@@ -6,7 +6,7 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 > This plugin has not been fully and thoroughly tested. Compatibility with other plugins has also not been tested. Use at your own risk.
 
 > [!CAUTION]
-> As you probably know, Valve can ban your server for using plugins like this one, so be advised. [More information...](https://blog.counter-strike.net/index.php/server_guidelines)
+> As you probably know, Valve can ban your server for using plugins like this one, so be advised. [See more information on Valve Guidelines...](https://blog.counter-strike.net/index.php/server_guidelines)
 
 ## Current Features
 
