@@ -29,7 +29,7 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 > [!WARNING]  
 > Right now I'm open to issue reports, please don't open feature request or suggestion issues - they will be closed. I may take your comments into account, but the issue is going to remain closed.
 
-## Instalation
+## Installation
 
 - [Download](https://github.com/ianlucas/cs2-InventorySimulatorPlugin/releases) the latest release.
 - Extract the .zip file into `addons/counterstrikesharp/plugins`.
