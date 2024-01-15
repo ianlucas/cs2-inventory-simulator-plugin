@@ -25,7 +25,7 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 - [ ] ⛔ Graffiti
 
 > [!IMPORTANT]  
-> ⛔ means I'm not aware of a way to modify using CSSharp or C++ and is very unlikely to be implemented soon.
+> ⛔ means I'm not aware of a way to modify using CSSharp or C++ and is very unlikely to be implemented any time soon.
 
 > [!WARNING]  
 > Right now I'm open to issue reports, please don't open feature request or suggestion issues - they will be closed. I may take your comments into account, but the issue is going to remain closed.
@@ -48,6 +48,7 @@ Not right now. I'm planning on adding a command for refreshing the inventory, bu
 
 - All knives will have the rare deploy animation.
 - Drop buy won't apply skins.
+- Sometimes the skin name won't be displayed on HUD.
 
 ## See also
 
