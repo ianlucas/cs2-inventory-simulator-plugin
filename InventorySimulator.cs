@@ -52,6 +52,8 @@ namespace InventorySimulator
                 {
                     try {
                         if (!player.IsValid || player.IsBot || player.IsHLTV) continue;
+                        var equipment = g_PlayerEquipment[player.SteamID];
+                        if (equipment == null) continue;
                         var viewModels = GetPlayerViewModels(player);
                         if (viewModels == null) continue;
                         var viewModel = viewModels[0];
@@ -59,8 +61,15 @@ namespace InventorySimulator
                         CBasePlayerWeapon weapon = viewModel.Value.Weapon.Value;
                         if (weapon == null || !weapon.IsValid) continue;
                         var isKnife = viewModel.Value.VMName.Contains("knife");
+                        var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
+                        var team = player.TeamNum;
+                        var knifeKey = $"me_{team}";
+                        var paintKitKey = $"pa_{team}_{itemDef}";
+
                         if (!isKnife)
                         {
+                            if (!equipment.ContainsKey(paintKitKey)) continue;
+
                             if (
                                 viewModel.Value.CBodyComponent != null
                                 && viewModel.Value.CBodyComponent.SceneNode != null
@@ -68,13 +77,15 @@ namespace InventorySimulator
                             {
                                 var skeleton = GetSkeletonInstance(viewModel.Value.CBodyComponent.SceneNode);
                                 skeleton.ModelState.MeshGroupMask = (ulong) (
-                                    IsLegacyModel(weapon.AttributeManager.Item.ItemDefinitionIndex, weapon.FallbackPaintKit) ? 2 : 1
+                                    IsLegacyModel(itemDef, weapon.FallbackPaintKit) ? 2 : 1
                                 );
                             }
                             Utilities.SetStateChanged(viewModel.Value, "CBaseEntity", "m_CBodyComponent");
                         } else
                         {
-                            var newModel = GetKnifeModel(weapon.AttributeManager.Item.ItemDefinitionIndex);
+                            if (!equipment.ContainsKey(knifeKey)) continue;
+
+                            var newModel = GetKnifeModel(itemDef);
                             if (newModel != "" && viewModel.Value.VMName != newModel)
                             {
                                 viewModel.Value.VMName = newModel;
@@ -115,8 +126,10 @@ namespace InventorySimulator
                         var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
                         var team = player.TeamNum;
                         var knifeKey = $"me_{team}";
+
+                        if (isKnife && !equipment.ContainsKey(knifeKey)) return;
                         
-                        if (isKnife && equipment.ContainsKey(knifeKey))
+                        if (isKnife)
                         {
                             itemDef = Convert.ToUInt16(
                                 (Int64) equipment[knifeKey]
