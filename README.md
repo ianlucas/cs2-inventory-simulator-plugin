@@ -1,6 +1,6 @@
 # CS2 Inventory Simulator Plugin
 
-A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory.cstrike.app). It features basically all we know so far to display economy items in-game, so it's full of hacks of all sorts and is missing a lot of features.
+A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory.cstrike.app). It features basically all we know (publically) so far to display economy items in-game, so it's full of hacks of all sorts and is missing a lot of features.
 
 > [!CAUTION]
 > This plugin has not been fully and thoroughly tested. Compatibility with other plugins has also not been tested. Use at your own risk.
@@ -35,14 +35,18 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 - Extract the .zip file into `addons/counterstrikesharp/plugins`.
 - Make sure `FollowCS2ServerGuidelines` is `false` in `addons/counterstrikesharp/configs/core.json`.
 
-## Configuration?
+### Configuration?
 
 Not right now. I'm planning on adding options for the Inventory Simulator endpoint and `cslib`'s `items.json` endpoint (so you can point to yours). So right now you depend on my online services or a fork of the project.
 
-## Commands?
+### Commands?
 
 Not right now. I'm planning on adding a command for refreshing the inventory, but it's not really high priority for me as I'm going to use this on competitive matches, and I don't want players messing with skins mid-game, so right now the skins are only fetched when the player connects to the server.
 
-## Known issues
+### Known issues
 
 - All knives will have the rare deploy animation.
+
+## See also
+
+If you are looking for a plugin that gives you more control, please see [cs2-weaponPaints](https://github.com/Nereziel/cs2-WeaponPaints).
