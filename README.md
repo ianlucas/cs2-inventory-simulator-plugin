@@ -47,7 +47,8 @@ Not right now. I'm planning on adding a command for refreshing the inventory, bu
 ### Known issues
 
 - All knives will have the rare deploy animation.
+- Drop buy won't apply skins.
 
 ## See also
 
-If you are looking for a plugin that gives you more control, please see [cs2-weaponPaints](https://github.com/Nereziel/cs2-WeaponPaints).
+If you are looking for a plugin that gives you more control, please see [cs2-WeaponPaints](https://github.com/Nereziel/cs2-WeaponPaints).
