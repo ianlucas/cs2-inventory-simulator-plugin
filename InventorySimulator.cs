@@ -5,22 +5,15 @@
 
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
-using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Entities;
-using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace InventorySimulator
 {
@@ -32,59 +25,56 @@ namespace InventorySimulator
         public override string ModuleVersion => "0.0.1";
 
         private static List<CS_Item>? g_EconomyItems;
-        private static Dictionary<ulong, Dictionary<string, object>?> g_PlayerEquipment = new();
+        private static Dictionary<ulong, PlayerEquipment> g_PlayerEquipment = new();
         private static Dictionary<ushort, Dictionary<int, bool>> g_LegacyItemDefPaintKit = new();
         private static Dictionary<ushort, string> g_ItemDefModel = new();
+        private static bool g_IsWindows = Environment.OSVersion.Platform == PlatformID.Win32NT || Environment.OSVersion.Platform == PlatformID.Win32Windows;
 
         public override void Load(bool hotReload)
         {
+            // We need this since removing weapons crashes on CS#.
+            // So the plugin takes care of giving the knife to the player.
+            Server.ExecuteCommand("mp_ct_default_melee \"\"");
+            Server.ExecuteCommand("mp_t_default_melee \"\"");
+
             Task.Run(async () =>
             {
                 await LoadEconomyItems();
             });
 
-            /// <summary>
-            /// Hacks our way to display the expected skins on the player's view model.
-            /// </summary>
             RegisterListener<Listeners.OnTick>(() =>
             {
                 foreach (var player in Utilities.GetPlayers())
                 {
                     try {
                         if (!player.IsValid || player.IsBot || player.IsHLTV) continue;
-                        var equipment = g_PlayerEquipment[player.SteamID];
-                        if (equipment == null) continue;
                         var viewModels = GetPlayerViewModels(player);
                         if (viewModels == null) continue;
                         var viewModel = viewModels[0];
                         if (viewModel == null || viewModel.Value == null || viewModel.Value.Weapon == null || viewModel.Value.Weapon.Value == null) continue;
                         CBasePlayerWeapon weapon = viewModel.Value.Weapon.Value;
                         if (weapon == null || !weapon.IsValid) continue;
+                        
+                        var equipment = GetPlayerEquipment(player);
                         var isKnife = viewModel.Value.VMName.Contains("knife");
                         var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
                         var team = player.TeamNum;
-                        var knifeKey = $"me_{team}";
-                        var paintKitKey = $"pa_{team}_{itemDef}";
 
                         if (!isKnife)
                         {
-                            if (!equipment.ContainsKey(paintKitKey)) continue;
+                            if (!equipment.hasProperty("pa", team, itemDef)) continue;
 
-                            if (
-                                viewModel.Value.CBodyComponent != null
-                                && viewModel.Value.CBodyComponent.SceneNode != null
-                            )
-                            {
-                                var skeleton = GetSkeletonInstance(viewModel.Value.CBodyComponent.SceneNode);
-                                skeleton.ModelState.MeshGroupMask = (ulong) (
-                                    IsLegacyModel(itemDef, weapon.FallbackPaintKit) ? 2 : 1
-                                );
-                            }
+                            // Looks like changing the weapon's MeshGroupMask during creation is not enough, so we
+                            // force it every tick to make sure we're displaying the right model on player's POV.
+                            UpdateWeaponModel(viewModel.Value, IsLegacyModel(itemDef, weapon.FallbackPaintKit));
                             Utilities.SetStateChanged(viewModel.Value, "CBaseEntity", "m_CBodyComponent");
                         } else
                         {
-                            if (!equipment.ContainsKey(knifeKey)) continue;
-
+                            
+                            if (!g_IsWindows || !equipment.hasProperty("me", team)) continue;
+                            // In Windows, we cannot give weapons using GiveNamedItem, so we force into the viewmodel
+                            // using the SetModel function. A caveat is that the animations are broken and the player
+                            // will always see the rarest deploy animation.
                             var newModel = GetKnifeModel(itemDef);
                             if (newModel != "" && viewModel.Value.VMName != newModel)
                             {
@@ -119,35 +109,28 @@ namespace InventorySimulator
                         var playerIndex = (int)pawn.Controller.Index;
                         var player = Utilities.GetPlayerFromIndex(playerIndex);
                         if (!(player != null && player.IsValid && !player.IsBot && !player.IsHLTV)) return;
-                        var equipment = g_PlayerEquipment[player.SteamID];
-                        if (equipment == null) return;
                         if (weapon.AttributeManager == null || weapon.AttributeManager.Item == null) return;
 
+                        var equipment = GetPlayerEquipment(player);
                         var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
                         var team = player.TeamNum;
-                        var knifeKey = $"me_{team}";
 
-                        if (isKnife && !equipment.ContainsKey(knifeKey)) return;
+                        if (isKnife && !equipment.hasProperty("me", team)) return;
                         
                         if (isKnife)
                         {
-                            itemDef = Convert.ToUInt16(
-                                (Int64) equipment[knifeKey]
-                            );
+                            itemDef = equipment.GetUShort("me", team);
+                            weapon.AttributeManager.Item.ItemDefinitionIndex = itemDef;
                         }
                         
-                        var paintKitKey = $"pa_{team}_{itemDef}";
-                        var seedKey = $"se_{team}_{itemDef}";
-                        var wearKey = $"fl_{team}_{itemDef}";
-                        var statTrakKey = $"st_{team}_{itemDef}";
-                        var nameTagKey = $"nt_{team}_{itemDef}";
-                        var hasPaintKit = equipment.ContainsKey(paintKitKey);
-
-                        weapon.AttributeManager.Item.ItemDefinitionIndex = itemDef;
+                        var hasPaintKit = equipment.hasProperty("pa", team, itemDef);
 
                         if (isKnife)
                         {
-                            weapon.SetModel(GetKnifeModel(itemDef));
+                            if (g_IsWindows)
+                            {
+                                weapon.SetModel(GetKnifeModel(itemDef));
+                            }
                             weapon.AttributeManager.Item.EntityQuality = 3;
                         }
 
@@ -157,51 +140,27 @@ namespace InventorySimulator
 
                         if (hasPaintKit)
                         {
-                            var paintKit = Convert.ToInt32((Int64) equipment[paintKitKey]);
+                            var paintKit = equipment.GetInt("pa", team, itemDef, 0);
                             weapon.FallbackPaintKit = paintKit;
                             if (!isKnife && IsLegacyModel(itemDef, paintKit))
                             {
-                                if (weapon.CBodyComponent != null && weapon.CBodyComponent.SceneNode != null)
-                                {
-                                    var skeleton = GetSkeletonInstance(weapon.CBodyComponent.SceneNode);
-                                    skeleton.ModelState.MeshGroupMask = 2;
-                                }
+                                UpdateWeaponModel(weapon, true);
                             }
                         }
                             
                         if (hasPaintKit)
                         {
-                            weapon.FallbackSeed = 
-                            (
-                                equipment.ContainsKey(seedKey)
-                                ? Convert.ToInt32((Int64) equipment[seedKey])
-                                : 1
-                            );
+                            weapon.FallbackSeed = equipment.GetInt("se", team, itemDef, 1);
                         }
                         
                         if (hasPaintKit)
                         {
-                            if (equipment.ContainsKey(wearKey))
-                            {
-                                var wear = (
-                                    equipment[wearKey] is double
-                                    ? (double) equipment[wearKey]
-                                    : (int) equipment[wearKey]
-                                );
-                                weapon.FallbackWear = (float) wear;
-                            } else
-                            {
-                                weapon.FallbackWear = 0.0f;
-                            }
+                            weapon.FallbackWear = equipment.GetFloat("fl", team, itemDef, 0.0f);
                         }
 
                         if (hasPaintKit)
                         {
-                            weapon.FallbackStatTrak = (
-                                equipment.ContainsKey(statTrakKey)
-                                ? Convert.ToInt32((Int64) equipment[statTrakKey])
-                                : -1
-                            );
+                            weapon.FallbackStatTrak = equipment.GetInt("st", team, itemDef, -1);
                         }
 
                         if (hasPaintKit)
@@ -209,11 +168,7 @@ namespace InventorySimulator
                             SchemaStringMember<CEconItemView> member = new SchemaStringMember<CEconItemView>(
                                 weapon.AttributeManager.Item, "CEconItemView", "m_szCustomName"
                             );
-                            member.Set(
-                                equipment.ContainsKey(nameTagKey)
-                                ? (string) equipment[nameTagKey]
-                                : ""
-                            );
+                            member.Set(equipment.GetString("nt", team, itemDef, ""));
                         }
                     });
                 }
@@ -244,6 +199,17 @@ namespace InventorySimulator
             return HookResult.Continue;
         }
 
+        [GameEventHandler(HookMode.Pre)]
+        public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+        {
+            // We need this since removing weapons crashes on CS#.
+            // So the plugin takes care of giving the knife to the player.
+            Server.ExecuteCommand("mp_ct_default_melee \"\"");
+            Server.ExecuteCommand("mp_t_default_melee \"\"");
+
+            return HookResult.Continue;
+        }
+
         /// <summary>
         /// Reapply the music kit to the player when they spawn. It used to have
         /// a bug on CS:GO that the music kit would go away when spraying. Need
@@ -259,6 +225,8 @@ namespace InventorySimulator
             }
 
             ApplyMusicKit(player);
+            ApplyGloves(player);
+            ApplyKnife(player);
 
             return HookResult.Continue;
         }
@@ -344,9 +312,9 @@ namespace InventorySimulator
                     response.EnsureSuccessStatusCode();
 
                     string jsonContent = await response.Content.ReadAsStringAsync();
-                    var userData = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonContent);
+                    var equipment = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonContent);
 
-                    g_PlayerEquipment[steamId] = userData;
+                    g_PlayerEquipment[steamId] = new PlayerEquipment(equipment);
                     Logger.LogInformation($"Loaded player {steamId} equipment");
                 }
             }
@@ -356,22 +324,55 @@ namespace InventorySimulator
             }
         }
 
-        /// <summary>
-        /// Apply the music kit to a given player.
-        /// </summary>
-        public void ApplyMusicKit(CCSPlayerController player)
+        public static void ApplyMusicKit(CCSPlayerController player)
         {
             if (player.InventoryServices == null) return;
-            var equipment = g_PlayerEquipment[player.SteamID];
-            if (equipment == null || !equipment.ContainsKey("mk")) return;
-            player.InventoryServices.MusicID = Convert.ToUInt16(
-                (Int64) equipment["mk"]
-            );
+            var equipment = GetPlayerEquipment(player);
+            if (!equipment.hasProperty("mk")) return;
+            player.InventoryServices.MusicID = equipment.GetUShort("mk");
         }
 
-        /// <summary>
-        /// Check if a given item definition and paint kit is using the legacy model (aka CS:GO model).
-        /// </summary>
+        public static void ApplyGloves(CCSPlayerController player)
+        {
+            var equipment = GetPlayerEquipment(player);
+
+            var team = player.TeamNum;
+            if (!equipment.hasProperty("gl", team)) return;
+
+            var itemDef = equipment.GetUShort("gl", team);
+            if (!equipment.hasProperty("pa", team, itemDef)) return;
+
+            var glove = player.PlayerPawn.Value!.EconGloves;
+            glove.ItemDefinitionIndex = itemDef;
+            glove.ItemIDLow = 16384 & 0xFFFFFFFF;
+            glove.ItemIDHigh = 16384 >> 32;
+
+            Server.NextFrame(() =>
+            {
+                glove.Initialized = true;
+                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture prefab", equipment.GetInt("pa", team, itemDef, 0));
+                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture seed", equipment.GetInt("se", team, itemDef, 1));
+                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture wear", equipment.GetFloat("fl", team, itemDef, 1));
+                SetBodygroup(player, "default_gloves", 1);
+            });
+        }
+
+        public void ApplyKnife(CCSPlayerController player)
+        {
+            var equipment = GetPlayerEquipment(player);
+
+            var team = player.TeamNum;
+            if (g_IsWindows || !equipment.hasProperty("me", team))
+            {
+                var suffix = (team == 2 ? "_t" : "");
+                player.GiveNamedItem($"weapon_knife{suffix}");
+                return;
+            }
+
+            var model = GetItemDefModel(equipment.GetUShort("me", team));
+            player.GiveNamedItem($"weapon_{model}");
+        }
+
         public bool IsLegacyModel(ushort itemDef, Int32 paintKit)
         {
             if (g_LegacyItemDefPaintKit.TryGetValue(itemDef, out var paintKitDict))
@@ -384,9 +385,6 @@ namespace InventorySimulator
             return false;
         }
 
-        /// <summary>
-        /// Get the model for a given item definition.
-        /// </summary>
         public string GetItemDefModel(ushort itemDef)
         {
             if (g_ItemDefModel.TryGetValue(itemDef, out var model))
@@ -396,9 +394,6 @@ namespace InventorySimulator
             return "";
         }
 
-        /// <summary>
-        /// Get the knife model for a given item definition.
-        /// </summary>
         public string GetKnifeModel(ushort itemDef)
         {
             var itemModel = GetItemDefModel(itemDef);
@@ -407,14 +402,16 @@ namespace InventorySimulator
             return $"weapons/models/knife/{modelName}/weapon_{modelName}.vmdl";
         }
 
-        /// <summary>
-        /// Get the skeleton instance of a scene node.
-        /// This is a hack by Nereziel/daffyyyy.
-        /// </summary>
-        private static CSkeletonInstance GetSkeletonInstance(CGameSceneNode node)
+        public static void UpdateWeaponModel(CBaseEntity weapon, bool isLegacy)
         {
-            Func<nint, nint> GetSkeletonInstance = VirtualFunction.Create<nint, nint>(node.Handle, 8);
-            return new CSkeletonInstance(GetSkeletonInstance(node.Handle));
+            if (weapon.CBodyComponent != null && weapon.CBodyComponent.SceneNode != null)
+            {
+                var skeleton = weapon.CBodyComponent.SceneNode.GetSkeletonInstance();
+                if (skeleton != null)
+                {
+                    skeleton.ModelState.MeshGroupMask = (ulong)(isLegacy ? 2 : 1);
+                }
+            }
         }
 
         /// <summary>
@@ -444,6 +441,35 @@ namespace InventorySimulator
             if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.ViewModelServices == null) return null;
             CCSPlayer_ViewModelServices viewModelServices = new CCSPlayer_ViewModelServices(player.PlayerPawn.Value.ViewModelServices!.Handle);
             return GetFixedArray<CHandle<CBaseViewModel>>(viewModelServices.Handle, "CCSPlayer_ViewModelServices", "m_hViewModel", 3);
+        }
+
+        /// <summary>
+        /// Set or Add attributes to an Attributes List.
+        /// CS# adaptiation by stefanx111 (publically available by skuzzis.)
+        /// </summary>
+        public static void SetOrAddAttributeValueByName(CAttributeList attr, string name, float f)
+        {
+            var SetAttr = VirtualFunction.Create<IntPtr, string, float, int>(GameData.GetSignature("CAttributeList_SetOrAddAttributeValueByName"));
+            SetAttr(attr.Handle, name, f);
+        }
+
+        /// <summary>
+        /// Set or Add attributes to an Attributes List.
+        /// CS# adaptiation by stefanx111 (publically available by skuzzis.)
+        /// </summary>
+        public static void SetBodygroup(CCSPlayerController player, string model, int i)
+        {
+            var SetBody = VirtualFunction.Create<IntPtr, string, int, int>(GameData.GetSignature("CBaseModelEntity_SetBodygroup"));
+            SetBody(player.PlayerPawn.Value!.Handle, model, i);
+        }
+
+        public static PlayerEquipment GetPlayerEquipment(CCSPlayerController player)
+        {
+            if (g_PlayerEquipment.TryGetValue(player.SteamID, out var equipment))
+            {
+                return equipment;
+            }
+            return new PlayerEquipment(null);
         }
     }
 
@@ -477,7 +503,6 @@ namespace InventorySimulator
 
     /// <summary>
     /// A Counter-Strike item definition from @ianlucas/cslib.
-    /// <see href="https://github.com/ianlucas/cslib/blob/9a4a3d8ea29778fb7b8bd0af934ec3dc40024b1b/src/economy.ts#L9-L44" />
     /// </summary>
     public class CS_Item
     {
@@ -523,8 +548,8 @@ namespace InventorySimulator
         [JsonProperty("name")]
         public string? Name { get; set; }
 
-        [JsonProperty("specialcontents")]
-        public List<int>? SpecialContents { get; set; }
+        [JsonProperty("specials")]
+        public List<int>? Specials { get; set; }
 
         [JsonProperty("specialimage")]
         public int? SpecialImage { get; set; }
@@ -546,5 +571,72 @@ namespace InventorySimulator
 
         [JsonProperty("wearmin")]
         public float? WearMin { get; set; }
+    }
+
+    public class PlayerEquipment
+    {
+        public Dictionary<string, object>? Equipment { get; set; }
+
+        public PlayerEquipment(Dictionary<string, object>? equipment)
+        {
+            Equipment = equipment ?? new Dictionary<string, object>();
+        }
+
+        public bool hasProperty(string prefix, byte team)
+        {
+            if (Equipment == null) return false;
+            return Equipment.ContainsKey($"{prefix}_{team}");
+        }
+
+        public bool hasProperty(string prefix, byte team, ushort itemDef)
+        {
+            if (Equipment == null) return false;
+            return Equipment.ContainsKey($"{prefix}_{team}_{itemDef}");
+        }
+
+        public bool hasProperty(string prefix)
+        {
+            if (Equipment == null) return false;
+            return Equipment.ContainsKey(prefix);
+        }
+    
+        public ushort GetUShort(string prefix, byte team)
+        {
+            if (Equipment == null) return 0;
+            var key = $"{prefix}_{team}";
+            return Convert.ToUInt16((Int64)Equipment[key]);
+        }
+
+        public ushort GetUShort(string prefix)
+        {
+            if (Equipment == null || !Equipment.ContainsKey(prefix)) return 0;
+            return Convert.ToUInt16((Int64)Equipment[prefix]);
+        }
+
+        public int GetInt(string prefix, byte team, ushort itemDef, int defaultValue)
+        {
+            var key = $"{prefix}_{team}_{itemDef}";
+            if (Equipment == null || !Equipment.ContainsKey(key)) return defaultValue;
+            return Convert.ToInt32((Int64)Equipment[key]);
+        }
+
+        public float GetFloat(string prefix, byte team, ushort itemDef, float defaultValue)
+        {
+            var key = $"{prefix}_{team}_{itemDef}";
+            if (Equipment == null || !Equipment.ContainsKey(key)) return defaultValue;
+            return Equipment[key] switch
+            {
+                double d => (float)d,
+                int i => (float)i,
+                _ => defaultValue
+            };
+        }
+
+        public string GetString(string prefix, byte team, ushort itemDef, string defaultValue)
+        {
+            var key = $"{prefix}_{team}_{itemDef}";
+            if (Equipment == null || !Equipment.ContainsKey(key)) return defaultValue;
+            return (string)Equipment[key];
+        }
     }
 }
