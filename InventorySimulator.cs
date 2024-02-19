@@ -43,7 +43,7 @@ namespace InventorySimulator
                 foreach (var player in Utilities.GetPlayers())
                 {
                     try {
-                        if (!IsValidPlayer(player)) continue;
+                        if (!IsValidHumanPlayer(player)) continue;
 
                         var viewModels = GetPlayerViewModels(player);
                         if (viewModels == null) continue;
@@ -69,7 +69,6 @@ namespace InventorySimulator
                             Utilities.SetStateChanged(viewModel.Value, "CBaseEntity", "m_CBodyComponent");
                         } else
                         {
-                            
                             if (!g_IsWindows || !equipment.hasProperty("me", team)) continue;
                             // In Windows, we cannot give weapons using GiveNamedItem, so we force into the viewmodel
                             // using the SetModel function. A caveat is that the animations are broken and the player
@@ -92,7 +91,7 @@ namespace InventorySimulator
                 var designerName = entity.DesignerName;
 
                 if (designerName.Contains("weapon")) {
-                    var isKnife = designerName.Contains("bayonet") || designerName.Contains("knife");
+                    var isKnife = IsKnifeClassName(designerName);
 
                     Server.NextFrame(() =>
                     {
@@ -105,7 +104,7 @@ namespace InventorySimulator
 
                         var playerIndex = (int)pawn.Controller.Index;
                         var player = Utilities.GetPlayerFromIndex(playerIndex);
-                        if (!IsValidPlayer(player)) return;
+                        if (!IsValidHumanPlayer(player)) return;
 
                         var equipment = GetPlayerEquipment(player);
                         var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
@@ -176,10 +175,8 @@ namespace InventorySimulator
         {
             CCSPlayerController? player = @event.Userid;
 
-            if (player == null || !player.IsValid || player.IsBot || player.IsHLTV)
-            {
+            if (!IsValidHumanPlayer(player))
                 return HookResult.Continue;
-            }
 
             var steamId = player.SteamID;
 
@@ -192,10 +189,10 @@ namespace InventorySimulator
         }
 
         [GameEventHandler(HookMode.Pre)]
-        public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+        public HookResult OnPlayerSpawnedPre(EventPlayerSpawn @event, GameEventInfo info)
         {
-            // We need this since removing weapons crashes on CS#.
-            // So the plugin takes care of giving the knife to the player.
+            // Plugin takes care of giving knives to players.
+            // This is a workaround for the weapon removal crash issue.
             Server.ExecuteCommand("mp_ct_default_melee \"\"");
             Server.ExecuteCommand("mp_t_default_melee \"\"");
 
@@ -206,10 +203,8 @@ namespace InventorySimulator
         public HookResult OnPlayerSpawned(EventPlayerSpawn @event, GameEventInfo info)
         {
             CCSPlayerController? player = @event.Userid;
-            if (player == null || !player.IsValid || player.IsBot || player.PlayerPawn == null || !player.PlayerPawn.IsValid)
-            {
+            if (!IsValidPlayer(player) || !IsValidPlayerPawn(player))
                 return HookResult.Continue;
-            }
 
             ApplyMusicKit(player);
             ApplyGloves(player);
@@ -222,12 +217,10 @@ namespace InventorySimulator
         public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
         {
             CCSPlayerController? player = @event.Userid;
-            if (player == null || !player.IsValid || player.IsBot || player.PlayerPawn == null || !player.PlayerPawn.IsValid)
+            if (IsValidHumanPlayer(player))
             {
-                return HookResult.Continue;
+                g_PlayerEquipment.Remove(player.SteamID);
             }
-
-            g_PlayerEquipment.Remove(player.SteamID);
 
             return HookResult.Continue;
         }
@@ -337,8 +330,12 @@ namespace InventorySimulator
 
         public void ApplyKnife(CCSPlayerController player)
         {
-            var equipment = GetPlayerEquipment(player);
+            if (HasKnife(player))
+            {
+                return;
+            }
 
+            var equipment = GetPlayerEquipment(player);
             var team = player.TeamNum;
             if (g_IsWindows || !equipment.hasProperty("me", team))
             {
@@ -440,9 +437,37 @@ namespace InventorySimulator
             return new PlayerEquipment(null);
         }
 
-        public bool IsValidPlayer(CCSPlayerController player)
+        public bool IsKnifeClassName(string className)
         {
-            return player != null && player.IsValid && !player.IsBot && !player.IsHLTV;
+            return className.Contains("bayonet") || className.Contains("knife");
+        }
+
+        public bool IsValidPlayer(CCSPlayerController? player)
+        {
+            return player != null && player.IsValid && !player.IsHLTV;
+        }
+
+        public bool IsValidHumanPlayer(CCSPlayerController? player)
+        {
+            return IsValidPlayer(player) && !player!.IsBot;
+        }
+
+        public bool IsValidPlayerPawn(CCSPlayerController player)
+        {
+            return player.PlayerPawn != null && player.PlayerPawn.IsValid;
+        }
+
+        public bool HasKnife(CCSPlayerController player)
+        {
+            foreach (var weapon in player.PlayerPawn.Value!.WeaponServices!.MyWeapons)
+            {
+                if (weapon is { IsValid: true, Value.IsValid: true })
+                {
+                    if (IsKnifeClassName(weapon.Value.DesignerName))
+                        return true;
+                }
+            }
+            return false;
         }
     }
 
