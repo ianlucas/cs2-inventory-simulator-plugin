@@ -12,6 +12,7 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 - Weapon/Knife
   - Paint Kit, Wear, Seed, Name tag, StatTrak.
+- Gloves
 - Music Kit
 
 ## Feature Roadmap
@@ -21,7 +22,6 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 - [ ] ⛔ Weapon Stickers
 - [ ] ⛔ Pins
 - [ ] ⛔ Agent Patches
-- [ ] ⛔ Gloves
 - [ ] ⛔ Graffiti
 
 > [!IMPORTANT]  
