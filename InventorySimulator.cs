@@ -9,7 +9,6 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -24,34 +23,34 @@ namespace InventorySimulator
         public override string ModuleName => "InventorySimulator";
         public override string ModuleVersion => "0.0.1";
 
-        private static List<CS_Item>? g_EconomyItems;
-        private static Dictionary<ulong, PlayerEquipment> g_PlayerEquipment = new();
-        private static Dictionary<ushort, Dictionary<int, bool>> g_LegacyItemDefPaintKit = new();
-        private static Dictionary<ushort, string> g_ItemDefModel = new();
-        private static bool g_IsWindows = Environment.OSVersion.Platform == PlatformID.Win32NT || Environment.OSVersion.Platform == PlatformID.Win32Windows;
+        private List<CS_Item>? g_Items;
+        private readonly Dictionary<ulong, PlayerEquipment> g_PlayerEquipment = new();
+        private readonly Dictionary<ushort, Dictionary<int, bool>> g_LegacyItemDefPaintKit = new();
+        private readonly Dictionary<ushort, string> g_ItemDefModel = new();
+        private readonly bool g_IsWindows = Environment.OSVersion.Platform == PlatformID.Win32NT || Environment.OSVersion.Platform == PlatformID.Win32Windows;
 
         public override void Load(bool hotReload)
         {
-            // We need this since removing weapons crashes on CS#.
-            // So the plugin takes care of giving the knife to the player.
-            Server.ExecuteCommand("mp_ct_default_melee \"\"");
-            Server.ExecuteCommand("mp_t_default_melee \"\"");
-
+            // Loads the economy items.
             Task.Run(async () =>
             {
-                await LoadEconomyItems();
+                await FetchEconomyItems();
             });
 
+            // Used to update weapon model and, on Windows, force Knife model.
             RegisterListener<Listeners.OnTick>(() =>
             {
                 foreach (var player in Utilities.GetPlayers())
                 {
                     try {
-                        if (!player.IsValid || player.IsBot || player.IsHLTV) continue;
+                        if (!IsValidPlayer(player)) continue;
+
                         var viewModels = GetPlayerViewModels(player);
                         if (viewModels == null) continue;
+
                         var viewModel = viewModels[0];
                         if (viewModel == null || viewModel.Value == null || viewModel.Value.Weapon == null || viewModel.Value.Weapon.Value == null) continue;
+
                         CBasePlayerWeapon weapon = viewModel.Value.Weapon.Value;
                         if (weapon == null || !weapon.IsValid) continue;
                         
@@ -87,9 +86,7 @@ namespace InventorySimulator
                 }
             });
 
-            /// <summary>
-            /// Updates the attributes of an entity when it's created.
-            /// </summary>
+            // Updates attributes of knife and weapons.
             RegisterListener<Listeners.OnEntityCreated>(entity =>
             {
                 var designerName = entity.DesignerName;
@@ -100,16 +97,15 @@ namespace InventorySimulator
                     Server.NextFrame(() =>
                     {
                         var weapon = new CBasePlayerWeapon(entity.Handle);
-                        if (!weapon.IsValid) return;
-                        if (weapon.OwnerEntity.Value == null) return;
-                        if (weapon.OwnerEntity.Index <= 0) return;
+                        if (!weapon.IsValid || weapon.OwnerEntity.Value == null || weapon.OwnerEntity.Index <= 0 || weapon.AttributeManager == null || weapon.AttributeManager.Item == null) return;
+
                         int weaponOwner = (int)weapon.OwnerEntity.Index;
                         var pawn = new CBasePlayerPawn(NativeAPI.GetEntityFromIndex(weaponOwner));
                         if (!pawn.IsValid) return;
+
                         var playerIndex = (int)pawn.Controller.Index;
                         var player = Utilities.GetPlayerFromIndex(playerIndex);
-                        if (!(player != null && player.IsValid && !player.IsBot && !player.IsHLTV)) return;
-                        if (weapon.AttributeManager == null || weapon.AttributeManager.Item == null) return;
+                        if (!IsValidPlayer(player)) return;
 
                         var equipment = GetPlayerEquipment(player);
                         var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
@@ -165,10 +161,9 @@ namespace InventorySimulator
 
                         if (hasPaintKit)
                         {
-                            SchemaStringMember<CEconItemView> member = new SchemaStringMember<CEconItemView>(
+                            (new SchemaStringMember<CEconItemView>(
                                 weapon.AttributeManager.Item, "CEconItemView", "m_szCustomName"
-                            );
-                            member.Set(equipment.GetString("nt", team, itemDef, ""));
+                            )).Set(equipment.GetString("nt", team, itemDef, ""));
                         }
                     });
                 }
@@ -176,9 +171,6 @@ namespace InventorySimulator
             
         }
 
-        /// <summary>
-        /// Load the player's equipment when they connect.
-        /// </summary>
         [GameEventHandler]
         public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
         {
@@ -193,7 +185,7 @@ namespace InventorySimulator
 
             Task.Run(async () =>
             {
-                await LoadPlayerEquipment(steamId);
+                await FetchPlayerEquipment(steamId);
             });
 
             return HookResult.Continue;
@@ -210,11 +202,6 @@ namespace InventorySimulator
             return HookResult.Continue;
         }
 
-        /// <summary>
-        /// Reapply the music kit to the player when they spawn. It used to have
-        /// a bug on CS:GO that the music kit would go away when spraying. Need
-        /// to check if this is still the case on CS2.
-        /// </summary>
         [GameEventHandler]
         public HookResult OnPlayerSpawned(EventPlayerSpawn @event, GameEventInfo info)
         {
@@ -231,9 +218,6 @@ namespace InventorySimulator
             return HookResult.Continue;
         }
 
-        /// <summary>
-        /// Remove the player's equipment when they disconnect.
-        /// </summary>
         [GameEventHandler]
         public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
         {
@@ -248,10 +232,7 @@ namespace InventorySimulator
             return HookResult.Continue;
         }
 
-        /// <summary>
-        /// Load economy items from cslib's CDN.
-        /// </summary>
-        public async Task LoadEconomyItems()
+        public async Task FetchEconomyItems()
         {
             try
             {
@@ -262,12 +243,12 @@ namespace InventorySimulator
                     response.EnsureSuccessStatusCode();
 
                     string jsonContent = await response.Content.ReadAsStringAsync();
-                    g_EconomyItems = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CS_Item>>(jsonContent);
+                    g_Items = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CS_Item>>(jsonContent);
                     Logger.LogInformation("Loaded economy items from cslib's CDN.");
 
-                    if (g_EconomyItems != null)
+                    if (g_Items != null)
                     {
-                        foreach (var item in g_EconomyItems)
+                        foreach (var item in g_Items)
                         {
                             if (item.Type == "weapon" && item.Def != null && item.Index != null)
                             {
@@ -298,10 +279,7 @@ namespace InventorySimulator
             }
         }
 
-        /// <summary>
-        /// Load a player's equipment from inventory.cstrike.app.
-        /// </summary>
-        public async Task LoadPlayerEquipment(ulong steamId)
+        public async Task FetchPlayerEquipment(ulong steamId)
         {
             try
             {
@@ -324,7 +302,7 @@ namespace InventorySimulator
             }
         }
 
-        public static void ApplyMusicKit(CCSPlayerController player)
+        public void ApplyMusicKit(CCSPlayerController player)
         {
             if (player.InventoryServices == null) return;
             var equipment = GetPlayerEquipment(player);
@@ -332,7 +310,7 @@ namespace InventorySimulator
             player.InventoryServices.MusicID = equipment.GetUShort("mk");
         }
 
-        public static void ApplyGloves(CCSPlayerController player)
+        public void ApplyGloves(CCSPlayerController player)
         {
             var equipment = GetPlayerEquipment(player);
 
@@ -402,7 +380,7 @@ namespace InventorySimulator
             return $"weapons/models/knife/{modelName}/weapon_{modelName}.vmdl";
         }
 
-        public static void UpdateWeaponModel(CBaseEntity weapon, bool isLegacy)
+        public void UpdateWeaponModel(CBaseEntity weapon, bool isLegacy)
         {
             if (weapon.CBodyComponent != null && weapon.CBodyComponent.SceneNode != null)
             {
@@ -414,56 +392,46 @@ namespace InventorySimulator
             }
         }
 
-        /// <summary>
-        /// Get a fixed array of CBaseViewModels.
-        /// This is a hack by KillStr3aK.
-        /// </summary>
-        public unsafe T[] GetFixedArray<T>(nint pointer, string @class, string member, int length) where T : CHandle<CBaseViewModel>
+        // This is hack by KillStr3aK.
+        public unsafe CHandle<CBaseViewModel>[] GetViewModelFixedArray(nint pointer, string @class, string member, int length)
         {
             nint ptr = pointer + Schema.GetSchemaOffset(@class, member);
             Span<nint> references = MemoryMarshal.CreateSpan<nint>(ref ptr, length);
-            T[] values = new T[length];
+            CHandle<CBaseViewModel>[] values = new CHandle<CBaseViewModel>[length];
 
             for (int i = 0; i < length; i++)
             {
-                values[i] = (T)Activator.CreateInstance(typeof(T), references[i])!;
+                values[i] = (CHandle<CBaseViewModel>)Activator.CreateInstance(typeof(CHandle<CBaseViewModel>), references[i])!;
             }
 
             return values;
         }
 
-        /// <summary>
-        /// Get the player's view models.
-        /// This is a hack by KillStr3aK.
-        /// </summary>
+        // This is a hack by KillStr3aK.
         public unsafe CHandle<CBaseViewModel>[]? GetPlayerViewModels(CCSPlayerController player)
         {
             if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.ViewModelServices == null) return null;
             CCSPlayer_ViewModelServices viewModelServices = new CCSPlayer_ViewModelServices(player.PlayerPawn.Value.ViewModelServices!.Handle);
-            return GetFixedArray<CHandle<CBaseViewModel>>(viewModelServices.Handle, "CCSPlayer_ViewModelServices", "m_hViewModel", 3);
+            return GetViewModelFixedArray(viewModelServices.Handle, "CCSPlayer_ViewModelServices", "m_hViewModel", 3);
         }
 
-        /// <summary>
-        /// Set or Add attributes to an Attributes List.
-        /// CS# adaptiation by stefanx111 (publically available by skuzzis.)
-        /// </summary>
-        public static void SetOrAddAttributeValueByName(CAttributeList attr, string name, float f)
+        // This was made public by skuzzis.
+        // CS# public implementation by stefanx111.
+        public void SetOrAddAttributeValueByName(CAttributeList attributeList, string name, float value)
         {
-            var SetAttr = VirtualFunction.Create<IntPtr, string, float, int>(GameData.GetSignature("CAttributeList_SetOrAddAttributeValueByName"));
-            SetAttr(attr.Handle, name, f);
+            var SetOrAddAttributeValueByNameFunc = VirtualFunction.Create<IntPtr, string, float, int>(GameData.GetSignature("CAttributeList_SetOrAddAttributeValueByName"));
+            SetOrAddAttributeValueByNameFunc(attributeList.Handle, name, value);
         }
 
-        /// <summary>
-        /// Set or Add attributes to an Attributes List.
-        /// CS# adaptiation by stefanx111 (publically available by skuzzis.)
-        /// </summary>
-        public static void SetBodygroup(CCSPlayerController player, string model, int i)
+        // This was made public by skuzzis.
+        // CS# public implementation by stefanx111.
+        public void SetBodygroup(CCSPlayerController player, string model, int i)
         {
-            var SetBody = VirtualFunction.Create<IntPtr, string, int, int>(GameData.GetSignature("CBaseModelEntity_SetBodygroup"));
-            SetBody(player.PlayerPawn.Value!.Handle, model, i);
+            var SetBodygroupFunc = VirtualFunction.Create<IntPtr, string, int, int>(GameData.GetSignature("CBaseModelEntity_SetBodygroup"));
+            SetBodygroupFunc(player.PlayerPawn.Value!.Handle, model, i);
         }
 
-        public static PlayerEquipment GetPlayerEquipment(CCSPlayerController player)
+        public PlayerEquipment GetPlayerEquipment(CCSPlayerController player)
         {
             if (g_PlayerEquipment.TryGetValue(player.SteamID, out var equipment))
             {
@@ -471,13 +439,14 @@ namespace InventorySimulator
             }
             return new PlayerEquipment(null);
         }
+
+        public bool IsValidPlayer(CCSPlayerController player)
+        {
+            return player != null && player.IsValid && !player.IsBot && !player.IsHLTV;
+        }
     }
 
-    /// <summary>
-    /// A class to manipulate a string in memory.
-    /// We currently need it to update string members.
-    /// This is a hack by Iksix.
-    /// </summary>
+    // This is a hack by Iksix.
     public class SchemaStringMember<SchemaClass> : NativeObject where SchemaClass : NativeObject
     {
         public SchemaStringMember(SchemaClass instance, string className, string member) : base(Schema.GetSchemaValue<nint>(instance.Handle, className, member))
@@ -501,9 +470,6 @@ namespace InventorySimulator
         }
     }
 
-    /// <summary>
-    /// A Counter-Strike item definition from @ianlucas/cslib.
-    /// </summary>
     public class CS_Item
     {
         [JsonProperty("altname")]
