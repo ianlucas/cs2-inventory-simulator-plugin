@@ -61,7 +61,7 @@ namespace InventorySimulator
 
                         if (!isKnife)
                         {
-                            if (!equipment.hasProperty("pa", team, itemDef)) continue;
+                            if (!equipment.HasProperty("pa", team, itemDef)) continue;
 
                             // Looks like changing the weapon's MeshGroupMask during creation is not enough, so we
                             // force it every tick to make sure we're displaying the right model on player's POV.
@@ -69,7 +69,7 @@ namespace InventorySimulator
                             Utilities.SetStateChanged(viewModel.Value, "CBaseEntity", "m_CBodyComponent");
                         } else
                         {
-                            if (!g_IsWindows || !equipment.hasProperty("me", team)) continue;
+                            if (!g_IsWindows || !equipment.HasProperty("me", team)) continue;
                             // In Windows, we cannot give weapons using GiveNamedItem, so we force into the viewmodel
                             // using the SetModel function. A caveat is that the animations are broken and the player
                             // will always see the rarest deploy animation.
@@ -110,7 +110,7 @@ namespace InventorySimulator
                         var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
                         var team = player.TeamNum;
 
-                        if (isKnife && !equipment.hasProperty("me", team)) return;
+                        if (isKnife && !equipment.HasProperty("me", team)) return;
                         
                         if (isKnife)
                         {
@@ -118,7 +118,7 @@ namespace InventorySimulator
                             weapon.AttributeManager.Item.ItemDefinitionIndex = itemDef;
                         }
                         
-                        var hasPaintKit = equipment.hasProperty("pa", team, itemDef);
+                        var hasPaintKit = equipment.HasProperty("pa", team, itemDef);
 
                         if (isKnife)
                         {
@@ -299,7 +299,7 @@ namespace InventorySimulator
         {
             if (player.InventoryServices == null) return;
             var equipment = GetPlayerEquipment(player);
-            if (!equipment.hasProperty("mk")) return;
+            if (!equipment.HasProperty("mk")) return;
             player.InventoryServices.MusicID = equipment.GetUShort("mk");
         }
 
@@ -308,10 +308,10 @@ namespace InventorySimulator
             var equipment = GetPlayerEquipment(player);
 
             var team = player.TeamNum;
-            if (!equipment.hasProperty("gl", team)) return;
+            if (!equipment.HasProperty("gl", team)) return;
 
             var itemDef = equipment.GetUShort("gl", team);
-            if (!equipment.hasProperty("pa", team, itemDef)) return;
+            if (!equipment.HasProperty("pa", team, itemDef)) return;
 
             var glove = player.PlayerPawn.Value!.EconGloves;
             glove.ItemDefinitionIndex = itemDef;
@@ -337,7 +337,7 @@ namespace InventorySimulator
 
             var equipment = GetPlayerEquipment(player);
             var team = player.TeamNum;
-            if (g_IsWindows || !equipment.hasProperty("me", team))
+            if (g_IsWindows || !equipment.HasProperty("me", team))
             {
                 var suffix = (team == 2 ? "_t" : "");
                 player.GiveNamedItem($"weapon_knife{suffix}");
@@ -573,19 +573,19 @@ namespace InventorySimulator
             Equipment = equipment ?? new Dictionary<string, object>();
         }
 
-        public bool hasProperty(string prefix, byte team)
+        public bool HasProperty(string prefix, byte team)
         {
             if (Equipment == null) return false;
             return Equipment.ContainsKey($"{prefix}_{team}");
         }
 
-        public bool hasProperty(string prefix, byte team, ushort itemDef)
+        public bool HasProperty(string prefix, byte team, ushort itemDef)
         {
             if (Equipment == null) return false;
             return Equipment.ContainsKey($"{prefix}_{team}_{itemDef}");
         }
 
-        public bool hasProperty(string prefix)
+        public bool HasProperty(string prefix)
         {
             if (Equipment == null) return false;
             return Equipment.ContainsKey(prefix);
