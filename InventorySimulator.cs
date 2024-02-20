@@ -471,7 +471,7 @@ namespace InventorySimulator
         }
     }
 
-    // This is a hack by Iksix.
+    // This is a hack by KillStr3aK.
     public class SchemaStringMember<SchemaClass> : NativeObject where SchemaClass : NativeObject
     {
         public SchemaStringMember(SchemaClass instance, string className, string member) : base(Schema.GetSchemaValue<nint>(instance.Handle, className, member))
