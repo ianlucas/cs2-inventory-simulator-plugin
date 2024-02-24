@@ -31,13 +31,11 @@ namespace InventorySimulator
 
         public override void Load(bool hotReload)
         {
-            // Loads the economy items.
             Task.Run(async () =>
             {
                 await FetchEconomyItems();
             });
 
-            // Used to update weapon model and, on Windows, force Knife model.
             RegisterListener<Listeners.OnTick>(() =>
             {
                 foreach (var player in Utilities.GetPlayers())
@@ -70,7 +68,7 @@ namespace InventorySimulator
                         } else
                         {
                             if (!g_IsWindows || !equipment.HasProperty("me", team)) continue;
-                            // In Windows, we cannot give weapons using GiveNamedItem, so we force into the viewmodel
+                            // In Windows, we cannot give knives using GiveNamedItem, so we force into the viewmodel
                             // using the SetModel function. A caveat is that the animations are broken and the player
                             // will always see the rarest deploy animation.
                             var newModel = GetKnifeModel(itemDef);
@@ -85,7 +83,6 @@ namespace InventorySimulator
                 }
             });
 
-            // Updates attributes of knife and weapons.
             RegisterListener<Listeners.OnEntityCreated>(entity =>
             {
                 var designerName = entity.DesignerName;
@@ -337,6 +334,11 @@ namespace InventorySimulator
 
             var equipment = GetPlayerEquipment(player);
             var team = player.TeamNum;
+            // On Windows we cannot give knives using GiveNamedItems, still no
+            // explanation from a C++/RE expert. We could use subclass_change, but
+            // from my testing it'd require a full client update to show the skin.
+            // Until someone figure this out, on Windows we force the knife on the
+            // viewmodel.
             if (g_IsWindows || !equipment.HasProperty("me", team))
             {
                 var suffix = (team == 2 ? "_t" : "");
