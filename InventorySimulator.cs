@@ -106,19 +106,24 @@ namespace InventorySimulator
                         var equipment = GetPlayerEquipment(player);
                         var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
                         var team = player.TeamNum;
+                        var hasKnife = equipment.HasProperty("me", team);
 
-                        if (isKnife && !equipment.HasProperty("me", team)) return;
+                        if (isKnife && !hasKnife) return;
+                        
+                        var hasNametag = equipment.HasProperty("nt", team, itemDef);
+                        var hasPaintKit = equipment.HasProperty("pa", team, itemDef);
+                        var hasStickers = equipment.HasProperty("ss", team, itemDef);
+                        var hasWear = equipment.HasProperty("fl", team, itemDef);
+                        var hasSeed = equipment.HasProperty("se", team, itemDef);
+                        var hasStatTrak = equipment.HasProperty("st", team, itemDef);
+                        var isCustomItem = hasKnife || hasPaintKit || hasNametag || hasStickers || hasWear || hasSeed || hasStatTrak;
+                        
+                        if (!isKnife && !isCustomItem) return;
                         
                         if (isKnife)
                         {
                             itemDef = equipment.GetUShort("me", team);
                             weapon.AttributeManager.Item.ItemDefinitionIndex = itemDef;
-                        }
-                        
-                        var hasPaintKit = equipment.HasProperty("pa", team, itemDef);
-
-                        if (isKnife)
-                        {
                             if (g_IsWindows)
                             {
                                 weapon.SetModel(GetKnifeModel(itemDef));
@@ -130,37 +135,18 @@ namespace InventorySimulator
                         weapon.AttributeManager.Item.ItemIDLow = 16384 & 0xFFFFFFFF;
                         weapon.AttributeManager.Item.ItemIDHigh = weapon.AttributeManager.Item.ItemIDLow >> 32;
 
-                        if (hasPaintKit)
+                        var paintKit = equipment.GetInt("pa", team, itemDef, 0);
+                        weapon.FallbackPaintKit = paintKit;
+
+                        if (!isKnife && IsLegacyModel(itemDef, paintKit))
                         {
-                            var paintKit = equipment.GetInt("pa", team, itemDef, 0);
-                            weapon.FallbackPaintKit = paintKit;
-                            if (!isKnife && IsLegacyModel(itemDef, paintKit))
-                            {
-                                UpdateWeaponModel(weapon, true);
-                            }
+                            UpdateWeaponModel(weapon, true);
                         }
                             
-                        if (hasPaintKit)
-                        {
-                            weapon.FallbackSeed = equipment.GetInt("se", team, itemDef, 1);
-                        }
-                        
-                        if (hasPaintKit)
-                        {
-                            weapon.FallbackWear = equipment.GetFloat("fl", team, itemDef, 0.0f);
-                        }
-
-                        if (hasPaintKit)
-                        {
-                            weapon.FallbackStatTrak = equipment.GetInt("st", team, itemDef, -1);
-                        }
-
-                        if (hasPaintKit)
-                        {
-                            (new SchemaStringMember<CEconItemView>(
-                                weapon.AttributeManager.Item, "CEconItemView", "m_szCustomName"
-                            )).Set(equipment.GetString("nt", team, itemDef, ""));
-                        }
+                        weapon.FallbackSeed = equipment.GetInt("se", team, itemDef, 1);
+                        weapon.FallbackWear = equipment.GetFloat("fl", team, itemDef, 0.0f);
+                        weapon.FallbackStatTrak = equipment.GetInt("st", team, itemDef, -1);
+                        weapon.AttributeManager.Item.CustomName = equipment.GetString("nt", team, itemDef, "");
                     });
                 }
             });
@@ -470,30 +456,6 @@ namespace InventorySimulator
                 }
             }
             return false;
-        }
-    }
-
-    // This is a hack by KillStr3aK.
-    public class SchemaStringMember<SchemaClass> : NativeObject where SchemaClass : NativeObject
-    {
-        public SchemaStringMember(SchemaClass instance, string className, string member) : base(Schema.GetSchemaValue<nint>(instance.Handle, className, member))
-        { }
-
-        public unsafe void Set(string str)
-        {
-            byte[] bytes = this.GetStringBytes(str);
-
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                Unsafe.Write((void*)(this.Handle.ToInt64() + i), bytes[i]);
-            }
-
-            Unsafe.Write((void*)(this.Handle.ToInt64() + bytes.Length), 0);
-        }
-
-        private byte[] GetStringBytes(string str)
-        {
-            return Encoding.UTF8.GetBytes(str);
         }
     }
 
