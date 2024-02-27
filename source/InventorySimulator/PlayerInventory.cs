@@ -1,4 +1,18 @@
-﻿namespace InventorySimulator;
+﻿using CounterStrikeSharp.API.Core;
+
+namespace InventorySimulator;
+
+public partial class InventorySimulator
+{
+    public PlayerInventory GetPlayerInventory(CCSPlayerController player)
+    {
+        if (g_PlayerInventory.TryGetValue(player.SteamID, out var inventory))
+        {
+            return inventory;
+        }
+        return new PlayerInventory(null);
+    }
+}
 
 public class PlayerInventory
 {
