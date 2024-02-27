@@ -46,42 +46,63 @@ public class PlayerInventory
         return Inventory.ContainsKey(prefix);
     }
 
-    public ushort GetUShort(string prefix, byte team)
+    public ushort GetUShort(string prefix, byte team, ushort defaultValue = 0)
     {
-        if (Inventory == null) return 0;
+        if (Inventory == null) return defaultValue;
         var key = $"{prefix}_{team}";
-        return Convert.ToUInt16((long)Inventory[key]);
+        if (Inventory.TryGetValue(key, out var value))
+        {
+            return Convert.ToUInt16((long)value);
+        }
+        return defaultValue;
     }
 
-    public ushort GetUShort(string prefix)
+    public ushort GetUShort(string prefix, ushort defaultValue = 0)
     {
-        if (Inventory == null || !Inventory.ContainsKey(prefix)) return 0;
-        return Convert.ToUInt16((long)Inventory[prefix]);
+        if (Inventory == null) return defaultValue;
+        if (Inventory.TryGetValue(prefix, out var value))
+        {
+            return Convert.ToUInt16((long)value);
+        }
+        return defaultValue;
     }
 
     public int GetInt(string prefix, byte team, ushort itemDef, int defaultValue)
     {
+        if (Inventory == null) return defaultValue;
         var key = $"{prefix}_{team}_{itemDef}";
-        if (Inventory == null || !Inventory.ContainsKey(key)) return defaultValue;
-        return Convert.ToInt32((long)Inventory[key]);
+        if (Inventory.TryGetValue(key, out var value))
+        {
+            return Convert.ToInt32((long)value);
+        }
+        return defaultValue;
     }
 
     public float GetFloat(string prefix, byte team, ushort itemDef, float defaultValue)
     {
+        if (Inventory == null) return defaultValue;
         var key = $"{prefix}_{team}_{itemDef}";
-        if (Inventory == null || !Inventory.ContainsKey(key)) return defaultValue;
-        return Inventory[key] switch
+        if (Inventory.TryGetValue(key, out var value))
         {
-            double d => (float)d,
-            int i => i,
-            _ => defaultValue
-        };
+            return value switch
+            {
+                double d => (float)d,
+                int i => i,
+                long i => (float)i,
+                _ => defaultValue
+            };
+        }
+        return defaultValue;
     }
 
     public string GetString(string prefix, byte team, ushort itemDef, string defaultValue)
     {
+        if (Inventory == null) return defaultValue;
         var key = $"{prefix}_{team}_{itemDef}";
-        if (Inventory == null || !Inventory.ContainsKey(key)) return defaultValue;
-        return (string)Inventory[key];
+        if (Inventory.TryGetValue(key, out var value))
+        {
+            return (string)value;
+        }
+        return defaultValue;
     }
 }
