@@ -4,9 +4,9 @@ public class PlayerInventory
 {
     public Dictionary<string, object>? Inventory { get; set; }
 
-    public PlayerInventory(Dictionary<string, object>? equipment)
+    public PlayerInventory(Dictionary<string, object>? inventory)
     {
-        Inventory = equipment ?? new Dictionary<string, object>();
+        Inventory = inventory ?? new Dictionary<string, object>();
     }
 
     public bool HasProperty(string prefix, byte team)
