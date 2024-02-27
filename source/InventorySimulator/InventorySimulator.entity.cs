@@ -3,22 +3,30 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public void UpdateWeaponModel(CBaseEntity weapon, bool isLegacy)
+    public bool UpdateWeaponModel(CBaseEntity weapon, bool isLegacy)
     {
         if (weapon.CBodyComponent != null && weapon.CBodyComponent.SceneNode != null)
         {
             var skeleton = weapon.CBodyComponent.SceneNode.GetSkeletonInstance();
             if (skeleton != null)
             {
-                skeleton.ModelState.MeshGroupMask = (ulong)(isLegacy ? 2 : 1);
+                var value = (ulong)(isLegacy ? 2 : 1);
+                if (skeleton.ModelState.MeshGroupMask != value)
+                {
+                    skeleton.ModelState.MeshGroupMask = value;
+                    return true;
+                }
+                return false;
             }
         }
+        return false;
     }
 
     public bool IsValidPlayer(CCSPlayerController? player)

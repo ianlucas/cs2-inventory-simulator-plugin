@@ -32,7 +32,7 @@ public partial class InventorySimulator : BasePlugin
         });
 
         RegisterListener<Listeners.OnTick>(OnTick);
-        RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
+        RegisterListener<Listeners.OnEntitySpawned>(OnEntitySpawned);
     }
 
     [GameEventHandler]
@@ -99,17 +99,15 @@ public partial class InventorySimulator : BasePlugin
             {
                 if (!IsValidHumanPlayer(player)) continue;
 
-                var viewModels = GetPlayerViewModels(player);
-                if (viewModels == null) continue;
+                var viewModel = GetPlayerViewModel(player);
+                if (viewModel == null) continue;
+                if (viewModel.Weapon.Value == null) continue;
 
-                var viewModel = viewModels[0];
-                if (viewModel == null || viewModel.Value == null || viewModel.Value.Weapon == null || viewModel.Value.Weapon.Value == null) continue;
-
-                CBasePlayerWeapon weapon = viewModel.Value.Weapon.Value;
+                CBasePlayerWeapon weapon = viewModel.Weapon.Value;
                 if (weapon == null || !weapon.IsValid) continue;
 
                 var inventory = GetPlayerInventory(player);
-                var isKnife = viewModel.Value.VMName.Contains("knife");
+                var isKnife = viewModel.VMName.Contains("knife");
                 var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
                 var team = player.TeamNum;
 
@@ -118,21 +116,24 @@ public partial class InventorySimulator : BasePlugin
                     if (!inventory.HasProperty("pa", team, itemDef)) continue;
 
                     // Looks like changing the weapon's MeshGroupMask during creation is not enough, so we
-                    // force it every tick to make sure we're displaying the right model on player's POV.
-                    UpdateWeaponModel(viewModel.Value, IsLegacyModel(itemDef, weapon.FallbackPaintKit));
-                    Utilities.SetStateChanged(viewModel.Value, "CBaseEntity", "m_CBodyComponent");
+                    // update the view model's skeleton as well.
+                    if (UpdateWeaponModel(viewModel, IsLegacyModel(itemDef, weapon.FallbackPaintKit)))
+                    {
+                        Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
+                    }
                 }
                 else
                 {
                     if (!g_IsWindows || !inventory.HasProperty("me", team)) continue;
+
                     // In Windows, we cannot give knives using GiveNamedItem, so we force into the viewmodel
                     // using the SetModel function. A caveat is that the animations are broken and the player
                     // will always see the rarest deploy animation.
                     var newModel = GetKnifeModel(itemDef);
-                    if (newModel != null && viewModel.Value.VMName != newModel)
+                    if (newModel != null && viewModel.VMName != newModel)
                     {
-                        viewModel.Value.VMName = newModel;
-                        viewModel.Value.SetModel(newModel);
+                        viewModel.VMName = newModel;
+                        viewModel.SetModel(newModel);
                     }
                 }
             }
@@ -141,7 +142,7 @@ public partial class InventorySimulator : BasePlugin
         }
     }
 
-    public void OnEntityCreated(CEntityInstance entity)
+    public void OnEntitySpawned(CEntityInstance entity)
     {
         var designerName = entity.DesignerName;
 
@@ -152,7 +153,7 @@ public partial class InventorySimulator : BasePlugin
             Server.NextFrame(() =>
             {
                 var weapon = new CBasePlayerWeapon(entity.Handle);
-                if (!weapon.IsValid || weapon.OwnerEntity.Value == null || weapon.OwnerEntity.Index <= 0 || weapon.AttributeManager == null || weapon.AttributeManager.Item == null) return;
+                if (!weapon.IsValid || weapon.OwnerEntity.Value == null || weapon.OwnerEntity.Index <= 0) return;
 
                 int weaponOwner = (int)weapon.OwnerEntity.Index;
                 var pawn = new CBasePlayerPawn(NativeAPI.GetEntityFromIndex(weaponOwner));
@@ -200,16 +201,15 @@ public partial class InventorySimulator : BasePlugin
 
                 var paintKit = inventory.GetInt("pa", team, itemDef, 0);
                 weapon.FallbackPaintKit = paintKit;
-
-                if (!isKnife && IsLegacyModel(itemDef, paintKit))
-                {
-                    UpdateWeaponModel(weapon, true);
-                }
-
                 weapon.FallbackSeed = inventory.GetInt("se", team, itemDef, 1);
                 weapon.FallbackWear = inventory.GetFloat("fl", team, itemDef, 0.0f);
                 weapon.FallbackStatTrak = inventory.GetInt("st", team, itemDef, -1);
                 weapon.AttributeManager.Item.CustomName = inventory.GetString("nt", team, itemDef, "");
+
+                if (!isKnife)
+                {
+                    UpdateWeaponModel(weapon, IsLegacyModel(itemDef, paintKit));
+                }
             });
         }
     }
