@@ -11,7 +11,7 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public void ApplyMusicKit(CCSPlayerController player)
+    public void GiveMusicKit(CCSPlayerController player)
     {
         if (player.InventoryServices == null) return;
         var inventory = GetPlayerInventory(player);
@@ -19,7 +19,7 @@ public partial class InventorySimulator
         player.InventoryServices.MusicID = inventory.GetUShort("mk");
     }
 
-    public void ApplyGloves(CCSPlayerController player)
+    public void GiveGloves(CCSPlayerController player)
     {
         var inventory = GetPlayerInventory(player);
 
@@ -44,7 +44,7 @@ public partial class InventorySimulator
         });
     }
 
-    public void ApplyKnife(CCSPlayerController player)
+    public void GiveKnife(CCSPlayerController player)
     {
         if (HasKnife(player))
         {
@@ -72,7 +72,7 @@ public partial class InventorySimulator
         }
     }
 
-    public void ApplyAgent(CCSPlayerController player)
+    public void GiveAgent(CCSPlayerController player)
     {
         var team = player.TeamNum;
         var inventory = GetPlayerInventory(player);

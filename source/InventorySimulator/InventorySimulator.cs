@@ -71,10 +71,10 @@ public partial class InventorySimulator : BasePlugin
         if (!IsValidPlayer(player) || !IsValidPlayerPawn(player))
             return HookResult.Continue;
 
-        ApplyMusicKit(player);
-        ApplyAgent(player);
-        ApplyGloves(player);
-        ApplyKnife(player);
+        GiveMusicKit(player);
+        GiveAgent(player);
+        GiveGloves(player);
+        GiveKnife(player);
 
         return HookResult.Continue;
     }
