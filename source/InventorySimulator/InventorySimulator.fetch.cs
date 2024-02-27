@@ -1,4 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Ian Lucas. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace InventorySimulator;
