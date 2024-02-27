@@ -61,6 +61,9 @@ public partial class InventorySimulator : BasePlugin
         Server.ExecuteCommand("mp_ct_default_melee \"\"");
         Server.ExecuteCommand("mp_t_default_melee \"\"");
 
+        // Looks like this throws some informational logs in the console due to it being
+        // triggered and probably executed on every spawn in the game, but I want to keep
+        // it here to ensure any outsider exec will not mess with this.
         return HookResult.Continue;
     }
 
