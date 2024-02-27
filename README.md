@@ -39,7 +39,7 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 ### Configuration?
 
-Not right now. I'm planning on adding options for the Inventory Simulator endpoint and `cslib`'s `items.json` endpoint (so you can point to yours). So right now you depend on my online services or a fork of the project.
+Not right now. I'm planning on adding options for the Inventory Simulator endpoint and `cslib`'s endpoints (so you can point to yours). So right now you depend on my online services or a fork of the project.
 
 ### Commands?
 
