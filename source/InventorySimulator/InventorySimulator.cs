@@ -5,11 +5,13 @@
 
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using System.Runtime.InteropServices;
 
 namespace InventorySimulator;
 
+[MinimumApiVersion(175)]
 public partial class InventorySimulator : BasePlugin
 {
     public override string ModuleAuthor => "Ian Lucas";
