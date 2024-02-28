@@ -11,7 +11,7 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public void GiveMusicKit(CCSPlayerController player)
+    public void GivePlayerMusicKit(CCSPlayerController player)
     {
         if (player.InventoryServices == null) return;
         var inventory = GetPlayerInventory(player);
@@ -19,7 +19,7 @@ public partial class InventorySimulator
         player.InventoryServices.MusicID = inventory.GetUShort("mk");
     }
 
-    public void GiveGloves(CCSPlayerController player)
+    public void GivePlayerGloves(CCSPlayerController player)
     {
         var inventory = GetPlayerInventory(player);
 
@@ -44,50 +44,48 @@ public partial class InventorySimulator
         });
     }
 
-    public void GiveKnife(CCSPlayerController player)
+    public void GivePlayerKnife(CCSPlayerController player)
     {
-        if (HasKnife(player))
+        if (IsPlayerOwnsKnife(player))
         {
             return;
         }
 
-        var inventory = GetPlayerInventory(player);
         var team = player.TeamNum;
+        var inventory = GetPlayerInventory(player);
+        var model = inventory.GetString("mem", team);
+
         // On Windows we cannot give knives using GiveNamedItems, still no
         // explanation from a C++/RE expert. We could use subclass_change, but
         // from my testing it'd require a full client update to show the skin.
         // Until someone figure this out, on Windows we force the knife on the
         // viewmodel.
-        if (g_IsWindows || !inventory.HasProperty("me", team))
+        if (g_IsWindows || model == null)
         {
             var suffix = team == 2 ? "_t" : "";
             player.GiveNamedItem($"weapon_knife{suffix}");
             return;
         }
 
-        var model = GetItemDefModel(inventory.GetUShort("me", team));
-        if (model != null)
-        {
-            player.GiveNamedItem(model);
-        }
+        player.GiveNamedItem(GetWeaponClassName(model));
     }
 
-    public void GiveAgent(CCSPlayerController player)
+    public void GivePlayerAgent(CCSPlayerController player)
     {
         var team = player.TeamNum;
         var inventory = GetPlayerInventory(player);
-        if (!inventory.HasProperty("ag", team)) return;
+        var model = inventory.GetString("agm", team);
+
+        if (model == null) return;
 
         try
         {
-            var model = GetAgentModel(inventory.GetUShort("ag", team));
-            if (model != null)
+            Server.NextFrame(() =>
             {
-                Server.NextFrame(() =>
-                {
-                    player.PlayerPawn.Value!.SetModel(model);
-                });
-            }
+                player.PlayerPawn.Value!.SetModel(
+                    GetAgentModelPath(model)
+                );
+            });
         }
         catch (Exception)
         {

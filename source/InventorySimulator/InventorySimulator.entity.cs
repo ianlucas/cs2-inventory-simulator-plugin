@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 
 namespace InventorySimulator;
@@ -29,22 +28,22 @@ public partial class InventorySimulator
         return false;
     }
 
-    public bool IsValidPlayer(CCSPlayerController? player)
+    public bool IsPlayerValid(CCSPlayerController? player)
     {
         return player != null && player.IsValid && !player.IsHLTV;
     }
 
-    public bool IsValidHumanPlayer(CCSPlayerController? player)
+    public bool IsPlayerHumanAndValid(CCSPlayerController? player)
     {
-        return IsValidPlayer(player) && !player!.IsBot;
+        return IsPlayerValid(player) && !player!.IsBot;
     }
 
-    public bool IsValidPlayerPawn(CCSPlayerController player)
+    public bool IsPlayerPawnValid(CCSPlayerController player)
     {
         return player.PlayerPawn != null && player.PlayerPawn.IsValid;
     }
 
-    public bool HasKnife(CCSPlayerController player)
+    public bool IsPlayerOwnsKnife(CCSPlayerController player)
     {
         foreach (var weapon in player.PlayerPawn.Value!.WeaponServices!.MyWeapons)
         {

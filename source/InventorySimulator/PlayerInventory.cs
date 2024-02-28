@@ -49,8 +49,7 @@ public class PlayerInventory
     public ushort GetUShort(string prefix, byte team, ushort defaultValue = 0)
     {
         if (Inventory == null) return defaultValue;
-        var key = $"{prefix}_{team}";
-        if (Inventory.TryGetValue(key, out var value))
+        if (Inventory.TryGetValue($"{prefix}_{team}", out var value))
         {
             return Convert.ToUInt16((long)value);
         }
@@ -70,8 +69,7 @@ public class PlayerInventory
     public int GetInt(string prefix, byte team, ushort itemDef, int defaultValue)
     {
         if (Inventory == null) return defaultValue;
-        var key = $"{prefix}_{team}_{itemDef}";
-        if (Inventory.TryGetValue(key, out var value))
+        if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}", out var value))
         {
             return Convert.ToInt32((long)value);
         }
@@ -81,8 +79,7 @@ public class PlayerInventory
     public float GetFloat(string prefix, byte team, ushort itemDef, float defaultValue)
     {
         if (Inventory == null) return defaultValue;
-        var key = $"{prefix}_{team}_{itemDef}";
-        if (Inventory.TryGetValue(key, out var value))
+        if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}", out var value))
         {
             return value switch
             {
@@ -98,11 +95,20 @@ public class PlayerInventory
     public string GetString(string prefix, byte team, ushort itemDef, string defaultValue)
     {
         if (Inventory == null) return defaultValue;
-        var key = $"{prefix}_{team}_{itemDef}";
-        if (Inventory.TryGetValue(key, out var value))
+        if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}", out var value))
         {
             return (string)value;
         }
         return defaultValue;
+    }
+
+    public string? GetString(string prefix, byte team)
+    {
+        if (Inventory == null) return null;
+        if (Inventory.TryGetValue($"{prefix}_{team}", out var value))
+        {
+            return (string)value;
+        }
+        return null;
     }
 }

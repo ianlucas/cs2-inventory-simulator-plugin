@@ -6,6 +6,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using System.Runtime.InteropServices;
 
 namespace InventorySimulator;
 
@@ -14,23 +15,13 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleAuthor => "Ian Lucas";
     public override string ModuleDescription => "Inventory Simulator (inventory.cstrike.app)";
     public override string ModuleName => "InventorySimulator";
-    public override string ModuleVersion => "0.0.1";
+    public override string ModuleVersion => "0.0.4";
 
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
-    private Dictionary<ushort, List<int>> g_LookupWeaponLegacy = new();
-    private Dictionary<ushort, string> g_LookupWeaponModel = new();
-    private Dictionary<ushort, string> g_LookupAgentModel = new();
-    private readonly bool g_IsWindows = Environment.OSVersion.Platform == PlatformID.Win32NT || Environment.OSVersion.Platform == PlatformID.Win32Windows;
+    private readonly bool g_IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
     public override void Load(bool hotReload)
     {
-        Task.Run(async () =>
-        {
-            await FetchLookupWeaponLegacy();
-            await FetchLookupWeaponModel();
-            await FetchLookupAgentModel();
-        });
-
         RegisterListener<Listeners.OnTick>(OnTick);
         RegisterListener<Listeners.OnEntitySpawned>(OnEntitySpawned);
     }
@@ -40,7 +31,7 @@ public partial class InventorySimulator : BasePlugin
     {
         CCSPlayerController? player = @event.Userid;
 
-        if (!IsValidHumanPlayer(player))
+        if (!IsPlayerHumanAndValid(player))
             return HookResult.Continue;
 
         var steamId = player.SteamID;
@@ -71,13 +62,13 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
         CCSPlayerController? player = @event.Userid;
-        if (!IsValidPlayer(player) || !IsValidPlayerPawn(player))
+        if (!IsPlayerValid(player) || !IsPlayerPawnValid(player))
             return HookResult.Continue;
 
-        GiveMusicKit(player);
-        GiveAgent(player);
-        GiveGloves(player);
-        GiveKnife(player);
+        GivePlayerMusicKit(player);
+        GivePlayerAgent(player);
+        GivePlayerGloves(player);
+        GivePlayerKnife(player);
 
         return HookResult.Continue;
     }
@@ -86,7 +77,7 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         CCSPlayerController? player = @event.Userid;
-        if (IsValidHumanPlayer(player))
+        if (IsPlayerHumanAndValid(player))
         {
             g_PlayerInventory.Remove(player.SteamID);
         }
@@ -100,7 +91,7 @@ public partial class InventorySimulator : BasePlugin
         {
             try
             {
-                if (!IsValidHumanPlayer(player)) continue;
+                if (!IsPlayerHumanAndValid(player)) continue;
 
                 var viewModel = GetPlayerViewModel(player);
                 if (viewModel == null) continue;
@@ -120,7 +111,7 @@ public partial class InventorySimulator : BasePlugin
 
                     // Looks like changing the weapon's MeshGroupMask during creation is not enough, so we
                     // update the view model's skeleton as well.
-                    if (UpdateWeaponModel(viewModel, IsLegacyModel(itemDef, weapon.FallbackPaintKit)))
+                    if (UpdateWeaponModel(viewModel, inventory.HasProperty("pal", team, itemDef)))
                     {
                         Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
                     }
@@ -132,11 +123,15 @@ public partial class InventorySimulator : BasePlugin
                     // In Windows, we cannot give knives using GiveNamedItem, so we force into the viewmodel
                     // using the SetModel function. A caveat is that the animations are broken and the player
                     // will always see the rarest deploy animation.
-                    var newModel = GetKnifeModel(itemDef);
-                    if (newModel != null && viewModel.VMName != newModel)
+                    var model = inventory.GetString("mem", team);
+                    if (model != null)
                     {
-                        viewModel.VMName = newModel;
-                        viewModel.SetModel(newModel);
+                        var modelPath = GetKnifeModelPath(model);
+                        if (viewModel.VMName != modelPath)
+                        {
+                            viewModel.VMName = modelPath;
+                            viewModel.SetModel(modelPath);
+                        }
                     }
                 }
             }
@@ -164,7 +159,7 @@ public partial class InventorySimulator : BasePlugin
 
                 var playerIndex = (int)pawn.Controller.Index;
                 var player = Utilities.GetPlayerFromIndex(playerIndex);
-                if (!IsValidHumanPlayer(player)) return;
+                if (!IsPlayerHumanAndValid(player)) return;
 
                 var inventory = GetPlayerInventory(player);
                 var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
@@ -189,10 +184,10 @@ public partial class InventorySimulator : BasePlugin
                     weapon.AttributeManager.Item.ItemDefinitionIndex = itemDef;
                     if (g_IsWindows)
                     {
-                        var model = GetKnifeModel(itemDef);
+                        var model = inventory.GetString("mem", team);
                         if (model != null)
                         {
-                            weapon.SetModel(model);
+                            weapon.SetModel(GetKnifeModelPath(model));
                         }
                     }
                     weapon.AttributeManager.Item.EntityQuality = 3;
@@ -211,7 +206,7 @@ public partial class InventorySimulator : BasePlugin
 
                 if (!isKnife)
                 {
-                    UpdateWeaponModel(weapon, IsLegacyModel(itemDef, paintKit));
+                    UpdateWeaponModel(weapon, inventory.HasProperty("pal", team, itemDef));
                 }
             });
         }

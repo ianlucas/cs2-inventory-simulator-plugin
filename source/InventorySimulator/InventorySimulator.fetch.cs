@@ -29,43 +29,6 @@ public partial class InventorySimulator
         }
     }
 
-    public async Task FetchLookupWeaponLegacy()
-    {
-        var lookupWeaponLegacy = await Fetch<Dictionary<ushort, List<int>>>(
-            "https://raw.githubusercontent.com/ianlucas/cslib/main/assets/data/lookup-weapon-legacy.json"
-        );
-        if (lookupWeaponLegacy != null)
-        {
-            g_LookupWeaponLegacy = lookupWeaponLegacy;
-        }
-    }
-
-    public async Task FetchLookupWeaponModel()
-    {
-        var lookupWeaponModel = await Fetch<Dictionary<ushort, string>>(
-            "https://raw.githubusercontent.com/ianlucas/cslib/main/assets/data/lookup-weapon-model.json"
-        );
-        if (lookupWeaponModel != null)
-        {
-            g_LookupWeaponModel = lookupWeaponModel;
-        }
-    }
-
-    public async Task FetchLookupAgentModel()
-    {
-        var lookupAgentModel = await Fetch<Dictionary<ushort, string>>(
-            "https://raw.githubusercontent.com/ianlucas/cslib/main/assets/data/lookup-agent-model.json"
-        );
-        if (lookupAgentModel != null)
-        {
-            foreach (var entry in lookupAgentModel)
-            {
-                var model = $"characters/models/{entry.Value}.vmdl";
-                g_LookupAgentModel.Add(entry.Key, model);
-            }
-        }
-    }
-
     public async Task FetchPlayerInventory(ulong steamId)
     {
         var playerInventory = await Fetch<Dictionary<string, object>>(
