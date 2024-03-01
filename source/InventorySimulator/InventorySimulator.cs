@@ -64,7 +64,7 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
         CCSPlayerController? player = @event.Userid;
-        if (!IsPlayerHumanAndValid(player) || !IsPlayerPawnValid(player))
+        if (!IsPlayerValid(player) || !IsPlayerPawnValid(player))
             return HookResult.Continue;
 
         GivePlayerMusicKit(player);
@@ -96,8 +96,7 @@ public partial class InventorySimulator : BasePlugin
                 if (!IsPlayerHumanAndValid(player)) continue;
 
                 var viewModel = GetPlayerViewModel(player);
-                if (viewModel == null) continue;
-                if (viewModel.Weapon.Value == null) continue;
+                if (viewModel == null || viewModel.Weapon.Value == null) continue;
 
                 CBasePlayerWeapon weapon = viewModel.Weapon.Value;
                 if (weapon == null || !weapon.IsValid) continue;
