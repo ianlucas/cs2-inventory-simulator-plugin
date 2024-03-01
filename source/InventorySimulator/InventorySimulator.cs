@@ -21,6 +21,7 @@ public partial class InventorySimulator : BasePlugin
 
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
     private readonly bool g_IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+    private ulong g_ItemId = UInt64.MaxValue - 32768;
 
     public override void Load(bool hotReload)
     {
@@ -194,9 +195,10 @@ public partial class InventorySimulator : BasePlugin
                     weapon.AttributeManager.Item.EntityQuality = 3;
                 }
 
-                weapon.AttributeManager.Item.ItemID = 16384;
-                weapon.AttributeManager.Item.ItemIDLow = 16384 & 0xFFFFFFFF;
-                weapon.AttributeManager.Item.ItemIDHigh = weapon.AttributeManager.Item.ItemIDLow >> 32;
+                ulong itemId = g_ItemId++;
+                weapon.AttributeManager.Item.ItemID = itemId;
+                weapon.AttributeManager.Item.ItemIDLow = (uint)itemId & 0xFFFFFFFF;
+                weapon.AttributeManager.Item.ItemIDHigh = (uint)itemId >> 32;
 
                 var paintKit = inventory.GetInt("pa", team, itemDef, 0);
                 weapon.FallbackPaintKit = paintKit;
@@ -204,6 +206,9 @@ public partial class InventorySimulator : BasePlugin
                 weapon.FallbackWear = inventory.GetFloat("fl", team, itemDef, 0.0f);
                 weapon.FallbackStatTrak = inventory.GetInt("st", team, itemDef, -1);
                 weapon.AttributeManager.Item.CustomName = inventory.GetString("nt", team, itemDef, "");
+
+                // This APPEARS to fix the issue where sometimes the skin name won't be displayed on HUD.
+                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture prefab", paintKit);
 
                 if (!isKnife)
                 {
