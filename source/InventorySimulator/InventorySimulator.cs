@@ -49,7 +49,7 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
         CCSPlayerController? player = @event.Userid;
-        if (!IsPlayerValid(player) || !IsPlayerPawnValid(player))
+        if (!IsPlayerHumanAndValid(player) || !IsPlayerPawnValid(player))
             return HookResult.Continue;
 
         GivePlayerMusicKit(player);
