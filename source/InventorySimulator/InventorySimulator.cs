@@ -16,7 +16,7 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleAuthor => "Ian Lucas";
     public override string ModuleDescription => "Inventory Simulator (inventory.cstrike.app)";
     public override string ModuleName => "InventorySimulator";
-    public override string ModuleVersion => "0.0.4";
+    public override string ModuleVersion => "0.0.5";
 
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
     private ulong g_ItemId = UInt64.MaxValue - 32768;
