@@ -7,17 +7,6 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public string GetWeaponClassName(string model)
-    {
-        return $"weapon_{model}";
-    }
-
-    public string GetKnifeModelPath(string model)
-    {
-        model = model == "bayonet" ? "knife_bayonet" : model;
-        return $"weapons/models/knife/{model}/weapon_{model}.vmdl";
-    }
-
     public string GetAgentModelPath(string model)
     {
         return $"characters/models/{model}.vmdl";

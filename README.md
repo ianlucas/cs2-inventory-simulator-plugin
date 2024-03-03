@@ -48,9 +48,9 @@ Not right now. I'm planning on adding a command for refreshing the inventory, bu
 
 ### Known issues
 
-- All knives will have the rare deploy animation (Windows-only).
 - Drop buy won't apply skins.
-- Sometimes the skin name won't be displayed on HUD. (Fixed?)
+- - ~~All knives will have the rare deploy animation.~~ (Fixed?)
+- ~~Sometimes the skin name won't be displayed on HUD.~~ (Fixed?)
 
 ## See also
 

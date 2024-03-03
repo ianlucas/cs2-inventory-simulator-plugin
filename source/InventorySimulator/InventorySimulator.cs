@@ -7,7 +7,6 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
-using System.Runtime.InteropServices;
 
 namespace InventorySimulator;
 
@@ -20,7 +19,6 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleVersion => "0.0.4";
 
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
-    private readonly bool g_IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
     private ulong g_ItemId = UInt64.MaxValue - 32768;
 
     public override void Load(bool hotReload)
@@ -47,20 +45,6 @@ public partial class InventorySimulator : BasePlugin
         return HookResult.Continue;
     }
 
-    [GameEventHandler(HookMode.Pre)]
-    public HookResult OnPlayerSpawnPre(EventPlayerSpawn @event, GameEventInfo info)
-    {
-        // Plugin takes care of giving knives to players.
-        // This is a workaround for the weapon removal crash issue.
-        Server.ExecuteCommand("mp_ct_default_melee \"\"");
-        Server.ExecuteCommand("mp_t_default_melee \"\"");
-
-        // Looks like this throws some informational logs in the console due to it being
-        // triggered and probably executed on every spawn in the game, but I want to keep
-        // it here to ensure any outsider exec will not mess with this.
-        return HookResult.Continue;
-    }
-
     [GameEventHandler]
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
@@ -71,7 +55,6 @@ public partial class InventorySimulator : BasePlugin
         GivePlayerMusicKit(player);
         GivePlayerAgent(player);
         GivePlayerGloves(player);
-        GivePlayerKnife(player);
 
         return HookResult.Continue;
     }
@@ -98,43 +81,22 @@ public partial class InventorySimulator : BasePlugin
 
                 var viewModel = GetPlayerViewModel(player);
                 if (viewModel == null || viewModel.Weapon.Value == null) continue;
+                if (viewModel.VMName.Contains("knife")) continue;
 
                 CBasePlayerWeapon weapon = viewModel.Weapon.Value;
                 if (weapon == null || !weapon.IsValid) continue;
 
                 var inventory = GetPlayerInventory(player);
-                var isKnife = viewModel.VMName.Contains("knife");
                 var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
                 var team = player.TeamNum;
 
-                if (!isKnife)
-                {
-                    if (!inventory.HasProperty("pa", team, itemDef)) continue;
+                if (!inventory.HasProperty("pa", team, itemDef)) continue;
 
-                    // Looks like changing the weapon's MeshGroupMask during creation is not enough, so we
-                    // update the view model's skeleton as well.
-                    if (UpdateWeaponModel(viewModel, inventory.HasProperty("pal", team, itemDef)))
-                    {
-                        Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
-                    }
-                }
-                else
+                // Looks like changing the weapon's MeshGroupMask during creation is not enough, so we
+                // update the view model's skeleton as well.
+                if (UpdateWeaponModel(viewModel, inventory.HasProperty("pal", team, itemDef)))
                 {
-                    if (!g_IsWindows || !inventory.HasProperty("me", team)) continue;
-
-                    // In Windows, we cannot give knives using GiveNamedItem, so we force into the viewmodel
-                    // using the SetModel function. A caveat is that the animations are broken and the player
-                    // will always see the rarest deploy animation.
-                    var model = inventory.GetString("mem", team);
-                    if (model != null)
-                    {
-                        var modelPath = GetKnifeModelPath(model);
-                        if (viewModel.VMName != modelPath)
-                        {
-                            viewModel.VMName = modelPath;
-                            viewModel.SetModel(modelPath);
-                        }
-                    }
+                    Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
                 }
             }
             catch (Exception)
@@ -183,15 +145,11 @@ public partial class InventorySimulator : BasePlugin
                 if (isKnife)
                 {
                     itemDef = inventory.GetUShort("me", team);
-                    weapon.AttributeManager.Item.ItemDefinitionIndex = itemDef;
-                    if (g_IsWindows)
+                    if (weapon.AttributeManager.Item.ItemDefinitionIndex != itemDef)
                     {
-                        var model = inventory.GetString("mem", team);
-                        if (model != null)
-                        {
-                            weapon.SetModel(GetKnifeModelPath(model));
-                        }
+                        SubclassChange(weapon, itemDef);
                     }
+                    weapon.AttributeManager.Item.ItemDefinitionIndex = itemDef;
                     weapon.AttributeManager.Item.EntityQuality = 3;
                 }
 

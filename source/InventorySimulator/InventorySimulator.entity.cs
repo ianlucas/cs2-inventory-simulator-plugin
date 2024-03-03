@@ -42,17 +42,4 @@ public partial class InventorySimulator
     {
         return player.PlayerPawn != null && player.PlayerPawn.IsValid;
     }
-
-    public bool IsPlayerOwnsKnife(CCSPlayerController player)
-    {
-        foreach (var weapon in player.PlayerPawn.Value!.WeaponServices!.MyWeapons)
-        {
-            if (weapon is { IsValid: true, Value.IsValid: true })
-            {
-                if (IsKnifeClassName(weapon.Value.DesignerName))
-                    return true;
-            }
-        }
-        return false;
-    }
 }
