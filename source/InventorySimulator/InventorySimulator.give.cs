@@ -65,4 +65,53 @@ public partial class InventorySimulator
             Logger.LogInformation($"Could not set player model for {player.PlayerName}");
         }
     }
+
+    public void GivePlayerWeaponSkin(CCSPlayerController player, CBasePlayerWeapon weapon)
+    {
+        var isKnife = IsKnifeClassName(weapon.DesignerName);
+        var inventory = GetPlayerInventory(player);
+        var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
+        var team = player.TeamNum;
+        var hasKnife = inventory.HasProperty("me", team);
+
+        if (isKnife && !hasKnife) return;
+
+        var hasNametag = inventory.HasProperty("nt", team, itemDef);
+        var hasPaintKit = inventory.HasProperty("pa", team, itemDef);
+        var hasStickers = inventory.HasProperty("ss", team, itemDef);
+        var hasWear = inventory.HasProperty("fl", team, itemDef);
+        var hasSeed = inventory.HasProperty("se", team, itemDef);
+        var hasStatTrak = inventory.HasProperty("st", team, itemDef);
+        var isCustomItem = hasKnife || hasPaintKit || hasNametag || hasStickers || hasWear || hasSeed || hasStatTrak;
+
+        if (!isKnife && !isCustomItem) return;
+
+        if (isKnife)
+        {
+            itemDef = inventory.GetUShort("me", team);
+            if (weapon.AttributeManager.Item.ItemDefinitionIndex != itemDef)
+            {
+                SubclassChange(weapon, itemDef);
+            }
+            weapon.AttributeManager.Item.ItemDefinitionIndex = itemDef;
+            weapon.AttributeManager.Item.EntityQuality = 3;
+        }
+
+        UpdateItemID(weapon.AttributeManager.Item);
+
+        var paintKit = inventory.GetInt("pa", team, itemDef, 0);
+        weapon.FallbackPaintKit = paintKit;
+        weapon.FallbackSeed = inventory.GetInt("se", team, itemDef, 1);
+        weapon.FallbackWear = inventory.GetFloat("fl", team, itemDef, 0.0f);
+        weapon.FallbackStatTrak = inventory.GetInt("st", team, itemDef, -1);
+        weapon.AttributeManager.Item.CustomName = inventory.GetString("nt", team, itemDef, "");
+
+        // This APPEARS to fix the issue where sometimes the skin name won't be displayed on HUD.
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture prefab", paintKit);
+
+        if (!isKnife)
+        {
+            UpdateWeaponModel(weapon, inventory.HasProperty("pal", team, itemDef));
+        }
+    }
 }

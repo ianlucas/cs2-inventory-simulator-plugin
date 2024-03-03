@@ -7,6 +7,8 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 
 namespace InventorySimulator;
 
@@ -24,7 +26,7 @@ public partial class InventorySimulator : BasePlugin
     public override void Load(bool hotReload)
     {
         RegisterListener<Listeners.OnTick>(OnTick);
-        RegisterListener<Listeners.OnEntitySpawned>(OnEntitySpawned);
+        VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
     }
 
     [GameEventHandler]
@@ -104,73 +106,17 @@ public partial class InventorySimulator : BasePlugin
         }
     }
 
-    public void OnEntitySpawned(CEntityInstance entity)
+    public HookResult OnGiveNamedItemPost(DynamicHook hook)
     {
-        var designerName = entity.DesignerName;
+        var itemServices = hook.GetParam<CCSPlayer_ItemServices>(0);
+        var weapon = hook.GetReturn<CBasePlayerWeapon>(0);
+        if (!weapon.DesignerName.Contains("weapon"))
+            return HookResult.Continue;
 
-        if (designerName.Contains("weapon"))
-        {
-            var isKnife = IsKnifeClassName(designerName);
+        var player = GetPlayerFromItemServices(itemServices);
+        if (player != null)
+            GivePlayerWeaponSkin(player, weapon);
 
-            Server.NextFrame(() =>
-            {
-                var weapon = new CBasePlayerWeapon(entity.Handle);
-                if (!weapon.IsValid || weapon.OwnerEntity.Value == null || weapon.OwnerEntity.Index <= 0) return;
-
-                int weaponOwner = (int)weapon.OwnerEntity.Index;
-                var pawn = new CBasePlayerPawn(NativeAPI.GetEntityFromIndex(weaponOwner));
-                if (!pawn.IsValid) return;
-
-                var playerIndex = (int)pawn.Controller.Index;
-                var player = Utilities.GetPlayerFromIndex(playerIndex);
-                if (!IsPlayerHumanAndValid(player)) return;
-
-                var inventory = GetPlayerInventory(player);
-                var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
-                var team = player.TeamNum;
-                var hasKnife = inventory.HasProperty("me", team);
-
-                if (isKnife && !hasKnife) return;
-
-                var hasNametag = inventory.HasProperty("nt", team, itemDef);
-                var hasPaintKit = inventory.HasProperty("pa", team, itemDef);
-                var hasStickers = inventory.HasProperty("ss", team, itemDef);
-                var hasWear = inventory.HasProperty("fl", team, itemDef);
-                var hasSeed = inventory.HasProperty("se", team, itemDef);
-                var hasStatTrak = inventory.HasProperty("st", team, itemDef);
-                var isCustomItem = hasKnife || hasPaintKit || hasNametag || hasStickers || hasWear || hasSeed || hasStatTrak;
-
-                if (!isKnife && !isCustomItem) return;
-
-                if (isKnife)
-                {
-                    itemDef = inventory.GetUShort("me", team);
-                    if (weapon.AttributeManager.Item.ItemDefinitionIndex != itemDef)
-                    {
-                        SubclassChange(weapon, itemDef);
-                    }
-                    weapon.AttributeManager.Item.ItemDefinitionIndex = itemDef;
-                    weapon.AttributeManager.Item.EntityQuality = 3;
-                }
-
-                UpdateItemID(weapon.AttributeManager.Item);
-
-                var paintKit = inventory.GetInt("pa", team, itemDef, 0);
-                weapon.FallbackPaintKit = paintKit;
-                weapon.FallbackSeed = inventory.GetInt("se", team, itemDef, 1);
-                weapon.FallbackWear = inventory.GetFloat("fl", team, itemDef, 0.0f);
-                weapon.FallbackStatTrak = inventory.GetInt("st", team, itemDef, -1);
-                weapon.AttributeManager.Item.CustomName = inventory.GetString("nt", team, itemDef, "");
-
-                // This APPEARS to fix the issue where sometimes the skin name won't be displayed on HUD.
-                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture prefab", paintKit);
-
-                if (!isKnife)
-                {
-                    UpdateWeaponModel(weapon, inventory.HasProperty("pal", team, itemDef));
-                }
-            });
-        }
+        return HookResult.Continue;
     }
 }
-

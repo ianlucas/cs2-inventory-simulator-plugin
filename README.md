@@ -48,7 +48,7 @@ Not right now. I'm planning on adding a command for refreshing the inventory, bu
 
 ### Known issues
 
-- Drop buy won't apply skins.
+- ~~Drop buy won't apply skins.~~ (Fixed?)
 - ~~All knives will have the rare deploy animation.~~ (Fixed?)
 - ~~Sometimes the skin name won't be displayed on HUD.~~ (Fixed?)
 
