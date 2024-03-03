@@ -25,7 +25,6 @@ public partial class InventorySimulator : BasePlugin
 
     public override void Load(bool hotReload)
     {
-        RegisterListener<Listeners.OnTick>(OnTick);
         VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
     }
 
@@ -71,39 +70,6 @@ public partial class InventorySimulator : BasePlugin
         }
 
         return HookResult.Continue;
-    }
-
-    public void OnTick()
-    {
-        foreach (var player in Utilities.GetPlayers())
-        {
-            try
-            {
-                if (!IsPlayerHumanAndValid(player)) continue;
-
-                var viewModel = GetPlayerViewModel(player);
-                if (viewModel == null || viewModel.Weapon.Value == null) continue;
-                if (viewModel.VMName.Contains("knife")) continue;
-
-                CBasePlayerWeapon weapon = viewModel.Weapon.Value;
-                if (weapon == null || !weapon.IsValid) continue;
-
-                var inventory = GetPlayerInventory(player);
-                var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
-                var team = player.TeamNum;
-
-                if (!inventory.HasProperty("pa", team, itemDef)) continue;
-
-                // Looks like changing the weapon's MeshGroupMask during creation is not enough, so we
-                // update the view model's skeleton as well.
-                if (UpdateWeaponModel(viewModel, inventory.HasProperty("pal", team, itemDef)))
-                {
-                    Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
-                }
-            }
-            catch (Exception)
-            { }
-        }
     }
 
     public HookResult OnGiveNamedItemPost(DynamicHook hook)

@@ -31,7 +31,7 @@ public partial class InventorySimulator
 
         var glove = player.PlayerPawn.Value!.EconGloves;
         glove.ItemDefinitionIndex = itemDef;
-        UpdateItemID(glove);
+        UpdatePlayerItemID(glove);
 
         Server.NextFrame(() =>
         {
@@ -97,7 +97,7 @@ public partial class InventorySimulator
             weapon.AttributeManager.Item.EntityQuality = 3;
         }
 
-        UpdateItemID(weapon.AttributeManager.Item);
+        UpdatePlayerItemID(weapon.AttributeManager.Item);
 
         var paintKit = inventory.GetInt("pa", team, itemDef, 0);
         weapon.FallbackPaintKit = paintKit;
@@ -111,7 +111,7 @@ public partial class InventorySimulator
 
         if (!isKnife)
         {
-            UpdateWeaponModel(weapon, inventory.HasProperty("pal", team, itemDef));
+            UpdatePlayerWeaponMeshGroupMask(player, weapon, inventory.HasProperty("pal", team, itemDef));
         }
     }
 }

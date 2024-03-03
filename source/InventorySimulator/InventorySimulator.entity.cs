@@ -3,32 +3,47 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public bool UpdateWeaponModel(CBaseEntity weapon, bool isLegacy)
+
+    public void UpdateWeaponMeshGroupMask(CBaseEntity weapon, bool isLegacy)
     {
         if (weapon.CBodyComponent != null && weapon.CBodyComponent.SceneNode != null)
         {
             var skeleton = weapon.CBodyComponent.SceneNode.GetSkeletonInstance();
             if (skeleton != null)
             {
+                // Legacy refer to the old weapon models from CS:GO, in CS2 `MeshGroupMask` defines
+                // if the game should display the legacy (=2) or new model (=1).
                 var value = (ulong)(isLegacy ? 2 : 1);
                 if (skeleton.ModelState.MeshGroupMask != value)
                 {
                     skeleton.ModelState.MeshGroupMask = value;
-                    return true;
                 }
-                return false;
             }
         }
-        return false;
     }
 
-    public void UpdateItemID(CEconItemView econItemView)
+    public void UpdatePlayerWeaponMeshGroupMask(CCSPlayerController player, CBasePlayerWeapon weapon, bool isLegacy)
+    {
+        // 1. We update the weapon's mesh group mask.
+        UpdateWeaponMeshGroupMask(weapon, isLegacy);
+
+        // 2. If the current view model is showing it up, make sure it has the correct mesh group mask.
+        var viewModel = GetPlayerViewModel(player);
+        if (viewModel != null && viewModel.Weapon.Value != null && viewModel.Weapon.Value.Index == weapon.Index)
+        {
+            UpdateWeaponMeshGroupMask(viewModel, isLegacy);
+            Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
+        }
+    }
+
+    public void UpdatePlayerItemID(CEconItemView econItemView)
     {
         // Okay, so ItemID appears to be a global identification of the item. Since we're
         // faking it, we are using some arbitrary big numbers.
