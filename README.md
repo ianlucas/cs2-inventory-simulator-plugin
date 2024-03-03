@@ -19,11 +19,11 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 ## Feature Roadmap
 
-- [ ] StatTrak increment
-- [ ] ⛔ Weapon Stickers
-- [ ] ⛔ Pins
-- [ ] ⛔ Agent Patches
-- [ ] ⛔ Graffiti
+- StatTrak increment
+- ⛔ Weapon Stickers
+- ⛔ Pins
+- ⛔ Agent Patches
+- ⛔ Graffiti
 
 > [!IMPORTANT]  
 > ⛔ means I'm not aware of a way to modify using CSSharp or C++ and is very unlikely to be implemented any time soon.
@@ -49,7 +49,7 @@ Not right now. I'm planning on adding a command for refreshing the inventory, bu
 ### Known issues
 
 - Drop buy won't apply skins.
-- - ~~All knives will have the rare deploy animation.~~ (Fixed?)
+- ~~All knives will have the rare deploy animation.~~ (Fixed?)
 - ~~Sometimes the skin name won't be displayed on HUD.~~ (Fixed?)
 
 ## See also
