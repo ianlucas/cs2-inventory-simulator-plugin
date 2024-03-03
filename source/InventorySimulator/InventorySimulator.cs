@@ -153,13 +153,7 @@ public partial class InventorySimulator : BasePlugin
                     weapon.AttributeManager.Item.EntityQuality = 3;
                 }
 
-                // Okay, so ItemID appears to be a global identification of the item. Since we're
-                // faking it, we are using some arbitrary big numbers.
-                ulong itemId = g_ItemId++;
-                weapon.AttributeManager.Item.ItemID = itemId;
-                // This logic comes from the leaked CSGO source code.
-                weapon.AttributeManager.Item.ItemIDLow = (uint)itemId & 0xFFFFFFFF;
-                weapon.AttributeManager.Item.ItemIDHigh = (uint)itemId >> 32;
+                UpdateItemID(weapon.AttributeManager.Item);
 
                 var paintKit = inventory.GetInt("pa", team, itemDef, 0);
                 weapon.FallbackPaintKit = paintKit;

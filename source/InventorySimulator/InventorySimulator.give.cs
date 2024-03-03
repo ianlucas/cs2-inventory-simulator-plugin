@@ -31,8 +31,7 @@ public partial class InventorySimulator
 
         var glove = player.PlayerPawn.Value!.EconGloves;
         glove.ItemDefinitionIndex = itemDef;
-        glove.ItemIDLow = 16384 & 0xFFFFFFFF;
-        glove.ItemIDHigh = 16384 >> 32;
+        UpdateItemID(glove);
 
         Server.NextFrame(() =>
         {
