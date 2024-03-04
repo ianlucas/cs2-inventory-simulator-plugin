@@ -7,8 +7,6 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
-using CounterStrikeSharp.API.Modules.Memory;
-using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 
 namespace InventorySimulator;
 
@@ -18,14 +16,14 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleAuthor => "Ian Lucas";
     public override string ModuleDescription => "Inventory Simulator (inventory.cstrike.app)";
     public override string ModuleName => "InventorySimulator";
-    public override string ModuleVersion => "0.0.6";
+    public override string ModuleVersion => "0.0.7";
 
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
     private ulong g_ItemId = UInt64.MaxValue - 32768;
 
     public override void Load(bool hotReload)
     {
-        VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
+        RegisterListener<Listeners.OnEntitySpawned>(OnEntitySpawned);
     }
 
     [GameEventHandler]
@@ -72,17 +70,24 @@ public partial class InventorySimulator : BasePlugin
         return HookResult.Continue;
     }
 
-    public HookResult OnGiveNamedItemPost(DynamicHook hook)
+    public void OnEntitySpawned(CEntityInstance entity)
     {
-        var itemServices = hook.GetParam<CCSPlayer_ItemServices>(0);
-        var weapon = hook.GetReturn<CBasePlayerWeapon>(0);
-        if (!weapon.DesignerName.Contains("weapon"))
-            return HookResult.Continue;
+        var designerName = entity.DesignerName;
 
-        var player = GetPlayerFromItemServices(itemServices);
-        if (player != null)
-            GivePlayerWeaponSkin(player, weapon);
+        if (designerName.Contains("weapon"))
+        {
+            var isKnife = IsKnifeClassName(designerName);
 
-        return HookResult.Continue;
+            Server.NextFrame(() =>
+            {
+                var weapon = new CBasePlayerWeapon(entity.Handle);
+                if (!weapon.IsValid) return;
+
+                var player = Utilities.GetPlayerFromSteamId((ulong)weapon.OriginalOwnerXuidLow);
+                if (player == null || !IsPlayerHumanAndValid(player)) return;
+
+                GivePlayerWeaponSkin(player, weapon);
+            });
+        }
     }
 }
