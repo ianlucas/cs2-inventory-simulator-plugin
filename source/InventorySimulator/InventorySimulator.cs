@@ -19,7 +19,7 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleVersion => "0.0.7";
 
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
-    private ulong g_ItemId = UInt64.MaxValue - 32768;
+    private ulong g_ItemId = UInt64.MaxValue - 65536;
 
     public override void Load(bool hotReload)
     {
