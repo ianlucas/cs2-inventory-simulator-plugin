@@ -81,9 +81,10 @@ public partial class InventorySimulator : BasePlugin
             Server.NextFrame(() =>
             {
                 var weapon = new CBasePlayerWeapon(entity.Handle);
-                if (!weapon.IsValid) return;
+                uint? originalOwnerSteamId = weapon.OriginalOwnerXuidLow;
+                if (!weapon.IsValid || originalOwnerSteamId == null) return;
 
-                var player = Utilities.GetPlayerFromSteamId((ulong)weapon.OriginalOwnerXuidLow);
+                var player = Utilities.GetPlayerFromSteamId((ulong)originalOwnerSteamId);
                 if (player == null || !IsPlayerHumanAndValid(player)) return;
 
                 GivePlayerWeaponSkin(player, weapon);
