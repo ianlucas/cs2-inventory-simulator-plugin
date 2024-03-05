@@ -76,8 +76,6 @@ public partial class InventorySimulator : BasePlugin
 
         if (designerName.Contains("weapon"))
         {
-            var isKnife = IsKnifeClassName(designerName);
-
             Server.NextFrame(() =>
             {
                 var weapon = new CBasePlayerWeapon(entity.Handle);
