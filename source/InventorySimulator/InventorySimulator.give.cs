@@ -62,7 +62,6 @@ public partial class InventorySimulator
         }
         catch (Exception)
         {
-            Logger.LogInformation($"Could not set player model for {player.PlayerName}");
         }
     }
 
