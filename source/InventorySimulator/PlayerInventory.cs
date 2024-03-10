@@ -25,7 +25,24 @@ public class PlayerInventory
 
     public PlayerInventory(Dictionary<string, object>? inventory = null)
     {
-         Inventory = inventory ?? new();
+        Inventory = inventory ?? new();
+    }
+
+    private float ConvertUintToFloat(uint value)
+    {
+        byte[] bytes = BitConverter.GetBytes(value);
+        return BitConverter.ToSingle(bytes, 0);
+    }
+
+    private float ConvertObjectToFloat(object value, float defaultValue)
+    {
+        return value switch
+        {
+            double d => (float)d,
+            int i => i,
+            long i => (float)i,
+            _ => defaultValue
+        };
     }
 
     public bool HasProperty(string prefix, byte team)
@@ -74,13 +91,16 @@ public class PlayerInventory
     {
         if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}", out var value))
         {
-            return value switch
-            {
-                double d => (float)d,
-                int i => i,
-                long i => (float)i,
-                _ => defaultValue
-            };
+            return ConvertObjectToFloat(value, defaultValue);
+        }
+        return defaultValue;
+    }
+
+    public float GetFloat(string prefix, byte team, ushort itemDef, int slot, float defaultValue)
+    {
+        if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}_{slot}", out var value))
+        {
+            return ConvertObjectToFloat(value, defaultValue);
         }
         return defaultValue;
     }
@@ -101,5 +121,14 @@ public class PlayerInventory
             return (string)value;
         }
         return null;
+    }
+
+    public float GetIntAsFloat(string prefix, byte team, ushort itemDef, int slot, uint defaultValue)
+    {
+        if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}_{slot}", out var value))
+        {
+            return ConvertUintToFloat((uint)((long)value));
+        }
+        return ConvertUintToFloat(defaultValue);
     }
 }
