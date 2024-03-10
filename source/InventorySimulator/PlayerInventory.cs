@@ -28,7 +28,7 @@ public class PlayerInventory
         Inventory = inventory ?? new();
     }
 
-    private float ConvertUintToFloat(uint value)
+    private float ViewUintAsFloat(uint value)
     {
         byte[] bytes = BitConverter.GetBytes(value);
         return BitConverter.ToSingle(bytes, 0);
@@ -127,8 +127,8 @@ public class PlayerInventory
     {
         if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}_{slot}", out var value))
         {
-            return ConvertUintToFloat((uint)((long)value));
+            return ViewUintAsFloat((uint)((long)value));
         }
-        return ConvertUintToFloat(defaultValue);
+        return ViewUintAsFloat(defaultValue);
     }
 }
