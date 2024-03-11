@@ -30,7 +30,6 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
     {
         CCSPlayerController? player = @event.Userid;
-
         if (!IsPlayerHumanAndValid(player))
             return HookResult.Continue;
 
@@ -54,6 +53,7 @@ public partial class InventorySimulator : BasePlugin
         GivePlayerMusicKit(player);
         GivePlayerAgent(player);
         GivePlayerGloves(player);
+        GivePlayerPin(player);
 
         return HookResult.Continue;
     }

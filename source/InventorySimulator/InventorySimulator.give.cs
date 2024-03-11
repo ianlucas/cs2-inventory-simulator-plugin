@@ -19,6 +19,14 @@ public partial class InventorySimulator
         player.InventoryServices.MusicID = inventory.GetUShort("mk");
     }
 
+    public void GivePlayerPin(CCSPlayerController player)
+    {
+        if (player.InventoryServices == null) return;
+        var inventory = GetPlayerInventory(player);
+        if (!inventory.HasProperty("pi")) return;
+        player.InventoryServices.Rank[5] = (MedalRank_t)inventory.GetUInt("pi");
+    }
+
     public void GivePlayerGloves(CCSPlayerController player)
     {
         var inventory = GetPlayerInventory(player);
