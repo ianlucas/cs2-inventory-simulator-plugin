@@ -26,6 +26,7 @@ public partial class InventorySimulator : BasePlugin
     private ulong g_ItemId = UInt64.MaxValue - 65536;
 
     public FakeConVar<int> MinModelsCvar = new("css_minmodels", "Limits the number of custom models in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
+    public FakeConVar<string> InvSimCvar = new("css_inventory_simulator", "Inventory Simulator's URL to consume API.", "https://inventory.cstrike.app");
 
     public override void Load(bool hotReload)
     {

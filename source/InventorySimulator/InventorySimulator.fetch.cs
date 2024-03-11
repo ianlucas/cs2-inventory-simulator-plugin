@@ -40,7 +40,7 @@ public partial class InventorySimulator
         g_PlayerInventory[steamId] = new PlayerInventory();
 
         var playerInventory = Fetch<Dictionary<string, object>>(
-            $"https://inventory.cstrike.app/api/equipped/{steamId}.json"
+            $"{InvSimCvar.Value}/api/equipped/{steamId}.json"
         );
         if (playerInventory != null)
         {
