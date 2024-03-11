@@ -27,18 +27,27 @@ public partial class InventorySimulator : BasePlugin
     }
 
     [GameEventHandler]
-    public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
+    public HookResult OnPlayerConnect(EventPlayerConnect @event, GameEventInfo _)
     {
         CCSPlayerController? player = @event.Userid;
         if (!IsPlayerHumanAndValid(player))
             return HookResult.Continue;
 
         var steamId = player.SteamID;
+        FetchPlayerInventory(steamId);
 
-        Task.Run(async () =>
-        {
-            await FetchPlayerInventory(steamId);
-        });
+        return HookResult.Continue;
+    }
+
+    [GameEventHandler]
+    public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo _)
+    {
+        CCSPlayerController? player = @event.Userid;
+        if (!IsPlayerHumanAndValid(player))
+            return HookResult.Continue;
+
+        var steamId = player.SteamID;
+        FetchPlayerInventory(steamId);
 
         return HookResult.Continue;
     }

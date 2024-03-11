@@ -5,20 +5,21 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public async Task<T?> Fetch<T>(string url)
+    public T? Fetch<T>(string url)
     {
         try
         {
             using HttpClient client = new();
-            HttpResponseMessage response = await client.GetAsync(url);
+            HttpResponseMessage response = client.GetAsync(url).Result;
             response.EnsureSuccessStatusCode();
 
-            string jsonContent = await response.Content.ReadAsStringAsync();
+            string jsonContent = response.Content.ReadAsStringAsync().Result;
             T? data = JsonConvert.DeserializeObject<T>(jsonContent);
             return data;
         }
@@ -29,9 +30,17 @@ public partial class InventorySimulator
         }
     }
 
-    public async Task FetchPlayerInventory(ulong steamId)
+    public void FetchPlayerInventory(ulong steamId, bool force = false)
     {
-        var playerInventory = await Fetch<Dictionary<string, object>>(
+        if (!force && g_PlayerInventory.ContainsKey(steamId))
+        {
+            return;
+        }
+
+        // Reserves the inventory for the player in the dictionary.
+        g_PlayerInventory[steamId] = new PlayerInventory();
+
+        var playerInventory = Fetch<Dictionary<string, object>>(
             $"https://inventory.cstrike.app/api/equipped/{steamId}.json"
         );
         if (playerInventory != null)
