@@ -7,6 +7,8 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Cvars.Validators;
 
 namespace InventorySimulator;
 
@@ -21,9 +23,12 @@ public partial class InventorySimulator : BasePlugin
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
     private ulong g_ItemId = UInt64.MaxValue - 65536;
 
+    public FakeConVar<int> MinModelsCvar = new("cl_minmodels", "Limits the number of custom models in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
+
     public override void Load(bool hotReload)
     {
         RegisterListener<Listeners.OnEntitySpawned>(OnEntitySpawned);
+        RegisterFakeConVars(MinModelsCvar);
     }
 
     [GameEventHandler]

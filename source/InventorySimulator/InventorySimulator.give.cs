@@ -5,7 +5,7 @@
 
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API;
-using Microsoft.Extensions.Logging;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace InventorySimulator;
 
@@ -53,24 +53,26 @@ public partial class InventorySimulator
 
     public void GivePlayerAgent(CCSPlayerController player)
     {
+        if (MinModelsCvar.Value > 0)
+        {
+            // For now any value non-zero will force SAS & Phoenix.
+            // In the future: 1 - Map agents only, 2 - SAS & Phoenix.
+            if (player.Team == CsTeam.Terrorist)
+                SetPlayerModel(player, "characters/models/tm_phoenix/tm_phoenix.vmdl");
+
+            if (player.Team == CsTeam.CounterTerrorist)
+                SetPlayerModel(player, "characters/models/ctm_sas/ctm_sas.vmdl");
+
+            return;
+        }
+
         var team = player.TeamNum;
         var inventory = GetPlayerInventory(player);
         var model = inventory.GetString("agm", team);
 
         if (model == null) return;
 
-        try
-        {
-            Server.NextFrame(() =>
-            {
-                player.PlayerPawn.Value!.SetModel(
-                    GetAgentModelPath(model)
-                );
-            });
-        }
-        catch (Exception)
-        {
-        }
+        SetPlayerModel(player, GetAgentModelPath(model));
     }
 
     public void GivePlayerWeaponSkin(CCSPlayerController player, CBasePlayerWeapon weapon)

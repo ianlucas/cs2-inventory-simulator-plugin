@@ -54,6 +54,20 @@ public partial class InventorySimulator
         econItemView.ItemIDHigh = (uint)itemId >> 32;
     }
 
+    public void SetPlayerModel(CCSPlayerController player, string model)
+    {
+        try
+        {
+            Server.NextFrame(() =>
+            {
+                player.PlayerPawn.Value!.SetModel(model);
+            });
+        }
+        catch (Exception)
+        {
+        }
+    }
+
     public bool IsPlayerValid(CCSPlayerController? player)
     {
         return player != null && player.IsValid && !player.IsHLTV;
