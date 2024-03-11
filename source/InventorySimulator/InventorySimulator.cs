@@ -19,14 +19,17 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleDescription => "Inventory Simulator (inventory.cstrike.app)";
     public override string ModuleName => "InventorySimulator";
     public override string ModuleVersion => "0.0.9";
-
+    
+    private readonly string g_InventoriesFilePath = "csgo/css_inventories.json";
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
+    private readonly HashSet<ulong> g_PlayerInventoryLocked = new();
     private ulong g_ItemId = UInt64.MaxValue - 65536;
 
     public FakeConVar<int> MinModelsCvar = new("cl_minmodels", "Limits the number of custom models in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
 
     public override void Load(bool hotReload)
     {
+        LoadPlayerInventories();
         RegisterListener<Listeners.OnEntitySpawned>(OnEntitySpawned);
         RegisterFakeConVars(MinModelsCvar);
     }
@@ -76,7 +79,7 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         CCSPlayerController? player = @event.Userid;
-        if (IsPlayerHumanAndValid(player))
+        if (IsPlayerHumanAndValid(player) && !g_PlayerInventoryLocked.Contains(player.SteamID))
         {
             g_PlayerInventory.Remove(player.SteamID);
         }
