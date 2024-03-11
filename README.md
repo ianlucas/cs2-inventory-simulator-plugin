@@ -1,12 +1,9 @@
 # CS2 Inventory Simulator Plugin
 
-A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory.cstrike.app). It features basically all we know (publically) so far to display economy items in-game, so it's full of hacks of all sorts and is missing a lot of features.
+A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory.cstrike.app). It features all we know (publically) so far to give economy items in-game.
 
 > [!CAUTION]
-> This plugin has not been fully and thoroughly tested. Compatibility with other plugins has also not been tested. Use at your own risk.
-
-> [!CAUTION]
-> As you probably know, Valve can ban your server for using plugins like this one, so be advised. [See more information on Valve Guidelines...](https://blog.counter-strike.net/index.php/server_guidelines)
+> This plugin has not been fully and thoroughly tested. Compatibility with other plugins has also not been tested. Your server can be banned by Valve for using this plugin, [see the server guidelines](https://blog.counter-strike.net/index.php/server_guidelines). Use at your own risk.
 
 ## Current Features
 
@@ -34,22 +31,30 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 1. Make sure `FollowCS2ServerGuidelines` is `false` in `addons/counterstrikesharp/configs/core.json`.
 2. Add the contents of `gamedata/gamedata.json` to `addons/counterstrikesharp/gamedata/gamedata.json`.
-3. [Download](https://github.com/ianlucas/cs2-InventorySimulatorPlugin/releases) the latest release.
+3. [Download](https://github.com/ianlucas/cs2-inventory-simulator-plugin/releases) the latest release of CS2 Inventory Simulator Plugin.
 4. Extract the .zip file into `addons/counterstrikesharp`.
 
-### Configuration?
+### Configuration
 
-Not right now. I'm planning on adding options for the Inventory Simulator endpoint and `cslib`'s endpoints (so you can point to yours). So right now you depend on my online services or a fork of the project.
+#### `css_minmodels` ConVar
+
+* Description: Limits the usage of agents by the players.
+* Type: `int`
+* Default: `0`
+* Values:
+	- `0` - agents allowed.
+	- `1` - current map default agents. **Note:** current the same as `2` as Valve is yet to add them back.
+	- `2` - SAS and Phoenix agents only.
+
+#### `css_inventory_simulator` ConVar
+
+* Description: The base url to be used to consume Inventory Simulator's API.
+* Type: `string`
+* Default: `https://inventory.cstrike.app`
 
 ### Commands?
 
 Not right now. I'm planning on adding a command for refreshing the inventory, but it's not really high priority for me as I'm going to use this on competitive matches, and I don't want players messing with skins mid-game, so right now the skins are only fetched when the player connects to the server.
-
-### Known issues
-
-- ~~Drop buy won't apply skins.~~ (Fixed?)
-- ~~All knives will have the rare deploy animation.~~ (Fixed?)
-- ~~Sometimes the skin name won't be displayed on HUD.~~ (Fixed?)
 
 ## See also
 
