@@ -25,7 +25,7 @@ public partial class InventorySimulator : BasePlugin
     private readonly HashSet<ulong> g_PlayerInventoryLocked = new();
     private ulong g_ItemId = UInt64.MaxValue - 65536;
 
-    public FakeConVar<int> MinModelsCvar = new("cl_minmodels", "Limits the number of custom models in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
+    public FakeConVar<int> MinModelsCvar = new("css_minmodels", "Limits the number of custom models in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
 
     public override void Load(bool hotReload)
     {
