@@ -43,7 +43,7 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 * Default: `0`
 * Values:
 	- `0` - agents allowed.
-	- `1` - current map default agents. **Note:** current the same as `2` as Valve is yet to add them back.
+	- `1` - current map default agents. **Note:** currently the same as `2` as Valve is yet to add them back.
 	- `2` - SAS and Phoenix agents only.
 
 #### `css_inventory_simulator` ConVar
