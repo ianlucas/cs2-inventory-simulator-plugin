@@ -31,8 +31,13 @@ public partial class InventorySimulator : BasePlugin
     public override void Load(bool hotReload)
     {
         LoadPlayerInventories();
-        RegisterListener<Listeners.OnEntitySpawned>(OnEntitySpawned);
-        RegisterFakeConVars(MinModelsCvar);
+        // I think ideally hooking GiveNamedItem is the way to go, however we're unable to use it
+        // as it currently crashes on Windows. Seems like both OnEntityCreated and OnEntitySpawned
+        // do the trick for changing entity properties, however we hit some incompatibility with
+        // other plugins that are also hooking it (probably because of the NextFrame call).
+        // I switched back to OnEntityCreated to check if compatibility with MatchZy is recovered,
+        // they are hooking OnEntitySpawned to get some stats...
+        RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
     }
 
     [GameEventHandler]
@@ -88,7 +93,7 @@ public partial class InventorySimulator : BasePlugin
         return HookResult.Continue;
     }
 
-    public void OnEntitySpawned(CEntityInstance entity)
+    public void OnEntityCreated(CEntityInstance entity)
     {
         var designerName = entity.DesignerName;
 
