@@ -56,6 +56,10 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 Not right now. I'm planning on adding a command for refreshing the inventory, but it's not really high priority for me as I'm going to use this on competitive matches, and I don't want players messing with skins mid-game, so right now the skins are only fetched when the player connects to the server.
 
+### Known Issues
+
+* MVP theme not playing for music kits.
+
 ## See also
 
 If you are looking for a plugin that gives you more control, please see [cs2-WeaponPaints](https://github.com/Nereziel/cs2-WeaponPaints).
