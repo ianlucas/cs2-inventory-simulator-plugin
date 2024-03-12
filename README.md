@@ -59,6 +59,7 @@ Not right now. I'm planning on adding a command for refreshing the inventory, bu
 ### Known Issues
 
 * MVP theme not playing for music kits.
+* When the player owns a skin with wear, its wear overwrites equipped one.
 
 ## See also
 
