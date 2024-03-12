@@ -109,14 +109,18 @@ public partial class InventorySimulator
         UpdatePlayerItemID(weapon.AttributeManager.Item);
 
         var paintKit = inventory.GetInt("pa", team, itemDef, 0);
+        var seed = inventory.GetInt("se", team, itemDef, 1);
+        var wear = inventory.GetFloat("fl", team, itemDef, 0.0f);
         weapon.FallbackPaintKit = paintKit;
-        weapon.FallbackSeed = inventory.GetInt("se", team, itemDef, 1);
-        weapon.FallbackWear = inventory.GetFloat("fl", team, itemDef, 0.0f);
+        weapon.FallbackSeed = seed;
+        weapon.FallbackWear = wear;
         weapon.FallbackStatTrak = inventory.GetInt("st", team, itemDef, -1);
         weapon.AttributeManager.Item.CustomName = inventory.GetString("nt", team, itemDef, "");
 
         // This APPEARS to fix the issue where sometimes the skin name won't be displayed on HUD.
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture prefab", paintKit);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture seed", seed);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture wear", wear);
 
         if (!isKnife)
         {
