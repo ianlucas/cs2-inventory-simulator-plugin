@@ -68,6 +68,15 @@ public partial class InventorySimulator
         }
     }
 
+    public CCSPlayerController? GetPlayerFromItemServices(CCSPlayer_ItemServices itemServices)
+    {
+        var pawn = itemServices.Pawn.Value;
+        if (pawn == null || !pawn.IsValid || !pawn.Controller.IsValid || pawn.Controller.Value == null) return null;
+        var player = new CCSPlayerController(pawn.Controller.Value.Handle);
+        if (!IsPlayerHumanAndValid(player)) return null;
+        return player;
+    }
+
     public bool IsPlayerValid(CCSPlayerController? player)
     {
         return player != null && player.IsValid && !player.IsHLTV;
