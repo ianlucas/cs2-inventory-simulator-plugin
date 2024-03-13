@@ -29,6 +29,9 @@ public partial class InventorySimulator
 
     public void GivePlayerGloves(CCSPlayerController player)
     {
+        if (player.PlayerPawn.Value!.EconGloves == null)
+            return;
+
         var inventory = GetPlayerInventory(player);
 
         var team = player.TeamNum;
@@ -37,7 +40,7 @@ public partial class InventorySimulator
         var itemDef = inventory.GetUShort("gl", team);
         if (!inventory.HasProperty("pa", team, itemDef)) return;
 
-        var glove = player.PlayerPawn.Value!.EconGloves;
+        var glove = player.PlayerPawn.Value.EconGloves;
         glove.ItemDefinitionIndex = itemDef;
         UpdatePlayerItemID(glove);
 

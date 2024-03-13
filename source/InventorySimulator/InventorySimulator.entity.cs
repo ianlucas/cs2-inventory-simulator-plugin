@@ -80,6 +80,6 @@ public partial class InventorySimulator
 
     public bool IsPlayerPawnValid(CCSPlayerController player)
     {
-        return player.PlayerPawn != null && player.PlayerPawn.IsValid;
+        return player.PlayerPawn != null && player.PlayerPawn.Value != null && player.PlayerPawn.IsValid;
     }
 }
