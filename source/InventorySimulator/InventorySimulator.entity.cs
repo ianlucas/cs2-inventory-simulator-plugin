@@ -43,13 +43,14 @@ public partial class InventorySimulator
         }
     }
 
-    public void UpdatePlayerItemID(CEconItemView econItemView)
+    public void UpdatePlayerEconItemID(CEconItemView econItemView)
     {
         // Okay, so ItemID appears to be a global identification of the item. Since we're
         // faking it, we are using some arbitrary big numbers.
         var itemId = g_ItemId++;
         econItemView.ItemID = itemId;
-        // This logic comes from the leaked CSGO source code.
+
+        // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blob/main/game/shared/econ/econ_item_view.h#L313
         econItemView.ItemIDLow = (uint)itemId & 0xFFFFFFFF;
         econItemView.ItemIDHigh = (uint)itemId >> 32;
     }

@@ -42,7 +42,7 @@ public partial class InventorySimulator
 
         var glove = player.PlayerPawn.Value.EconGloves;
         glove.ItemDefinitionIndex = itemDef;
-        UpdatePlayerItemID(glove);
+        UpdatePlayerEconItemID(glove);
 
         Server.NextFrame(() =>
         {
@@ -99,7 +99,7 @@ public partial class InventorySimulator
             weapon.AttributeManager.Item.EntityQuality = 3;
         }
 
-        UpdatePlayerItemID(weapon.AttributeManager.Item);
+        UpdatePlayerEconItemID(weapon.AttributeManager.Item);
 
         var paintKit = inventory.GetInt("pa", team, itemDef, 0);
         var seed = inventory.GetInt("se", team, itemDef, 1);
