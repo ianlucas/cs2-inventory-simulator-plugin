@@ -84,19 +84,9 @@ public partial class InventorySimulator
         var inventory = GetPlayerInventory(player);
         var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
         var team = player.TeamNum;
-        var hasKnife = inventory.HasProperty("me", team);
+        var isCustom = inventory.HasProperty("cw", team, itemDef);
 
-        if (isKnife && !hasKnife) return;
-
-        var hasNametag = inventory.HasProperty("nt", team, itemDef);
-        var hasPaintKit = inventory.HasProperty("pa", team, itemDef);
-        var hasStickers = inventory.HasProperty("ss", team, itemDef);
-        var hasWear = inventory.HasProperty("fl", team, itemDef);
-        var hasSeed = inventory.HasProperty("se", team, itemDef);
-        var hasStatTrak = inventory.HasProperty("st", team, itemDef);
-        var isCustomItem = hasKnife || hasPaintKit || hasNametag || hasStickers || hasWear || hasSeed || hasStatTrak;
-
-        if (!isKnife && !isCustomItem) return;
+        if (!isCustom) return;
 
         if (isKnife)
         {
