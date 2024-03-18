@@ -24,14 +24,15 @@ public partial class InventorySimulator
         if (player.InventoryServices == null) return;
         var inventory = GetPlayerInventory(player);
         if (!inventory.HasProperty("pi")) return;
-        player.InventoryServices.Rank[5] = (MedalRank_t)inventory.GetUInt("pi");
+        for (var index = 0; index < player.InventoryServices.Rank.Length; index++)
+        {
+            player.InventoryServices.Rank[index] = index == 5 ? (MedalRank_t)inventory.GetUInt("pi") : MedalRank_t.MEDAL_RANK_NONE;
+        }
     }
 
     public void GivePlayerGloves(CCSPlayerController player)
     {
-        if (player.PlayerPawn.Value!.EconGloves == null)
-            return;
-
+        if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.EconGloves == null) return;
         var inventory = GetPlayerInventory(player);
 
         var team = player.TeamNum;
@@ -40,6 +41,7 @@ public partial class InventorySimulator
         var itemDef = inventory.GetUShort("gl", team);
         if (!inventory.HasProperty("pa", team, itemDef)) return;
 
+        player.PlayerPawn.Value.MyWearables.RemoveAll();
         var glove = player.PlayerPawn.Value.EconGloves;
         glove.ItemDefinitionIndex = itemDef;
         UpdatePlayerEconItemID(glove);
@@ -47,6 +49,7 @@ public partial class InventorySimulator
         Server.NextFrame(() =>
         {
             glove.Initialized = true;
+            glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
             SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture prefab", inventory.GetInt("pa", team, itemDef, 0));
             SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture seed", inventory.GetInt("se", team, itemDef, 1));
             SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture wear", inventory.GetFloat("fl", team, itemDef, 0.0f));
@@ -110,6 +113,7 @@ public partial class InventorySimulator
         weapon.FallbackWear = wear;
         weapon.FallbackStatTrak = inventory.GetInt("st", team, itemDef, -1);
         weapon.AttributeManager.Item.CustomName = inventory.GetString("nt", team, itemDef, "");
+        weapon.AttributeManager.Item.NetworkedDynamicAttributes.Attributes.RemoveAll();
 
         // This APPEARS to fix the issue where sometimes the skin name won't be displayed on HUD.
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture prefab", paintKit);
