@@ -59,9 +59,8 @@ Not right now. I'm planning on adding a command for refreshing the inventory, bu
 ### Known Issues
 
 * MVP theme not playing for music kits.
-* ~~Player own equipped new stickers can glitch out.~~
-* Some pins are not being equipped. (Fixed?)
-* Players own equipped gloves won't change. (Fixed?)
+* Some pins are not being equipped.
+* Players own equipped gloves won't change.
 
 ## See also
 
