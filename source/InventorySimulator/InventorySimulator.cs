@@ -84,7 +84,7 @@ public partial class InventorySimulator : BasePlugin
     }
 
     [GameEventHandler]
-    public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+    public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo _)
     {
         CCSPlayerController? player = @event.Userid;
         if (!IsPlayerHumanAndValid(player) || !IsPlayerPawnValid(player))
@@ -99,7 +99,7 @@ public partial class InventorySimulator : BasePlugin
     }
 
     [GameEventHandler]
-    public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
+    public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo _)
     {
         CCSPlayerController? player = @event.Userid;
         if (IsPlayerHumanAndValid(player) && !g_PlayerInventoryLocked.Contains(player.SteamID))
