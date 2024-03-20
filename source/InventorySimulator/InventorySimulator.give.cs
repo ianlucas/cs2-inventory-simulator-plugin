@@ -44,6 +44,14 @@ public partial class InventorySimulator
             var itemDef = inventory.GetUShort("gl", team);
             if (!inventory.HasProperty("pa", team, itemDef)) return;
 
+            foreach (var wearable in player.PlayerPawn.Value.MyWearables)
+            {
+                if (wearable.Value != null && wearable.IsValid)
+                {
+                    wearable.Value.AcceptInput("KillHierarchy");
+                }
+            }
+
             player.PlayerPawn.Value.MyWearables.RemoveAll();
             var glove = player.PlayerPawn.Value.EconGloves;
             glove.ItemDefinitionIndex = itemDef;
@@ -58,7 +66,7 @@ public partial class InventorySimulator
                 SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture wear", inventory.GetFloat("fl", team, itemDef, 0.0f));
                 SetBodygroup(player, "default_gloves");
             });
-        } catch (TargetInvocationException)
+        } catch (Exception)
         {
             // Getting `m_EconGloves` may throw an exception as it is marked as non-nullable in the schema, but it can still be NULL.
             // The check we do in the beggining of the function has no effect it seems.
