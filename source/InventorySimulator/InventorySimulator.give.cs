@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API;
 
 namespace InventorySimulator;
 
@@ -34,6 +34,7 @@ public partial class InventorySimulator
     {
         // player.PlayerPawn.Value.EconGloves may throw exceptions if the player is in a state that
         // is not alive. We check if the player is alive before proceeding.
+
         if (player.PlayerPawn.Value!.LifeState != (byte)LifeState_t.LIFE_ALIVE)
             return;
 
@@ -44,26 +45,25 @@ public partial class InventorySimulator
         var itemDef = inventory.GetUShort("gl", team);
         if (!inventory.HasProperty("pa", team, itemDef)) return;
 
-        foreach (var wearable in player.PlayerPawn.Value.MyWearables)
-        {
-            if (wearable.Value != null && wearable.IsValid)
-            {
-                wearable.Value.AcceptInput("KillHierarchy");
-            }
-        }
-
-        player.PlayerPawn.Value.MyWearables.RemoveAll();
         var glove = player.PlayerPawn.Value.EconGloves;
-        glove.ItemDefinitionIndex = itemDef;
-        UpdatePlayerEconItemID(glove);
+        var paintKit = inventory.GetInt("pa", team, itemDef, 0);
+        var seed = inventory.GetInt("se", team, itemDef, 1);
+        var wear = inventory.GetFloat("fl", team, itemDef, 0.0f);
 
         Server.NextFrame(() =>
         {
             glove.Initialized = true;
+            glove.ItemDefinitionIndex = itemDef;
+            UpdatePlayerEconItemID(glove);
             glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
-            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture prefab", inventory.GetInt("pa", team, itemDef, 0));
-            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture seed", inventory.GetInt("se", team, itemDef, 1));
-            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture wear", inventory.GetFloat("fl", team, itemDef, 0.0f));
+            glove.AttributeList.Attributes.RemoveAll();
+            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture prefab", paintKit);
+            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture seed", seed);
+            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture wear", wear);
+            // We also need to update AttributeList to overwrite owned glove attributes.
+            SetOrAddAttributeValueByName(glove.AttributeList, "set item texture prefab", paintKit);
+            SetOrAddAttributeValueByName(glove.AttributeList, "set item texture seed", seed);
+            SetOrAddAttributeValueByName(glove.AttributeList, "set item texture wear", wear);
             SetBodygroup(player, "default_gloves");
         });
     }
