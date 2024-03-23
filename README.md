@@ -59,8 +59,6 @@ Not right now. I'm planning on adding a command for refreshing the inventory, bu
 ### Known Issues
 
 * MVP theme not playing for music kits.
-* Players own equipped gloves won't change. (Fixed?)
-* Giving gloves may throw some exceptions when player is put on server. (Fixed?)
 
 ## See also
 
