@@ -3,10 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API;
-using System.Reflection;
+using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.Core;
 
 namespace InventorySimulator;
 
@@ -33,45 +32,40 @@ public partial class InventorySimulator
 
     public void GivePlayerGloves(CCSPlayerController player)
     {
-        try
+        // player.PlayerPawn.Value.EconGloves may throw exceptions if the player is in a state that
+        // is not alive. We check if the player is alive before proceeding.
+        if (player.PlayerPawn.Value!.LifeState != (byte)LifeState_t.LIFE_ALIVE)
+            return;
+
+        var inventory = GetPlayerInventory(player);
+        var team = player.TeamNum;
+        if (!inventory.HasProperty("gl", team)) return;
+
+        var itemDef = inventory.GetUShort("gl", team);
+        if (!inventory.HasProperty("pa", team, itemDef)) return;
+
+        foreach (var wearable in player.PlayerPawn.Value.MyWearables)
         {
-            if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.EconGloves == null) return;
-            var inventory = GetPlayerInventory(player);
-
-            var team = player.TeamNum;
-            if (!inventory.HasProperty("gl", team)) return;
-
-            var itemDef = inventory.GetUShort("gl", team);
-            if (!inventory.HasProperty("pa", team, itemDef)) return;
-
-            foreach (var wearable in player.PlayerPawn.Value.MyWearables)
+            if (wearable.Value != null && wearable.IsValid)
             {
-                if (wearable.Value != null && wearable.IsValid)
-                {
-                    wearable.Value.AcceptInput("KillHierarchy");
-                }
+                wearable.Value.AcceptInput("KillHierarchy");
             }
-
-            player.PlayerPawn.Value.MyWearables.RemoveAll();
-            var glove = player.PlayerPawn.Value.EconGloves;
-            glove.ItemDefinitionIndex = itemDef;
-            UpdatePlayerEconItemID(glove);
-
-            Server.NextFrame(() =>
-            {
-                glove.Initialized = true;
-                glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
-                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture prefab", inventory.GetInt("pa", team, itemDef, 0));
-                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture seed", inventory.GetInt("se", team, itemDef, 1));
-                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture wear", inventory.GetFloat("fl", team, itemDef, 0.0f));
-                SetBodygroup(player, "default_gloves");
-            });
-        } catch (Exception)
-        {
-            // Getting `m_EconGloves` may throw an exception as it is marked as non-nullable in the schema, but it can still be NULL.
-            // The check we do in the beggining of the function has no effect it seems.
-            // This should take care of TargetInvocationException exceptions.
         }
+
+        player.PlayerPawn.Value.MyWearables.RemoveAll();
+        var glove = player.PlayerPawn.Value.EconGloves;
+        glove.ItemDefinitionIndex = itemDef;
+        UpdatePlayerEconItemID(glove);
+
+        Server.NextFrame(() =>
+        {
+            glove.Initialized = true;
+            glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
+            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture prefab", inventory.GetInt("pa", team, itemDef, 0));
+            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture seed", inventory.GetInt("se", team, itemDef, 1));
+            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture wear", inventory.GetFloat("fl", team, itemDef, 0.0f));
+            SetBodygroup(player, "default_gloves");
+        });
     }
 
     public void GivePlayerAgent(CCSPlayerController player)
