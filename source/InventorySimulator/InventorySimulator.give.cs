@@ -32,9 +32,8 @@ public partial class InventorySimulator
 
     public void GivePlayerGloves(CCSPlayerController player)
     {
-        // player.PlayerPawn.Value.EconGloves may throw exceptions if the player is in a state that
-        // is not alive. We check if the player is alive before proceeding.
-
+        // To avoid exceptions, we check if the player is alive before accessing EconGloves. This ensures that
+        // the code only proceeds if the player is in a valid state.
         if (player.PlayerPawn.Value!.LifeState != (byte)LifeState_t.LIFE_ALIVE)
             return;
 
@@ -88,7 +87,6 @@ public partial class InventorySimulator
         var model = inventory.GetString("agm", team);
 
         if (model == null) return;
-
         SetPlayerModel(player, GetAgentModelPath(model));
     }
 
@@ -124,9 +122,8 @@ public partial class InventorySimulator
         weapon.FallbackWear = wear;
         weapon.FallbackStatTrak = inventory.GetInt("st", team, itemDef, -1);
         weapon.AttributeManager.Item.CustomName = inventory.GetString("nt", team, itemDef, "");
-        weapon.AttributeManager.Item.NetworkedDynamicAttributes.Attributes.RemoveAll();
 
-        // This APPEARS to fix the issue where sometimes the skin name won't be displayed on HUD.
+        weapon.AttributeManager.Item.NetworkedDynamicAttributes.Attributes.RemoveAll();
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture prefab", paintKit);
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture seed", seed);
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture wear", wear);
@@ -135,9 +132,10 @@ public partial class InventorySimulator
         {
             for (int slot = 0; slot < 4; slot++)
             {
-                // For setting the id of the sticker, we need to do a bit of trickery. In items_game.txt if you look for `sticker slot 0 id`, you will
-                // see that `stored_as_integer` is marked with `1`, so we basically need to view a `uint` as a `float`, e.g. the value stored in the
-                // address of the `uint` will be interpreted as it was a `float` type (e.g.: uint stickerId = 2229 -> float stickerId = 3.12349e-42f)
+                // To set the ID of the sticker, we need to use a workaround. In the items_game.txt file, locate the
+                // sticker slot 0 id entry. It should be marked with stored_as_integer set to 1. This means we need to
+                // treat a uint as a float. For example, if the uint stickerId is 2229, we would interpret its value as
+                // if it were a float (e.g., float stickerId = 3.12349e-42f).
                 // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blame/main/game/shared/econ/econ_item_view.cpp#L194
                 SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {slot} id", inventory.GetIntAsFloat("ss", team, itemDef, slot, 0));
                 SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {slot} wear", inventory.GetFloat("sf", team, itemDef, slot, 0.0f));

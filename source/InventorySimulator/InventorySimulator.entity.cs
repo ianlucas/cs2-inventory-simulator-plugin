@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API;
 
 namespace InventorySimulator;
 
@@ -18,8 +18,8 @@ public partial class InventorySimulator
             var skeleton = weapon.CBodyComponent.SceneNode.GetSkeletonInstance();
             if (skeleton != null)
             {
-                // Legacy refer to the old weapon models from CS:GO, in CS2 `MeshGroupMask` defines
-                // if the game should display the legacy (=2) or new model (=1).
+                // The term "Legacy" refers to the old weapon models from CS:GO. In CS2, the MeshGroupMask is used to
+                // determine whether the game should display the legacy model (value = 2) or the new model (value = 1).
                 var value = (ulong)(isLegacy ? 2 : 1);
                 if (skeleton.ModelState.MeshGroupMask != value)
                 {
@@ -31,10 +31,10 @@ public partial class InventorySimulator
 
     public void UpdatePlayerWeaponMeshGroupMask(CCSPlayerController player, CBasePlayerWeapon weapon, bool isLegacy)
     {
-        // 1. We update the weapon's mesh group mask.
+        // 1. We update the weapon's MeshGroupMask.
         UpdateWeaponMeshGroupMask(weapon, isLegacy);
 
-        // 2. If the current view model is showing it up, make sure it has the correct mesh group mask.
+        // 2. If the current view model is displaying it, ensure that it has the correct MeshGroupMask.
         var viewModel = GetPlayerViewModel(player);
         if (viewModel != null && viewModel.Weapon.Value != null && viewModel.Weapon.Value.Index == weapon.Index)
         {
@@ -45,8 +45,8 @@ public partial class InventorySimulator
 
     public void UpdatePlayerEconItemID(CEconItemView econItemView)
     {
-        // Okay, so ItemID appears to be a global identification of the item. Since we're
-        // faking it, we are using some arbitrary big numbers.
+        // Alright, so the ItemID serves as a global identifier for items. Since we're simulating it, we're
+        // using arbitrary large numbers.
         var itemId = g_ItemId++;
         econItemView.ItemID = itemId;
 
@@ -64,8 +64,9 @@ public partial class InventorySimulator
                 player.PlayerPawn.Value!.SetModel(model);
             });
         }
-        catch (Exception)
+        catch
         {
+            // Ignore any error.
         }
     }
 

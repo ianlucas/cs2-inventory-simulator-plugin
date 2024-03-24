@@ -22,9 +22,9 @@ public partial class InventorySimulator
             T? data = JsonConvert.DeserializeObject<T>(jsonContent);
             return data;
         }
-        catch (Exception ex)
+        catch (Exception error)
         {
-            Logger.LogError($"Error fetching data from {url}: {ex.Message}");
+            Logger.LogError($"Error fetching data from {url}: {error.Message}");
             return default;
         }
     }
@@ -36,12 +36,12 @@ public partial class InventorySimulator
             return;
         }
 
-        // Reserves the inventory for the player in the dictionary.
         g_PlayerInventory[steamId] = new PlayerInventory();
 
         var playerInventory = Fetch<Dictionary<string, object>>(
             $"{InvSimCvar.Value}/api/equipped/{steamId}.json"
         );
+
         if (playerInventory != null)
         {
             g_PlayerInventory[steamId] = new PlayerInventory(playerInventory);

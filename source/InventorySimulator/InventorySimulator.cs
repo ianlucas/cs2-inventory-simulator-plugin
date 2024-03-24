@@ -39,20 +39,21 @@ public partial class InventorySimulator : BasePlugin
 
         if (g_IsWindows)
         {
-            // As GiveNamedItem Post hook doesn't work properly on Windows, we hook OnEntityCreated.
-            // Should work well enough for vanilla gamemodes, but plugins may lack compatibility
-            // if they change items too fast (see MatchZy knife round for instance).
+            // Since the OnGiveNamedItemPost hook doesn't function reliably on Windows, we've opted to use the
+            // OnEntityCreated hook instead. This approach should work adequately for standard game modes. However,
+            // plugins might encounter compatibility issues if they frequently alter items, as observed in the
+            // MatchZy knife round, for example.
             RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         }
         else
         {
-            // Using GiveNamedItem Post hook is the best place to update the item's attributes
-            // as OnEntityCreated and OnEntitySpawned will require calling Server.NextFrame, and
-            // that may cause some timing issues we can observe on knife round from MatchZy.
-            // Unfortunately, CounterStikeSharp's DynamicHooks seems really bugged on Windows,
-            // maybe this is related to GiveNamedItem implementation on Windows having some quirks,
-            // as initially noted we cannot give knives on Windows, but we can on Linux using the
-            // same function. So Linux is expected to have the better compatibility with other plugins.
+            // Using the GiveNamedItem Post hook remains the optimal choice for updating an item's attributes, as
+            // using OnEntityCreated or OnEntitySpawned would necessitate calling Server.NextFrame, potentially
+            // leading to timing problems similar to those seen in MatchZy's knife round. However, it's worth
+            // noting that CounterStikeSharp's DynamicHooks appears to have significant bugs on Windows. This issue
+            // may be related to quirks in the GiveNamedItem implementation on Windows, as initially observed with
+            // the inability to give knives on Windows compared to Linux, where the same function works as
+            // expected. Therefore, Linux is likely to offer better compatibility with other plugins.
             VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
         }
     }

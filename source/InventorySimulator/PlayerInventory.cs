@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API;
 using Newtonsoft.Json;
 
 namespace InventorySimulator;
@@ -20,16 +20,18 @@ public partial class InventorySimulator
         {
             string json = File.ReadAllText(path);
             var inventories = JsonConvert.DeserializeObject<Dictionary<ulong, Dictionary<string, object>>>(json);
-            if (inventories == null)
-                return;
-            foreach (var pair in inventories)
+            if (inventories != null)
             {
-                g_PlayerInventoryLocked.Add(pair.Key);
-                g_PlayerInventory[pair.Key] = new PlayerInventory(pair.Value);
+                foreach (var pair in inventories)
+                {
+                    g_PlayerInventoryLocked.Add(pair.Key);
+                    g_PlayerInventory[pair.Key] = new PlayerInventory(pair.Value);
+                }
             }
         }
-        catch (Exception)
+        catch
         {
+            // Ignore any error.
         }
     }
 
