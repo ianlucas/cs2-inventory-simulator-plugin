@@ -10,12 +10,12 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public T? Fetch<T>(string url)
+    public async Task<T?> Fetch<T>(string url)
     {
         try
         {
             using HttpClient client = new();
-            HttpResponseMessage response = client.GetAsync(url).Result;
+            HttpResponseMessage response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             string jsonContent = response.Content.ReadAsStringAsync().Result;
@@ -29,7 +29,7 @@ public partial class InventorySimulator
         }
     }
 
-    public void FetchPlayerInventory(ulong steamId, bool force = false)
+    public async void FetchPlayerInventory(ulong steamId, bool force = false)
     {
         if (!force && g_PlayerInventory.ContainsKey(steamId))
         {
@@ -38,7 +38,7 @@ public partial class InventorySimulator
 
         g_PlayerInventory[steamId] = new PlayerInventory();
 
-        var playerInventory = Fetch<Dictionary<string, object>>(
+        var playerInventory = await Fetch<Dictionary<string, object>>(
             $"{InvSimCvar.Value}/api/equipped/{steamId}.json"
         );
 
