@@ -30,9 +30,8 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 ## Installation
 
 1. Make sure `FollowCS2ServerGuidelines` is `false` in `addons/counterstrikesharp/configs/core.json`.
-2. Add the contents of `gamedata/gamedata.json` to `addons/counterstrikesharp/gamedata/gamedata.json`.
-3. [Download](https://github.com/ianlucas/cs2-inventory-simulator-plugin/releases) the latest release of CS2 Inventory Simulator Plugin.
-4. Extract the .zip file into `addons/counterstrikesharp`.
+2. [Download](https://github.com/ianlucas/cs2-inventory-simulator-plugin/releases) the latest release of CS2 Inventory Simulator Plugin.
+3. Extract the .zip file contents into `addons/counterstrikesharp`.
 
 ### Configuration
 
@@ -48,9 +47,9 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 #### `css_inventory_simulator` ConVar
 
-* Description: The base url to be used to consume Inventory Simulator's API.
+* Description: The host of the URL to be used to consume Inventory Simulator's API.
 * Type: `string`
-* Default: `https://inventory.cstrike.app`
+* Default: `inventory.cstrike.app`
 
 ### Commands?
 
