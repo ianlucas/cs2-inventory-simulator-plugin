@@ -31,7 +31,8 @@ public partial class InventorySimulator : BasePlugin
     private readonly bool g_IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
     public FakeConVar<int> MinModelsCvar = new("css_minmodels", "Limits the number of custom models in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
-    public FakeConVar<string> InvSimCvar = new("css_inventory_simulator", "Inventory Simulator's URL to consume API.", "https://inventory.cstrike.app");
+    public FakeConVar<string> InvSimProtocolCvar = new("css_inventory_simulator_protocol", "Inventory Simulator's protocol to consume API", "https");
+    public FakeConVar<string> InvSimCvar = new("css_inventory_simulator", "Inventory Simulator's host to consume API.", "inventory.cstrike.app");
 
     public override void Load(bool hotReload)
     {

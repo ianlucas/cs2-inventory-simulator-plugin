@@ -39,7 +39,7 @@ public partial class InventorySimulator
         g_PlayerInventory[steamId] = new PlayerInventory();
 
         var playerInventory = await Fetch<Dictionary<string, object>>(
-            $"{InvSimCvar.Value}/api/equipped/{steamId}.json"
+            $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}/api/equipped/{steamId}.json"
         );
 
         if (playerInventory != null)
