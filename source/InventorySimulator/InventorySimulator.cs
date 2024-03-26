@@ -52,9 +52,9 @@ public partial class InventorySimulator : BasePlugin
             // Using the GiveNamedItem Post hook remains the optimal choice for updating an item's attributes, as
             // using OnEntityCreated or OnEntitySpawned would necessitate calling Server.NextFrame, potentially
             // leading to timing problems similar to those seen in MatchZy's knife round. However, it's worth
-            // noting that CounterStikeSharp's DynamicHooks appears to have significant bugs on Windows. This issue
-            // may be related to quirks in the GiveNamedItem implementation on Windows, as initially observed with
-            // the inability to give knives on Windows compared to Linux, where the same function works as
+            // noting that CounterStrikeSharp's DynamicHooks appears to have significant bugs on Windows. This
+            // issue may be related to quirks in the GiveNamedItem implementation on Windows, as initially observed
+            // with the inability to give knives on Windows compared to Linux, where the same function works as
             // expected. Therefore, Linux is likely to offer better compatibility with other plugins.
             VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
 
