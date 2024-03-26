@@ -32,10 +32,13 @@ public partial class InventorySimulator
 
     public void GivePlayerGloves(CCSPlayerController player)
     {
-        // To avoid exceptions, we check if the player is alive before accessing EconGloves. This ensures that
-        // the code only proceeds if the player is in a valid state.
-        if (player.PlayerPawn.Value!.LifeState != (byte)LifeState_t.LIFE_ALIVE)
+        if (player.PlayerPawn.Value!.Handle == IntPtr.Zero)
+        {
+            // Some plugin or specific game scenario is throwing exceptions at this point whenever we try to access
+            // any member from the Player Pawn. We perform the actual check that triggers the exception. (I've
+            // tried catching it in the past, but it seems it won't work...)
             return;
+        }
 
         var inventory = GetPlayerInventory(player);
         var team = player.TeamNum;
@@ -92,6 +95,9 @@ public partial class InventorySimulator
 
     public void GivePlayerWeaponSkin(CCSPlayerController player, CBasePlayerWeapon weapon)
     {
+        if (IsCustomWeaponItemID(weapon))
+            return;
+
         var isKnife = IsKnifeClassName(weapon.DesignerName);
         var inventory = GetPlayerInventory(player);
         var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;

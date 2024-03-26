@@ -55,6 +55,11 @@ public partial class InventorySimulator
         econItemView.ItemIDHigh = (uint)itemId >> 32;
     }
 
+    public bool IsCustomWeaponItemID(CBasePlayerWeapon weapon)
+    {
+        return weapon.AttributeManager.Item.ItemID >= g_MinimumCustomItemID;
+    }
+
     public void SetPlayerModel(CCSPlayerController player, string model)
     {
         try

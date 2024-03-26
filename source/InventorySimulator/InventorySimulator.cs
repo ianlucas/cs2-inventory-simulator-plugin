@@ -26,7 +26,8 @@ public partial class InventorySimulator : BasePlugin
     private readonly string g_InventoriesFilePath = "csgo/css_inventories.json";
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
     private readonly HashSet<ulong> g_PlayerInventoryLocked = new();
-    private ulong g_ItemId = UInt64.MaxValue - 65536;
+    private readonly static ulong g_MinimumCustomItemID = UInt64.MaxValue - 131072;
+    private ulong g_ItemId = g_MinimumCustomItemID;
 
     private readonly bool g_IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
@@ -56,6 +57,11 @@ public partial class InventorySimulator : BasePlugin
             // the inability to give knives on Windows compared to Linux, where the same function works as
             // expected. Therefore, Linux is likely to offer better compatibility with other plugins.
             VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
+
+            // We also hook into OnEntityCreated for cases where the plugin does not trigger the GiveNamedItem hook
+            // (e.g., CS2 Retakes). Most of the time, GiveNamedItem will be called first, and we will know that we
+            // have changed a weapon entity to avoid changing its attributes again.
+            RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         }
     }
 
@@ -140,7 +146,7 @@ public partial class InventorySimulator : BasePlugin
         var itemServices = hook.GetParam<CCSPlayer_ItemServices>(0);
         var weapon = hook.GetReturn<CBasePlayerWeapon>();
         var player = GetPlayerFromItemServices(itemServices);
-
+        
         if (player != null)
         {
             GivePlayerWeaponSkin(player, weapon);
