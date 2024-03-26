@@ -26,7 +26,7 @@ public partial class InventorySimulator : BasePlugin
     private readonly string g_InventoriesFilePath = "csgo/css_inventories.json";
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
     private readonly HashSet<ulong> g_PlayerInventoryLocked = new();
-    private readonly static ulong g_MinimumCustomItemID = UInt64.MaxValue - 131072;
+    private readonly static ulong g_MinimumCustomItemID = 68719476736;
     private ulong g_ItemId = g_MinimumCustomItemID;
 
     private readonly bool g_IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
