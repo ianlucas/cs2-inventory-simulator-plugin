@@ -22,28 +22,28 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 - ⛔ Graffiti
 
 > [!IMPORTANT]  
-> ⛔ means I'm not aware of a way to modify using CSSharp or C++ and is very unlikely to be implemented any time soon.
+> ⛔ indicates that I'm unaware of a way to modify using CSSharp or C++ and that it's highly unlikely to be implemented anytime soon.
 
 > [!WARNING]  
-> Right now I'm open to issue reports, please don't open feature request or suggestion issues - they will be closed. I may take your comments into account, but the issue is going to remain closed.
+> Currently, I'm accepting issue reports, but please refrain from opening feature requests or suggestion issues as they will be closed. While I may consider your comments, the issue will remain closed.
 
 ## Installation
 
 1. Make sure `FollowCS2ServerGuidelines` is `false` in `addons/counterstrikesharp/configs/core.json`.
-2. [Download](https://github.com/ianlucas/cs2-inventory-simulator-plugin/releases) the latest release of CS2 Inventory Simulator Plugin.
-3. Extract the .zip file contents into `addons/counterstrikesharp`.
+2. [Download the latest release](https://github.com/ianlucas/cs2-inventory-simulator-plugin/releases) of CS2 Inventory Simulator Plugin.
+3. Extract the ZIP file contents into `addons/counterstrikesharp`.
 
 ### Configuration
 
 #### `css_minmodels` ConVar
 
-* Description: Limits the usage of agents by the players.
+* Description: Restricts the usage of agents by players.
 * Type: `int`
 * Default: `0`
 * Values:
-	- `0` - agents allowed.
-	- `1` - current map default agents. **Note:** currently the same as `2` as Valve is yet to add them back.
-	- `2` - SAS and Phoenix agents only.
+	- `0` - All agents allowed.
+	- `1` - Default agents for the current map. **Note:** Currently the same as `2``  as Valve has not yet added them back.
+	- `2` - Only SAS and Phoenix agents allowed.
 
 #### `css_inventory_simulator` ConVar
 
@@ -53,11 +53,11 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 ### Commands?
 
-Not right now. I'm planning on adding a command for refreshing the inventory, but it's not really high priority for me as I'm going to use this on competitive matches, and I don't want players messing with skins mid-game, so right now the skins are only fetched when the player connects to the server.
+Not at the moment. I'm considering adding a command for refreshing the inventory, but it's not high priority for me. Since I'll be using this during competitive matches, I don't want players to be able to change skins mid-game. Currently, skins are only fetched when a player connects to the server.
 
 ### Known Issues
 
-* MVP theme not playing for music kits.
+* MVP theme does not play for music kits.
 
 ## See also
 
