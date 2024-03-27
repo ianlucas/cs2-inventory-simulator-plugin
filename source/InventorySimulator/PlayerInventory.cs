@@ -6,6 +6,8 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API;
 using Newtonsoft.Json;
+using CounterStrikeSharp.API.Modules.Entities;
+using System.Numerics;
 
 namespace InventorySimulator;
 
@@ -24,7 +26,7 @@ public partial class InventorySimulator
             {
                 foreach (var pair in inventories)
                 {
-                    g_PlayerInventoryLocked.Add(pair.Key);
+                    g_PlayerInventoryLock.Add(pair.Key);
                     g_PlayerInventory[pair.Key] = new PlayerInventory(pair.Value);
                 }
             }
@@ -32,6 +34,24 @@ public partial class InventorySimulator
         catch
         {
             // Ignore any error.
+        }
+    }
+
+    public void PlayerInventoryCleanUp()
+    {
+        var connected = Utilities.GetPlayers().Select(player => player.SteamID).ToHashSet();
+        var disconnected = g_PlayerInventory.Keys.Except(connected).ToList();
+        foreach (var steamId in disconnected)
+        {
+            RemovePlayerInventory(steamId);
+        }
+    }
+
+    public void RemovePlayerInventory(ulong steamId)
+    {
+        if (!g_PlayerInventoryLock.Contains(steamId))
+        {
+            g_PlayerInventory.Remove(steamId);
         }
     }
 

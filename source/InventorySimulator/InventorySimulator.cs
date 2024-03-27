@@ -25,7 +25,7 @@ public partial class InventorySimulator : BasePlugin
 
     private readonly string g_InventoriesFilePath = "csgo/css_inventories.json";
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
-    private readonly HashSet<ulong> g_PlayerInventoryLocked = new();
+    private readonly HashSet<ulong> g_PlayerInventoryLock = new();
     private readonly static ulong g_MinimumCustomItemID = 68719476736;
     private ulong g_ItemId = g_MinimumCustomItemID;
 
@@ -110,10 +110,12 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo _)
     {
         CCSPlayerController? player = @event.Userid;
-        if (IsPlayerHumanAndValid(player) && !g_PlayerInventoryLocked.Contains(player.SteamID))
+        if (IsPlayerHumanAndValid(player))
         {
-            g_PlayerInventory.Remove(player.SteamID);
+            RemovePlayerInventory(player.SteamID);
         }
+
+        PlayerInventoryCleanUp();
 
         return HookResult.Continue;
     }
