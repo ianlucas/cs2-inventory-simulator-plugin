@@ -10,6 +10,8 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
+    private readonly HashSet<ulong> g_FetchInProgress = new();
+
     public async Task<T?> Fetch<T>(string url)
     {
         try
@@ -32,11 +34,12 @@ public partial class InventorySimulator
     public async void FetchPlayerInventory(ulong steamId, bool force = false)
     {
         if (!force && g_PlayerInventory.ContainsKey(steamId))
-        {
             return;
-        }
 
-        g_PlayerInventory[steamId] = new PlayerInventory();
+        if (g_FetchInProgress.Contains(steamId))
+            return;
+
+        g_FetchInProgress.Add(steamId);
 
         var playerInventory = await Fetch<Dictionary<string, object>>(
             $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}/api/equipped/{steamId}.json"
@@ -44,7 +47,9 @@ public partial class InventorySimulator
 
         if (playerInventory != null)
         {
-            g_PlayerInventory[steamId] = new PlayerInventory(playerInventory);
+            g_PlayerInventory.Add(steamId, new PlayerInventory(playerInventory));
         }
+
+        g_FetchInProgress.Remove(steamId);
     }
 }
