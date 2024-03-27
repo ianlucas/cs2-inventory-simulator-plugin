@@ -86,7 +86,16 @@ public class PlayerInventory
         return Inventory.ContainsKey(prefix);
     }
 
-    public ushort GetUShort(string prefix, byte team, ushort defaultValue = 0)
+    public ushort? GetUShort(string prefix, byte team)
+    {
+        if (Inventory.TryGetValue($"{prefix}_{team}", out var value))
+        {
+            return Convert.ToUInt16((long)value);
+        }
+        return null;
+    }
+
+    public ushort GetUShort(string prefix, byte team, ushort defaultValue)
     {
         if (Inventory.TryGetValue($"{prefix}_{team}", out var value))
         {
@@ -95,7 +104,16 @@ public class PlayerInventory
         return defaultValue;
     }
 
-    public ushort GetUShort(string prefix, ushort defaultValue = 0)
+    public ushort? GetUShort(string prefix)
+    {
+        if (Inventory.TryGetValue(prefix, out var value))
+        {
+            return Convert.ToUInt16((long)value);
+        }
+        return null;
+    }
+
+    public ushort GetUShort(string prefix, ushort defaultValue)
     {
         if (Inventory.TryGetValue(prefix, out var value))
         {
@@ -104,13 +122,13 @@ public class PlayerInventory
         return defaultValue;
     }
 
-    public uint GetUInt(string prefix, uint defaultValue = 0)
+    public uint? GetUInt(string prefix)
     {
         if (Inventory.TryGetValue(prefix, out var value))
         {
             return (uint)((long)value);
         }
-        return defaultValue;
+        return null;
     }
 
     public int GetInt(string prefix, byte team, ushort itemDef, int defaultValue)

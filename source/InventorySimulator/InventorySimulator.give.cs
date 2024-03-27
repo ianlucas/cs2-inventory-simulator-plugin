@@ -14,19 +14,24 @@ public partial class InventorySimulator
     public void GivePlayerMusicKit(CCSPlayerController player)
     {
         if (player.InventoryServices == null) return;
+
         var inventory = GetPlayerInventory(player);
-        if (!inventory.HasProperty("mk")) return;
-        player.InventoryServices.MusicID = inventory.GetUShort("mk");
+        var musicId = inventory.GetUShort("mk");
+        if (musicId == null) return;
+
+        player.InventoryServices.MusicID = musicId.Value;
     }
 
     public void GivePlayerPin(CCSPlayerController player)
     {
         if (player.InventoryServices == null) return;
         var inventory = GetPlayerInventory(player);
-        if (!inventory.HasProperty("pi")) return;
+        var rank = inventory.GetUInt("pi");
+        if (rank == null) return;
+
         for (var index = 0; index < player.InventoryServices.Rank.Length; index++)
         {
-            player.InventoryServices.Rank[index] = index == 5 ? (MedalRank_t)inventory.GetUInt("pi") : MedalRank_t.MEDAL_RANK_NONE;
+            player.InventoryServices.Rank[index] = index == 5 ? (MedalRank_t)rank.Value : MedalRank_t.MEDAL_RANK_NONE;
         }
     }
 
@@ -42,20 +47,18 @@ public partial class InventorySimulator
 
         var inventory = GetPlayerInventory(player);
         var team = player.TeamNum;
-        if (!inventory.HasProperty("gl", team)) return;
-
         var itemDef = inventory.GetUShort("gl", team);
-        if (!inventory.HasProperty("pa", team, itemDef)) return;
+        if (itemDef == null) return;
 
         var glove = player.PlayerPawn.Value.EconGloves;
-        var paintKit = inventory.GetInt("pa", team, itemDef, 0);
-        var seed = inventory.GetInt("se", team, itemDef, 1);
-        var wear = inventory.GetFloat("fl", team, itemDef, 0.0f);
+        var paintKit = inventory.GetInt("pa", team, itemDef.Value, 0);
+        var seed = inventory.GetInt("se", team, itemDef.Value, 1);
+        var wear = inventory.GetFloat("fl", team, itemDef.Value, 0.0f);
 
         Server.NextFrame(() =>
         {
             glove.Initialized = true;
-            glove.ItemDefinitionIndex = itemDef;
+            glove.ItemDefinitionIndex = itemDef.Value;
             UpdatePlayerEconItemID(glove);
             glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
             glove.AttributeList.Attributes.RemoveAll();
@@ -101,16 +104,18 @@ public partial class InventorySimulator
         var isKnife = IsKnifeClassName(weapon.DesignerName);
         var inventory = GetPlayerInventory(player);
         var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
+        var originalItemDef = itemDef;
         var team = player.TeamNum;
-        var hasKnife = inventory.HasProperty("me", team);
+        var knifeItemDef = inventory.GetUShort("me", team);
         var isCustom = inventory.HasProperty("cw", team, itemDef);
+        var isCustomKnife = isKnife && knifeItemDef != null;
 
-        if (!hasKnife && !isCustom) return;
+        if (!isCustomKnife && !isCustom) return;
 
         if (isKnife)
         {
-            itemDef = inventory.GetUShort("me", team);
-            if (weapon.AttributeManager.Item.ItemDefinitionIndex != itemDef)
+            itemDef = knifeItemDef ?? itemDef;
+            if (originalItemDef != itemDef)
             {
                 SubclassChange(weapon, itemDef);
             }
