@@ -6,13 +6,13 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API;
 using Newtonsoft.Json;
-using CounterStrikeSharp.API.Modules.Entities;
-using System.Numerics;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
+    private readonly PlayerInventory g_EmptyInventory = new();
+
     public void LoadPlayerInventories()
     {
         var path = Path.Combine(Server.GameDirectory, g_InventoriesFilePath);
@@ -61,7 +61,7 @@ public partial class InventorySimulator
         {
             return inventory;
         }
-        return new PlayerInventory();
+        return g_EmptyInventory;
     }
 }
 
