@@ -151,6 +151,15 @@ public class PlayerInventory
         return null;
     }
 
+    public uint? GetUInt(string prefix, byte team)
+    {
+        if (Inventory.TryGetValue($"{prefix}_{team}", out var value))
+        {
+            return (uint)((long)value);
+        }
+        return null;
+    }
+
     public int GetInt(string prefix, byte team, ushort itemDef, int defaultValue)
     {
         if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}", out var value))

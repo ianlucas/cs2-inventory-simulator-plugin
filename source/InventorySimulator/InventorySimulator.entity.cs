@@ -60,13 +60,21 @@ public partial class InventorySimulator
         return weapon.AttributeManager.Item.ItemID >= g_MinimumCustomItemID;
     }
 
-    public void SetPlayerModel(CCSPlayerController player, string model)
+    public void SetPlayerModel(CCSPlayerController player, string model, List<uint>? patches = null)
     {
         try
         {
             Server.NextFrame(() =>
             {
+                if (patches != null && patches.Count == 5)
+                {
+                    for (var index = 0; index < patches.Count; index++)
+                    {
+                        player.PlayerPawn.Value!.PlayerPatchEconIndices[index] = patches[index];
+                    }
+                }
                 player.PlayerPawn.Value!.SetModel(model);
+
             });
         }
         catch

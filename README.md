@@ -12,13 +12,13 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 - Gloves
   - Paint Kit, Wear, Seed. 
 - Agents
+  - Patches 
 - Music Kit
 - Pins
 
 ## Feature Roadmap
 
 - StatTrak increment
-- ⛔ Agent Patches
 - ⛔ Graffiti
 
 > [!IMPORTANT]  

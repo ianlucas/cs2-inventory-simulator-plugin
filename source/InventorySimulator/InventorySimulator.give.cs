@@ -91,9 +91,12 @@ public partial class InventorySimulator
         var team = player.TeamNum;
         var inventory = GetPlayerInventory(player);
         var model = inventory.GetString("agm", team);
+        var patch = inventory.GetUInt("ap", team);
 
         if (model == null) return;
-        SetPlayerModel(player, GetAgentModelPath(model));
+
+        var patches = patch != null ? Enumerable.Repeat(patch.Value, 5).ToList() : null;
+        SetPlayerModel(player, GetAgentModelPath(model), patches);
     }
 
     public void GivePlayerWeaponSkin(CCSPlayerController player, CBasePlayerWeapon weapon)
