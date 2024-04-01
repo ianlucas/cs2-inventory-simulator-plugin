@@ -21,7 +21,7 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleAuthor => "Ian Lucas";
     public override string ModuleDescription => "Inventory Simulator (inventory.cstrike.app)";
     public override string ModuleName => "InventorySimulator";
-    public override string ModuleVersion => "1.0.0-beta.14";
+    public override string ModuleVersion => "1.0.0-beta.15";
 
     private readonly string g_InventoriesFilePath = "csgo/css_inventories.json";
     private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
