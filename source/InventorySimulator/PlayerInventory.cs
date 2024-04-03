@@ -6,6 +6,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API;
 using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace InventorySimulator;
 
@@ -213,4 +214,82 @@ public class PlayerInventory
         }
         return ViewUintAsFloat(defaultValue);
     }
+}
+
+public class StickerItem
+{
+    [JsonProperty("def")]
+    public uint Def { get; set; }
+
+    [JsonProperty("slot")]
+    public ushort Slot { get; set; }
+
+    [JsonProperty("wear")]
+    public float Wear { get; set; }
+}
+
+public class BaseEconItem
+{
+    [JsonProperty("def")]
+    public ushort Def { get; set; }
+
+    [JsonProperty("paint")]
+    public int Paint { get; set; }
+
+    [JsonProperty("seed")]
+    public int Seed { get; set; }
+
+    [JsonProperty("wear")]
+    public float Wear { get; set; }
+}
+
+public class WeaponEconItem : BaseEconItem
+{
+    [JsonProperty("nametag")]
+    public required string Nametag { get; set; }
+
+    [JsonProperty("stattrak")]
+    public required int Stattrak { get; set; }
+
+    [JsonProperty("stickers")]
+    public required List<StickerItem> Stickers { get; set; }
+}
+
+public class KnifeEconItem : BaseEconItem
+{
+    [JsonProperty("stattrak")]
+    public required int Stattrak { get; set; }
+}
+
+public class AgentItem
+{
+    [JsonProperty("model")]
+    public required string Model { get; set; }
+
+    [JsonProperty("patches")]
+    public required List<uint> Patches { get; set; }
+}
+
+public class PlayerEquippedInventory
+{
+    [JsonProperty("knives")]
+    public required Dictionary<byte, KnifeEconItem> Knives { get; set; }
+
+    [JsonProperty("gloves")]
+    public required Dictionary<byte, BaseEconItem> Gloves { get; set; }
+
+    [JsonProperty("tWeapons")]
+    public required Dictionary<ushort, WeaponEconItem> TWeapons { get; set; }
+
+    [JsonProperty("ctWeapons")]
+    public required Dictionary<ushort, WeaponEconItem> CTWeapons { get; set; }
+
+    [JsonProperty("agents")]
+    public required Dictionary<byte, AgentItem> Agents { get; set; }
+
+    [JsonProperty("pin")]
+    public uint? Pin { get; set; }
+
+    [JsonProperty("musicKit")]
+    public ushort? MusicKit { get; set; }
 }
