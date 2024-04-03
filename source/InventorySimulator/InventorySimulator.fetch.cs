@@ -41,13 +41,13 @@ public partial class InventorySimulator
 
         g_FetchInProgress.Add(steamId);
 
-        var playerInventory = await Fetch<Dictionary<string, object>>(
-            $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}/api/equipped/{steamId}.json"
+        var playerInventory = await Fetch<PlayerInventory>(
+            $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}/api/equipped/v2/{steamId}.json"
         );
 
         if (playerInventory != null)
         {
-            g_PlayerInventory.Add(steamId, new PlayerInventory(playerInventory));
+            g_PlayerInventory.Add(steamId, playerInventory);
         }
 
         g_FetchInProgress.Remove(steamId);

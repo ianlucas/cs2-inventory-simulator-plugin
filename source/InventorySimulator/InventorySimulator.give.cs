@@ -14,9 +14,8 @@ public partial class InventorySimulator
     public void GivePlayerMusicKit(CCSPlayerController player)
     {
         if (player.InventoryServices == null) return;
-
-        var inventory = GetPlayerInventory(player);
-        var musicId = inventory.GetUShort("mk");
+        
+        var musicId = GetPlayerInventory(player).MusicKit;
         if (musicId == null) return;
 
         player.InventoryServices.MusicID = musicId.Value;
@@ -25,13 +24,13 @@ public partial class InventorySimulator
     public void GivePlayerPin(CCSPlayerController player)
     {
         if (player.InventoryServices == null) return;
-        var inventory = GetPlayerInventory(player);
-        var rank = inventory.GetUInt("pi");
-        if (rank == null) return;
+
+        var pin = GetPlayerInventory(player).Pin;
+        if (pin == null) return;
 
         for (var index = 0; index < player.InventoryServices.Rank.Length; index++)
         {
-            player.InventoryServices.Rank[index] = index == 5 ? (MedalRank_t)rank.Value : MedalRank_t.MEDAL_RANK_NONE;
+            player.InventoryServices.Rank[index] = index == 5 ? (MedalRank_t)pin.Value : MedalRank_t.MEDAL_RANK_NONE;
         }
     }
 
@@ -45,32 +44,26 @@ public partial class InventorySimulator
             return;
         }
 
-        var inventory = GetPlayerInventory(player);
-        var team = player.TeamNum;
-        var itemDef = inventory.GetUShort("gl", team);
-        if (itemDef == null) return;
-
-        var glove = player.PlayerPawn.Value.EconGloves;
-        var paintKit = inventory.GetInt("pa", team, itemDef.Value, 0);
-        var seed = inventory.GetInt("se", team, itemDef.Value, 1);
-        var wear = inventory.GetFloat("fl", team, itemDef.Value, 0.0f);
-
-        Server.NextFrame(() =>
+        if (GetPlayerInventory(player).Gloves.TryGetValue(player.TeamNum, out var item))
         {
-            glove.Initialized = true;
-            glove.ItemDefinitionIndex = itemDef.Value;
-            UpdatePlayerEconItemID(glove);
-            glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
-            glove.AttributeList.Attributes.RemoveAll();
-            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture prefab", paintKit);
-            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture seed", seed);
-            SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture wear", wear);
-            // We also need to update AttributeList to overwrite owned glove attributes.
-            SetOrAddAttributeValueByName(glove.AttributeList, "set item texture prefab", paintKit);
-            SetOrAddAttributeValueByName(glove.AttributeList, "set item texture seed", seed);
-            SetOrAddAttributeValueByName(glove.AttributeList, "set item texture wear", wear);
-            SetBodygroup(player, "default_gloves");
-        });
+            var glove = player.PlayerPawn.Value.EconGloves;
+            Server.NextFrame(() =>
+            {
+                glove.Initialized = true;
+                glove.ItemDefinitionIndex = item.Def;
+                UpdatePlayerEconItemID(glove);
+                glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
+                glove.AttributeList.Attributes.RemoveAll();
+                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture prefab", item.Paint);
+                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture seed", item.Seed);
+                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture wear", item.Wear);
+                // We also need to update AttributeList to overwrite owned glove attributes.
+                SetOrAddAttributeValueByName(glove.AttributeList, "set item texture prefab", item.Paint);
+                SetOrAddAttributeValueByName(glove.AttributeList, "set item texture seed", item.Seed);
+                SetOrAddAttributeValueByName(glove.AttributeList, "set item texture wear", item.Wear);
+                SetBodygroup(player, "default_gloves");
+            });
+        }
     }
 
     public void GivePlayerAgent(CCSPlayerController player)
@@ -88,73 +81,59 @@ public partial class InventorySimulator
             return;
         }
 
-        var team = player.TeamNum;
-        var inventory = GetPlayerInventory(player);
-        var model = inventory.GetString("agm", team);
-        var patch = inventory.GetUInt("ap", team);
-
-        if (model == null) return;
-
-        var patches = patch != null ? Enumerable.Repeat(patch.Value, 5).ToList() : null;
-        SetPlayerModel(player, GetAgentModelPath(model), patches);
+        if (GetPlayerInventory(player).Agents.TryGetValue(player.TeamNum, out var item))
+        {
+            var patches = item.Patches.Count != 5 ? Enumerable.Repeat((uint)0, 5).ToList() : item.Patches;
+            SetPlayerModel(player, GetAgentModelPath(item.Model), patches);
+        }
     }
 
     public void GivePlayerWeaponSkin(CCSPlayerController player, CBasePlayerWeapon weapon)
     {
-        if (IsCustomWeaponItemID(weapon))
-            return;
+        if (IsCustomWeaponItemID(weapon)) return;
 
         var isKnife = IsKnifeClassName(weapon.DesignerName);
+        var entityDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
         var inventory = GetPlayerInventory(player);
-        var itemDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
-        var originalItemDef = itemDef;
-        var team = player.TeamNum;
-        var knifeItemDef = inventory.GetUShort("me", team);
-        var isCustom = inventory.HasProperty("cw", team, itemDef);
-        var isCustomKnife = isKnife && knifeItemDef != null;
-
-        if (!isCustomKnife && !isCustom) return;
+        var item = isKnife ? inventory.GetKnife(player.TeamNum) : inventory.GetWeapon(player.Team, entityDef);
+        if (item == null) return;
 
         if (isKnife)
         {
-            itemDef = knifeItemDef ?? itemDef;
-            if (originalItemDef != itemDef)
+            if (entityDef != item.Def)
             {
-                SubclassChange(weapon, itemDef);
+                SubclassChange(weapon, item.Def);
             }
-            weapon.AttributeManager.Item.ItemDefinitionIndex = itemDef;
+            weapon.AttributeManager.Item.ItemDefinitionIndex = item.Def;
             weapon.AttributeManager.Item.EntityQuality = 3;
         }
 
         UpdatePlayerEconItemID(weapon.AttributeManager.Item);
 
-        var paintKit = inventory.GetInt("pa", team, itemDef, 0);
-        var seed = inventory.GetInt("se", team, itemDef, 1);
-        var wear = inventory.GetFloat("fl", team, itemDef, 0.0f);
-        weapon.FallbackPaintKit = paintKit;
-        weapon.FallbackSeed = seed;
-        weapon.FallbackWear = wear;
-        weapon.FallbackStatTrak = inventory.GetInt("st", team, itemDef, -1);
-        weapon.AttributeManager.Item.CustomName = inventory.GetString("nt", team, itemDef, "");
+        weapon.FallbackPaintKit = item.Paint;
+        weapon.FallbackSeed = item.Seed;
+        weapon.FallbackWear = item.Wear;
+        weapon.FallbackStatTrak = item.Stattrak;
+        weapon.AttributeManager.Item.CustomName = item.Nametag;
 
         weapon.AttributeManager.Item.NetworkedDynamicAttributes.Attributes.RemoveAll();
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture prefab", paintKit);
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture seed", seed);
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture wear", wear);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture prefab", item.Paint);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture seed", item.Seed);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture wear", item.Wear);
 
         if (!isKnife)
         {
-            for (int slot = 0; slot < 4; slot++)
+            foreach (var sticker in item.Stickers)
             {
                 // To set the ID of the sticker, we need to use a workaround. In the items_game.txt file, locate the
                 // sticker slot 0 id entry. It should be marked with stored_as_integer set to 1. This means we need to
                 // treat a uint as a float. For example, if the uint stickerId is 2229, we would interpret its value as
                 // if it were a float (e.g., float stickerId = 3.12349e-42f).
                 // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blame/main/game/shared/econ/econ_item_view.cpp#L194
-                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {slot} id", inventory.GetIntAsFloat("ss", team, itemDef, slot, 0));
-                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {slot} wear", inventory.GetFloat("sf", team, itemDef, slot, 0.0f));
+                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {sticker.Slot} id", ViewUintAsFloat(sticker.Def));
+                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {sticker.Slot} wear", sticker.Wear);
             }
-            UpdatePlayerWeaponMeshGroupMask(player, weapon, inventory.HasProperty("pal", team, itemDef));
+            UpdatePlayerWeaponMeshGroupMask(player, weapon, item.Legacy);
         }
     }
 }

@@ -3,16 +3,26 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Text.Json;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    private readonly PlayerInventory g_EmptyInventory = new();
+    public readonly PlayerInventory g_EmptyInventory = new()
+    {
+        Knives = new(),
+        Gloves = new(),
+        TWeapons = new(),
+        CTWeapons = new(),
+        Agents = new()
+    };
 
     public void LoadPlayerInventories()
     {
@@ -22,13 +32,13 @@ public partial class InventorySimulator
         try
         {
             string json = File.ReadAllText(path);
-            var inventories = JsonConvert.DeserializeObject<Dictionary<ulong, Dictionary<string, object>>>(json);
+            var inventories = JsonConvert.DeserializeObject<Dictionary<ulong, PlayerInventory>>(json);
             if (inventories != null)
             {
                 foreach (var pair in inventories)
                 {
                     g_PlayerInventoryLock.Add(pair.Key);
-                    g_PlayerInventory[pair.Key] = new PlayerInventory(pair.Value);
+                    g_PlayerInventory[pair.Key] = pair.Value;
                 }
             }
         }
@@ -64,155 +74,11 @@ public partial class InventorySimulator
         }
         return g_EmptyInventory;
     }
-}
 
-public class PlayerInventory
-{
-    public Dictionary<string, object> Inventory;
-
-    public PlayerInventory(Dictionary<string, object>? inventory = null)
-    {
-        Inventory = inventory ?? new();
-    }
-
-    private float ViewUintAsFloat(uint value)
+    public float ViewUintAsFloat(uint value)
     {
         byte[] bytes = BitConverter.GetBytes(value);
         return BitConverter.ToSingle(bytes, 0);
-    }
-
-    private float ConvertObjectToFloat(object value, float defaultValue)
-    {
-        return value switch
-        {
-            double d => (float)d,
-            int i => i,
-            long i => (float)i,
-            _ => defaultValue
-        };
-    }
-
-    public bool HasProperty(string prefix, byte team)
-    {
-        return Inventory.ContainsKey($"{prefix}_{team}");
-    }
-
-    public bool HasProperty(string prefix, byte team, ushort itemDef)
-    {
-        return Inventory.ContainsKey($"{prefix}_{team}_{itemDef}");
-    }
-
-    public bool HasProperty(string prefix)
-    {
-        return Inventory.ContainsKey(prefix);
-    }
-
-    public ushort? GetUShort(string prefix, byte team)
-    {
-        if (Inventory.TryGetValue($"{prefix}_{team}", out var value))
-        {
-            return Convert.ToUInt16((long)value);
-        }
-        return null;
-    }
-
-    public ushort GetUShort(string prefix, byte team, ushort defaultValue)
-    {
-        if (Inventory.TryGetValue($"{prefix}_{team}", out var value))
-        {
-            return Convert.ToUInt16((long)value);
-        }
-        return defaultValue;
-    }
-
-    public ushort? GetUShort(string prefix)
-    {
-        if (Inventory.TryGetValue(prefix, out var value))
-        {
-            return Convert.ToUInt16((long)value);
-        }
-        return null;
-    }
-
-    public ushort GetUShort(string prefix, ushort defaultValue)
-    {
-        if (Inventory.TryGetValue(prefix, out var value))
-        {
-            return Convert.ToUInt16((long)value);
-        }
-        return defaultValue;
-    }
-
-    public uint? GetUInt(string prefix)
-    {
-        if (Inventory.TryGetValue(prefix, out var value))
-        {
-            return (uint)((long)value);
-        }
-        return null;
-    }
-
-    public uint? GetUInt(string prefix, byte team)
-    {
-        if (Inventory.TryGetValue($"{prefix}_{team}", out var value))
-        {
-            return (uint)((long)value);
-        }
-        return null;
-    }
-
-    public int GetInt(string prefix, byte team, ushort itemDef, int defaultValue)
-    {
-        if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}", out var value))
-        {
-            return Convert.ToInt32((long)value);
-        }
-        return defaultValue;
-    }
-
-    public float GetFloat(string prefix, byte team, ushort itemDef, float defaultValue)
-    {
-        if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}", out var value))
-        {
-            return ConvertObjectToFloat(value, defaultValue);
-        }
-        return defaultValue;
-    }
-
-    public float GetFloat(string prefix, byte team, ushort itemDef, int slot, float defaultValue)
-    {
-        if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}_{slot}", out var value))
-        {
-            return ConvertObjectToFloat(value, defaultValue);
-        }
-        return defaultValue;
-    }
-
-    public string GetString(string prefix, byte team, ushort itemDef, string defaultValue)
-    {
-        if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}", out var value))
-        {
-            return (string)value;
-        }
-        return defaultValue;
-    }
-
-    public string? GetString(string prefix, byte team)
-    {
-        if (Inventory.TryGetValue($"{prefix}_{team}", out var value))
-        {
-            return (string)value;
-        }
-        return null;
-    }
-
-    public float GetIntAsFloat(string prefix, byte team, ushort itemDef, int slot, uint defaultValue)
-    {
-        if (Inventory.TryGetValue($"{prefix}_{team}_{itemDef}_{slot}", out var value))
-        {
-            return ViewUintAsFloat((uint)((long)value));
-        }
-        return ViewUintAsFloat(defaultValue);
     }
 }
 
@@ -245,6 +111,9 @@ public class BaseEconItem
 
 public class WeaponEconItem : BaseEconItem
 {
+    [JsonProperty("legacy")]
+    public bool Legacy { get; set; }
+
     [JsonProperty("nametag")]
     public required string Nametag { get; set; }
 
@@ -253,12 +122,6 @@ public class WeaponEconItem : BaseEconItem
 
     [JsonProperty("stickers")]
     public required List<StickerItem> Stickers { get; set; }
-}
-
-public class KnifeEconItem : BaseEconItem
-{
-    [JsonProperty("stattrak")]
-    public required int Stattrak { get; set; }
 }
 
 public class AgentItem
@@ -270,10 +133,10 @@ public class AgentItem
     public required List<uint> Patches { get; set; }
 }
 
-public class PlayerEquippedInventory
+public class PlayerInventory
 {
     [JsonProperty("knives")]
-    public required Dictionary<byte, KnifeEconItem> Knives { get; set; }
+    public required Dictionary<byte, WeaponEconItem> Knives { get; set; }
 
     [JsonProperty("gloves")]
     public required Dictionary<byte, BaseEconItem> Gloves { get; set; }
@@ -292,4 +155,22 @@ public class PlayerEquippedInventory
 
     [JsonProperty("musicKit")]
     public ushort? MusicKit { get; set; }
+
+    public WeaponEconItem? GetKnife(byte team)
+    {
+        if (Knives.TryGetValue(team, out var knife))
+        {
+            return knife;
+        }
+        return null;
+    }
+
+    public WeaponEconItem? GetWeapon(CsTeam team, ushort def)
+    {
+        if ((team == CsTeam.Terrorist ? TWeapons : CTWeapons).TryGetValue(def, out var weapon))
+        {
+            return weapon;
+        }
+        return null;
+    }
 }
