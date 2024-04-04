@@ -36,21 +36,33 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 ### Configuration
 
-#### `css_minmodels` ConVar
-
-* Description: Restricts the usage of agents by players.
-* Type: `int`
-* Default: `0`
-* Values:
-	- `0` - All agents allowed.
-	- `1` - Default agents for the current map. **Note:** Currently the same as `2`  as Valve has not yet added them back.
-	- `2` - Only SAS and Phoenix agents allowed.
-
 #### `css_inventory_simulator` ConVar
 
-* Description: The host of the URL to be used to consume Inventory Simulator's API.
-* Type: `string`
-* Default: `inventory.cstrike.app`
+* Host of Inventory Simulator's API.
+* **Type:** `string`
+* **Default:** `inventory.cstrike.app`
+
+#### `css_inventory_simulator_apikey` ConVar
+
+* API Key for Inventory Simulator.
+* **Type:** `string`
+* **Default:** _empty_
+
+#### `css_stattrak_ignore_bots` ConVar
+
+* Determines whether stattrak increases ignore bot kills.
+* **Type:** `bool`
+* **Default:** `true`
+
+#### `css_minmodels` ConVar
+
+* Limits the number of custom models allowed in-game.
+* **Type:** `int`
+* **Default:** `0`
+* **Values:**
+	- `0` - All agents allowed.
+	- `1` - Default agents for the current map. **Note:** Currently the same as `2` as Valve has not yet added them back.
+	- `2` - Only SAS and Phoenix agents allowed.
 
 ### Commands?
 
