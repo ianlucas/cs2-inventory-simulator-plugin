@@ -50,7 +50,7 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 #### `css_stattrak_ignore_bots` ConVar
 
-* Determines whether StatTrak gets increased by bot kills.
+* Determines whether to ignore StatTrak increments for bot kills.
 * **Type:** `bool`
 * **Default:** `true`
 
