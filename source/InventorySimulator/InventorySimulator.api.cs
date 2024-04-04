@@ -5,6 +5,8 @@
 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Net;
+using System.Text;
 
 namespace InventorySimulator;
 
@@ -12,12 +14,17 @@ public partial class InventorySimulator
 {
     private readonly HashSet<ulong> g_FetchInProgress = new();
 
-    public async Task<T?> Fetch<T>(string url)
+    public string GetApiUrl(string uri)
+    {
+        return $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}{uri}";
+    }
+
+    public async Task<T?> Fetch<T>(string uri)
     {
         try
         {
             using HttpClient client = new();
-            HttpResponseMessage response = await client.GetAsync(url);
+            var response = await client.GetAsync(GetApiUrl(uri));
             response.EnsureSuccessStatusCode();
 
             string jsonContent = response.Content.ReadAsStringAsync().Result;
@@ -26,8 +33,26 @@ public partial class InventorySimulator
         }
         catch (Exception error)
         {
-            Logger.LogError($"Error fetching data from {url}: {error.Message}");
+            Logger.LogError($"GET {uri} failed: {error.Message}");
             return default;
+        }
+    }
+
+    public async Task Send(string uri, object data)
+    {
+        var json = JsonConvert.SerializeObject(data);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        try
+        {
+            using HttpClient client = new();
+            var response = await client.PostAsync(GetApiUrl(uri), content);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                Logger.LogError($"POST {uri} failed, check your css_inventory_simulator_apikey's value.");
+        }
+        catch (Exception error)
+        {
+            Logger.LogError($"POST {uri} failed: {error.Message}");
         }
     }
 
@@ -42,7 +67,7 @@ public partial class InventorySimulator
         g_FetchInProgress.Add(steamId);
 
         var playerInventory = await Fetch<PlayerInventory>(
-            $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}/api/equipped/v2/{steamId}.json"
+            $"/api/equipped/v2/{steamId}.json"
         );
 
         if (playerInventory != null)
@@ -51,5 +76,18 @@ public partial class InventorySimulator
         }
 
         g_FetchInProgress.Remove(steamId);
+    }
+
+    public async void SendStatTrakIncrease(ulong userId, int targetUid)
+    {
+        if (InvSimApiKeyCvar.Value == "")
+            return;
+
+        await Send($"/api/increment-item-stattrak", new
+        {
+            apiKey = InvSimApiKeyCvar.Value,
+            targetUid,
+            userId = userId.ToString()
+        });
     }
 }

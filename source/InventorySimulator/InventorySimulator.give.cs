@@ -113,13 +113,26 @@ public partial class InventorySimulator
         weapon.FallbackPaintKit = item.Paint;
         weapon.FallbackSeed = item.Seed;
         weapon.FallbackWear = item.Wear;
-        weapon.FallbackStatTrak = item.Stattrak;
         weapon.AttributeManager.Item.CustomName = item.Nametag;
+        weapon.AttributeManager.Item.AccountID = (uint)player.SteamID;
 
         weapon.AttributeManager.Item.NetworkedDynamicAttributes.Attributes.RemoveAll();
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture prefab", item.Paint);
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture seed", item.Seed);
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture wear", item.Wear);
+        weapon.AttributeManager.Item.AttributeList.Attributes.RemoveAll();
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "set item texture prefab", item.Paint);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "set item texture seed", item.Seed);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "set item texture wear", item.Wear);
+        if (item.Stattrak >= 0)
+        {
+            weapon.FallbackStatTrak = item.Stattrak;
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "kill eater", ViewAsFloat(item.Stattrak));
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "kill eater score type", 0);
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "kill eater", ViewAsFloat(item.Stattrak));
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "kill eater score type", 0);
+        }
+        
 
         if (!isKnife)
         {
@@ -130,10 +143,50 @@ public partial class InventorySimulator
                 // treat a uint as a float. For example, if the uint stickerId is 2229, we would interpret its value as
                 // if it were a float (e.g., float stickerId = 3.12349e-42f).
                 // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blame/main/game/shared/econ/econ_item_view.cpp#L194
-                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {sticker.Slot} id", ViewUintAsFloat(sticker.Def));
+                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {sticker.Slot} id", ViewAsFloat(sticker.Def));
                 SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {sticker.Slot} wear", sticker.Wear);
             }
             UpdatePlayerWeaponMeshGroupMask(player, weapon, item.Legacy);
+        }
+    }
+
+    public void GivePlayerStatTrakIncrease(CCSPlayerController attacker, string attackerWeapon, string attackerWeaponItemId)
+    {
+        try
+        {
+            var weaponServices = attacker.PlayerPawn.Value!.WeaponServices;
+            if (weaponServices == null || weaponServices.ActiveWeapon == null)
+                return;
+
+            if (weaponServices.ActiveWeapon.Value == null || !weaponServices.ActiveWeapon.IsValid)
+                return;
+
+            var weapon = weaponServices.ActiveWeapon.Value;
+            if (!IsCustomWeaponItemID(weapon) || weapon.FallbackStatTrak < 0)
+                return;
+
+            if (weapon.AttributeManager.Item.AccountID != (uint)attacker.SteamID)
+                return;
+
+            if (weapon.AttributeManager.Item.ItemID != ulong.Parse(attackerWeaponItemId))
+                return;
+
+            var isKnife = IsKnifeClassName(attackerWeapon);
+            var newValue = weapon.FallbackStatTrak + 1;
+            var def = weapon.AttributeManager.Item.ItemDefinitionIndex;
+            weapon.FallbackStatTrak = newValue;
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "kill eater", ViewAsFloat(newValue));
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "kill eater", ViewAsFloat(newValue));
+            var inventory = GetPlayerInventory(attacker);
+            var item = isKnife ? inventory.GetKnife(attacker.TeamNum) : inventory.GetWeapon(attacker.Team, def);
+            if (item != null)
+            {
+                item.Stattrak = newValue;
+                SendStatTrakIncrease(attacker.SteamID, item.Uid);
+            }
+        } catch
+        {
+            // Ignore any errors.
         }
     }
 }

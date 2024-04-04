@@ -7,8 +7,6 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 using System.Text.Json;
 
 namespace InventorySimulator;
@@ -75,7 +73,13 @@ public partial class InventorySimulator
         return g_EmptyInventory;
     }
 
-    public float ViewUintAsFloat(uint value)
+    public float ViewAsFloat(int value)
+    {
+        byte[] bytes = BitConverter.GetBytes(value);
+        return BitConverter.ToSingle(bytes, 0);
+    }
+
+    public float ViewAsFloat(uint value)
     {
         byte[] bytes = BitConverter.GetBytes(value);
         return BitConverter.ToSingle(bytes, 0);
@@ -122,6 +126,9 @@ public class WeaponEconItem : BaseEconItem
 
     [JsonProperty("stickers")]
     public required List<StickerItem> Stickers { get; set; }
+
+    [JsonProperty("uid")]
+    public required int Uid { get; set; }
 }
 
 public class AgentItem

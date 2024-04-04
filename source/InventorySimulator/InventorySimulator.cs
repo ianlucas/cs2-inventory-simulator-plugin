@@ -31,9 +31,11 @@ public partial class InventorySimulator : BasePlugin
 
     private readonly bool g_IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-    public FakeConVar<int> MinModelsCvar = new("css_minmodels", "Limits the number of custom models in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
-    public FakeConVar<string> InvSimProtocolCvar = new("css_inventory_simulator_protocol", "Inventory Simulator's protocol to consume API", "https");
-    public FakeConVar<string> InvSimCvar = new("css_inventory_simulator", "Inventory Simulator's host to consume API.", "inventory.cstrike.app");
+    public FakeConVar<string> InvSimProtocolCvar = new("css_inventory_simulator_protocol", "Protocol used by Inventory Simulator to consume its API.", "https");
+    public FakeConVar<string> InvSimCvar = new("css_inventory_simulator", "Host of Inventory Simulator's API.", "inventory.cstrike.app");
+    public FakeConVar<string> InvSimApiKeyCvar = new("css_inventory_simulator_apikey", "API Key for Inventory Simulator.", "");
+    public FakeConVar<bool> StatTrakIgnoreBotsCvar = new("css_stattrak_ignore_bots", "Determines whether stattrak increases ignore kills by bots.", true);
+    public FakeConVar<int> MinModelsCvar = new("css_minmodels", "Limits the number of custom models allowed in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
 
     public override void Load(bool hotReload)
     {
@@ -106,6 +108,22 @@ public partial class InventorySimulator : BasePlugin
         return HookResult.Continue;
     }
 
+    [GameEventHandler(HookMode.Pre)]
+    public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo _)
+    {
+        CCSPlayerController? attacker = @event.Attacker;
+        if (!IsPlayerHumanAndValid(attacker) || !IsPlayerPawnValid(attacker))
+            return HookResult.Continue;
+
+        CCSPlayerController? victim = @event.Userid;
+        if ((StatTrakIgnoreBotsCvar.Value ? !IsPlayerHumanAndValid(victim) : !IsPlayerValid(victim)) || !IsPlayerPawnValid(victim))
+            return HookResult.Continue;
+
+        GivePlayerStatTrakIncrease(attacker, @event.Weapon, @event.WeaponItemid);
+
+        return HookResult.Continue;
+    }
+
     [GameEventHandler]
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo _)
     {
@@ -148,7 +166,7 @@ public partial class InventorySimulator : BasePlugin
         var itemServices = hook.GetParam<CCSPlayer_ItemServices>(0);
         var weapon = hook.GetReturn<CBasePlayerWeapon>();
         var player = GetPlayerFromItemServices(itemServices);
-        
+
         if (player != null)
         {
             GivePlayerWeaponSkin(player, weapon);

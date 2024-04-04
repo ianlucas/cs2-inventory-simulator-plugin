@@ -7,18 +7,19 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 ## Current Features
 
-- Weapon/Knife
-  - Paint Kit, Wear, Seed, Name tag, StatTrak, and Stickers.
+- Weapon
+  - Paint Kit, Wear, Seed, Name tag, StatTrak (with increment), and Stickers.
+- Knife
+  - Paint Kit, Wear, Seed, Name tag, and StatTrak (with increment).
 - Gloves
-  - Paint Kit, Wear, Seed. 
+  - Paint Kit, Wear, Seed.
 - Agents
-  - Patches 
+  - Patches.
 - Music Kit
 - Pins
 
 ## Feature Roadmap
 
-- StatTrak increment
 - ⛔ Graffiti
 
 > [!IMPORTANT]  
