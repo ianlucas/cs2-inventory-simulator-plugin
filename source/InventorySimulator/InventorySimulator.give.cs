@@ -106,6 +106,9 @@ public partial class InventorySimulator
             }
             weapon.AttributeManager.Item.ItemDefinitionIndex = item.Def;
             weapon.AttributeManager.Item.EntityQuality = 3;
+        } else
+        {
+            weapon.AttributeManager.Item.EntityQuality = item.Stattrak >= 0 ? 9 : 0;
         }
 
         UpdatePlayerEconItemID(weapon.AttributeManager.Item);
