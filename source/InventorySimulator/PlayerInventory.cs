@@ -24,11 +24,12 @@ public partial class InventorySimulator
 
     public void LoadPlayerInventories()
     {
-        var path = Path.Combine(Server.GameDirectory, g_InventoriesFilePath);
-        if (!File.Exists(path))
-            return;
         try
         {
+            var path = Path.Combine(Server.GameDirectory, g_InventoriesFilePath);
+            if (!File.Exists(path))
+                return;
+
             string json = File.ReadAllText(path);
             var inventories = JsonConvert.DeserializeObject<Dictionary<ulong, PlayerInventory>>(json);
             if (inventories != null)

@@ -40,10 +40,10 @@ public partial class InventorySimulator
 
     public async Task Send(string uri, object data)
     {
-        var json = JsonConvert.SerializeObject(data);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
         try
         {
+            var json = JsonConvert.SerializeObject(data);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
             using HttpClient client = new();
             var response = await client.PostAsync(GetApiUrl(uri), content);
 
