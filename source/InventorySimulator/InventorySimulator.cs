@@ -24,8 +24,8 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleVersion => "1.0.0-beta.16";
 
     private readonly string InventoriesFilePath = "csgo/css_inventories.json";
-    private readonly Dictionary<ulong, PlayerInventory> PlayerInventoryDict = new();
-    private readonly HashSet<ulong> PlayerInventoryLockSet = new();
+    private readonly Dictionary<ulong, PlayerInventory> PlayerInventories = new();
+    private readonly HashSet<ulong> PlayerInventoryLocks = new();
     private static readonly ulong MinimumCustomItemID = 68719476736;
     private ulong NextItemId = MinimumCustomItemID;
 

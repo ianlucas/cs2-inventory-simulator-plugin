@@ -36,8 +36,8 @@ public partial class InventorySimulator
             {
                 foreach (var pair in inventories)
                 {
-                    PlayerInventoryLockSet.Add(pair.Key);
-                    PlayerInventoryDict.Add(pair.Key, pair.Value);
+                    PlayerInventoryLocks.Add(pair.Key);
+                    PlayerInventories.Add(pair.Key, pair.Value);
                 }
             }
         }
@@ -50,7 +50,7 @@ public partial class InventorySimulator
     public void PlayerInventoryCleanUp()
     {
         var connected = Utilities.GetPlayers().Select(player => player.SteamID).ToHashSet();
-        var disconnected = PlayerInventoryDict.Keys.Except(connected).ToList();
+        var disconnected = PlayerInventories.Keys.Except(connected).ToList();
         foreach (var steamId in disconnected)
         {
             RemovePlayerInventory(steamId);
@@ -59,15 +59,15 @@ public partial class InventorySimulator
 
     public void RemovePlayerInventory(ulong steamId)
     {
-        if (!PlayerInventoryLockSet.Contains(steamId))
+        if (!PlayerInventoryLocks.Contains(steamId))
         {
-            PlayerInventoryDict.Remove(steamId);
+            PlayerInventories.Remove(steamId);
         }
     }
 
     public PlayerInventory GetPlayerInventory(CCSPlayerController player)
     {
-        if (PlayerInventoryDict.TryGetValue(player.SteamID, out var inventory))
+        if (PlayerInventories.TryGetValue(player.SteamID, out var inventory))
         {
             return inventory;
         }
