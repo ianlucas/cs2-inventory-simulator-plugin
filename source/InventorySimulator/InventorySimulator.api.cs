@@ -58,7 +58,7 @@ public partial class InventorySimulator
 
     public async void FetchPlayerInventory(ulong steamId, bool force = false)
     {
-        if (!force && PlayerInventories.ContainsKey(steamId))
+        if (!force && InventoryManager.ContainsKey(steamId))
             return;
 
         if (FetchInProgress.Contains(steamId))
@@ -72,7 +72,7 @@ public partial class InventorySimulator
 
         if (playerInventory != null)
         {
-            PlayerInventories.Add(steamId, playerInventory);
+            InventoryManager.Add(steamId, playerInventory);
         }
 
         FetchInProgress.Remove(steamId);

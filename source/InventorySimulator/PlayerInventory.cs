@@ -26,7 +26,7 @@ public partial class InventorySimulator
     {
         try
         {
-            var path = Path.Combine(Server.GameDirectory, InventoriesFilePath);
+            var path = Path.Combine(Server.GameDirectory, InventoryFilePath);
             if (!File.Exists(path))
                 return;
 
@@ -36,8 +36,8 @@ public partial class InventorySimulator
             {
                 foreach (var pair in inventories)
                 {
-                    PlayerInventoryLocks.Add(pair.Key);
-                    PlayerInventories.Add(pair.Key, pair.Value);
+                    LoadedSteamIds.Add(pair.Key);
+                    InventoryManager.Add(pair.Key, pair.Value);
                 }
             }
         }
@@ -50,7 +50,7 @@ public partial class InventorySimulator
     public void PlayerInventoryCleanUp()
     {
         var connected = Utilities.GetPlayers().Select(player => player.SteamID).ToHashSet();
-        var disconnected = PlayerInventories.Keys.Except(connected).ToList();
+        var disconnected = InventoryManager.Keys.Except(connected).ToList();
         foreach (var steamId in disconnected)
         {
             RemovePlayerInventory(steamId);
@@ -59,15 +59,15 @@ public partial class InventorySimulator
 
     public void RemovePlayerInventory(ulong steamId)
     {
-        if (!PlayerInventoryLocks.Contains(steamId))
+        if (!LoadedSteamIds.Contains(steamId))
         {
-            PlayerInventories.Remove(steamId);
+            InventoryManager.Remove(steamId);
         }
     }
 
     public PlayerInventory GetPlayerInventory(CCSPlayerController player)
     {
-        if (PlayerInventories.TryGetValue(player.SteamID, out var inventory))
+        if (InventoryManager.TryGetValue(player.SteamID, out var inventory))
         {
             return inventory;
         }
