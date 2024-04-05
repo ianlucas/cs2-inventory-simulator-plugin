@@ -47,7 +47,7 @@ public partial class InventorySimulator
     {
         // Alright, so the ItemID serves as a global identifier for items. Since we're simulating it, we're
         // using arbitrary large numbers.
-        var itemId = g_ItemId++;
+        var itemId = NextItemId++;
         econItemView.ItemID = itemId;
 
         // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blob/main/game/shared/econ/econ_item_view.h#L313
@@ -57,7 +57,7 @@ public partial class InventorySimulator
 
     public bool IsCustomWeaponItemID(CBasePlayerWeapon weapon)
     {
-        return weapon.AttributeManager.Item.ItemID >= g_MinimumCustomItemID;
+        return weapon.AttributeManager.Item.ItemID >= MinimumCustomItemID;
     }
 
     public void SetPlayerModel(CCSPlayerController player, string model, List<uint>? patches = null)

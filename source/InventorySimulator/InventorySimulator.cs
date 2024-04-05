@@ -23,13 +23,13 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleName => "InventorySimulator";
     public override string ModuleVersion => "1.0.0-beta.16";
 
-    private readonly string g_InventoriesFilePath = "csgo/css_inventories.json";
-    private readonly Dictionary<ulong, PlayerInventory> g_PlayerInventory = new();
-    private readonly HashSet<ulong> g_PlayerInventoryLock = new();
-    private readonly static ulong g_MinimumCustomItemID = 68719476736;
-    private ulong g_ItemId = g_MinimumCustomItemID;
+    private readonly string InventoriesFilePath = "csgo/css_inventories.json";
+    private readonly Dictionary<ulong, PlayerInventory> PlayerInventoryDict = new();
+    private readonly HashSet<ulong> PlayerInventoryLockSet = new();
+    private readonly static ulong MinimumCustomItemID = 68719476736;
+    private ulong NextItemId = MinimumCustomItemID;
 
-    private readonly bool g_IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+    private readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
     public FakeConVar<string> InvSimProtocolCvar = new("css_inventory_simulator_protocol", "Protocol used by Inventory Simulator to consume its API.", "https");
     public FakeConVar<string> InvSimCvar = new("css_inventory_simulator", "Host of Inventory Simulator's API.", "inventory.cstrike.app");
@@ -41,7 +41,7 @@ public partial class InventorySimulator : BasePlugin
     {
         LoadPlayerInventories();
 
-        if (g_IsWindows)
+        if (IsWindows)
         {
             // Since the OnGiveNamedItemPost hook doesn't function reliably on Windows, we've opted to use the
             // OnEntityCreated hook instead. This approach should work adequately for standard game modes. However,

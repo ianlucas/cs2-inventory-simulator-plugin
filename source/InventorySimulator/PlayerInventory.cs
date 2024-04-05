@@ -13,7 +13,7 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public readonly PlayerInventory g_EmptyInventory = new()
+    public readonly PlayerInventory EmptyInventory = new()
     {
         Knives = new(),
         Gloves = new(),
@@ -26,7 +26,7 @@ public partial class InventorySimulator
     {
         try
         {
-            var path = Path.Combine(Server.GameDirectory, g_InventoriesFilePath);
+            var path = Path.Combine(Server.GameDirectory, InventoriesFilePath);
             if (!File.Exists(path))
                 return;
 
@@ -36,8 +36,8 @@ public partial class InventorySimulator
             {
                 foreach (var pair in inventories)
                 {
-                    g_PlayerInventoryLock.Add(pair.Key);
-                    g_PlayerInventory[pair.Key] = pair.Value;
+                    PlayerInventoryLockSet.Add(pair.Key);
+                    PlayerInventoryDict.Add(pair.Key, pair.Value);
                 }
             }
         }
@@ -50,7 +50,7 @@ public partial class InventorySimulator
     public void PlayerInventoryCleanUp()
     {
         var connected = Utilities.GetPlayers().Select(player => player.SteamID).ToHashSet();
-        var disconnected = g_PlayerInventory.Keys.Except(connected).ToList();
+        var disconnected = PlayerInventoryDict.Keys.Except(connected).ToList();
         foreach (var steamId in disconnected)
         {
             RemovePlayerInventory(steamId);
@@ -59,19 +59,19 @@ public partial class InventorySimulator
 
     public void RemovePlayerInventory(ulong steamId)
     {
-        if (!g_PlayerInventoryLock.Contains(steamId))
+        if (!PlayerInventoryLockSet.Contains(steamId))
         {
-            g_PlayerInventory.Remove(steamId);
+            PlayerInventoryDict.Remove(steamId);
         }
     }
 
     public PlayerInventory GetPlayerInventory(CCSPlayerController player)
     {
-        if (g_PlayerInventory.TryGetValue(player.SteamID, out var inventory))
+        if (PlayerInventoryDict.TryGetValue(player.SteamID, out var inventory))
         {
             return inventory;
         }
-        return g_EmptyInventory;
+        return EmptyInventory;
     }
 
     public float ViewAsFloat(int value)

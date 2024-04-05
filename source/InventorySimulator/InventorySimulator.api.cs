@@ -12,7 +12,7 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    private readonly HashSet<ulong> g_FetchInProgress = new();
+    private readonly HashSet<ulong> FetchInProgress = new();
 
     public string GetApiUrl(string uri)
     {
@@ -58,13 +58,13 @@ public partial class InventorySimulator
 
     public async void FetchPlayerInventory(ulong steamId, bool force = false)
     {
-        if (!force && g_PlayerInventory.ContainsKey(steamId))
+        if (!force && PlayerInventoryDict.ContainsKey(steamId))
             return;
 
-        if (g_FetchInProgress.Contains(steamId))
+        if (FetchInProgress.Contains(steamId))
             return;
 
-        g_FetchInProgress.Add(steamId);
+        FetchInProgress.Add(steamId);
 
         var playerInventory = await Fetch<PlayerInventory>(
             $"/api/equipped/v2/{steamId}.json"
@@ -72,10 +72,10 @@ public partial class InventorySimulator
 
         if (playerInventory != null)
         {
-            g_PlayerInventory.Add(steamId, playerInventory);
+            PlayerInventoryDict.Add(steamId, playerInventory);
         }
 
-        g_FetchInProgress.Remove(steamId);
+        FetchInProgress.Remove(steamId);
     }
 
     public async void SendStatTrakIncrease(ulong userId, int targetUid)
