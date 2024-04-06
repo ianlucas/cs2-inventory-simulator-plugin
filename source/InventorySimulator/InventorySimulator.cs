@@ -100,10 +100,11 @@ public partial class InventorySimulator : BasePlugin
         if (!IsPlayerHumanAndValid(player) || !IsPlayerPawnValid(player))
             return HookResult.Continue;
 
-        GivePlayerMusicKit(player);
-        GivePlayerAgent(player);
-        GivePlayerGloves(player);
-        GivePlayerPin(player);
+        var inventory = GetPlayerInventory(player);
+        GivePlayerMusicKit(player, inventory);
+        GivePlayerAgent(player, inventory);
+        GivePlayerGloves(player, inventory);
+        GivePlayerPin(player, inventory);
 
         return HookResult.Continue;
     }

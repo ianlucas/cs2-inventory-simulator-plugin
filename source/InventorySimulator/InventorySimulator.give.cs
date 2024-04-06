@@ -11,21 +11,21 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public void GivePlayerMusicKit(CCSPlayerController player)
+    public void GivePlayerMusicKit(CCSPlayerController player, PlayerInventory inventory)
     {
         if (player.InventoryServices == null) return;
         
-        var musicId = GetPlayerInventory(player).MusicKit;
+        var musicId = inventory.MusicKit;
         if (musicId == null) return;
 
         player.InventoryServices.MusicID = musicId.Value;
     }
 
-    public void GivePlayerPin(CCSPlayerController player)
+    public void GivePlayerPin(CCSPlayerController player, PlayerInventory inventory)
     {
         if (player.InventoryServices == null) return;
 
-        var pin = GetPlayerInventory(player).Pin;
+        var pin = inventory.Pin;
         if (pin == null) return;
 
         for (var index = 0; index < player.InventoryServices.Rank.Length; index++)
@@ -34,7 +34,7 @@ public partial class InventorySimulator
         }
     }
 
-    public void GivePlayerGloves(CCSPlayerController player)
+    public void GivePlayerGloves(CCSPlayerController player, PlayerInventory inventory)
     {
         if (player.PlayerPawn.Value!.Handle == IntPtr.Zero)
         {
@@ -44,7 +44,7 @@ public partial class InventorySimulator
             return;
         }
 
-        if (GetPlayerInventory(player).Gloves.TryGetValue(player.TeamNum, out var item))
+        if (inventory.Gloves.TryGetValue(player.TeamNum, out var item))
         {
             var glove = player.PlayerPawn.Value.EconGloves;
             Server.NextFrame(() =>
@@ -66,7 +66,7 @@ public partial class InventorySimulator
         }
     }
 
-    public void GivePlayerAgent(CCSPlayerController player)
+    public void GivePlayerAgent(CCSPlayerController player, PlayerInventory inventory)
     {
         if (MinModelsCvar.Value > 0)
         {
@@ -81,7 +81,7 @@ public partial class InventorySimulator
             return;
         }
 
-        if (GetPlayerInventory(player).Agents.TryGetValue(player.TeamNum, out var item))
+        if (inventory.Agents.TryGetValue(player.TeamNum, out var item))
         {
             var patches = item.Patches.Count != 5 ? Enumerable.Repeat((uint)0, 5).ToList() : item.Patches;
             SetPlayerModel(player, GetAgentModelPath(item.Model), patches);
