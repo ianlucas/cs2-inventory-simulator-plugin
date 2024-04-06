@@ -153,11 +153,11 @@ public partial class InventorySimulator
         }
     }
 
-    public void GivePlayerStatTrakIncrease(CCSPlayerController attacker, string attackerWeapon, string attackerWeaponItemId)
+    public void GivePlayerStatTrakIncrease(CCSPlayerController player, string designerName, string weaponItemId)
     {
         try
         {
-            var weaponServices = attacker.PlayerPawn.Value!.WeaponServices;
+            var weaponServices = player.PlayerPawn.Value!.WeaponServices;
             if (weaponServices == null || weaponServices.ActiveWeapon == null)
                 return;
 
@@ -168,24 +168,24 @@ public partial class InventorySimulator
             if (!IsCustomWeaponItemID(weapon) || weapon.FallbackStatTrak < 0)
                 return;
 
-            if (weapon.AttributeManager.Item.AccountID != (uint)attacker.SteamID)
+            if (weapon.AttributeManager.Item.AccountID != (uint)player.SteamID)
                 return;
 
-            if (weapon.AttributeManager.Item.ItemID != ulong.Parse(attackerWeaponItemId))
+            if (weapon.AttributeManager.Item.ItemID != ulong.Parse(weaponItemId))
                 return;
 
-            var isKnife = IsKnifeClassName(attackerWeapon);
+            var isKnife = IsKnifeClassName(designerName);
             var newValue = weapon.FallbackStatTrak + 1;
             var def = weapon.AttributeManager.Item.ItemDefinitionIndex;
             weapon.FallbackStatTrak = newValue;
             SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "kill eater", ViewAsFloat(newValue));
             SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "kill eater", ViewAsFloat(newValue));
-            var inventory = GetPlayerInventory(attacker);
-            var item = isKnife ? inventory.GetKnife(attacker.TeamNum) : inventory.GetWeapon(attacker.Team, def);
+            var inventory = GetPlayerInventory(player);
+            var item = isKnife ? inventory.GetKnife(player.TeamNum) : inventory.GetWeapon(player.Team, def);
             if (item != null)
             {
                 item.Stattrak = newValue;
-                SendStatTrakIncrease(attacker.SteamID, item.Uid);
+                SendStatTrakIncrease(player.SteamID, item.Uid);
             }
         } catch
         {
