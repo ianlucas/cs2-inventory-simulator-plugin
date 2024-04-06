@@ -12,14 +12,14 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    private readonly HashSet<ulong> FetchInProgress = new();
+    private readonly HashSet<ulong> FetchingInventory = new();
 
     public string GetApiUrl(string uri)
     {
         return $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}{uri}";
     }
 
-    public async Task<T?> Fetch<T>(string uri)
+    public async Task<T?> Fetch<T>(string uri, bool shouldThrow = false)
     {
         try
         {
@@ -34,6 +34,7 @@ public partial class InventorySimulator
         catch (Exception error)
         {
             Logger.LogError($"GET {uri} failed: {error.Message}");
+            if (shouldThrow) throw;
             return default;
         }
     }
@@ -61,21 +62,32 @@ public partial class InventorySimulator
         if (!force && InventoryManager.ContainsKey(steamId))
             return;
 
-        if (FetchInProgress.Contains(steamId))
+        if (FetchingInventory.Contains(steamId))
             return;
 
-        FetchInProgress.Add(steamId);
+        FetchingInventory.Add(steamId);
 
-        var playerInventory = await Fetch<PlayerInventory>(
-            $"/api/equipped/v2/{steamId}.json"
-        );
-
-        if (playerInventory != null)
+        for (var attempt = 0; attempt < 3; attempt++)
         {
-            InventoryManager.Add(steamId, playerInventory);
-        }
+            try
+            {
+                var playerInventory = await Fetch<PlayerInventory>(
+                    $"/api/equipped/v2/{steamId}.json", true
+                );
 
-        FetchInProgress.Remove(steamId);
+                if (playerInventory != null)
+                {
+                    InventoryManager.Add(steamId, playerInventory);
+                }
+
+                FetchingInventory.Remove(steamId);
+                return;
+            }
+            catch
+            {
+                // Try again to fetch data (up to 3 times).
+            }
+        }
     }
 
     public async void SendStatTrakIncrease(ulong userId, int targetUid)
