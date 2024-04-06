@@ -14,7 +14,7 @@ public partial class InventorySimulator
     public void GivePlayerMusicKit(CCSPlayerController player, PlayerInventory inventory)
     {
         if (player.InventoryServices == null) return;
-        
+
         var musicId = inventory.MusicKit;
         if (musicId == null) return;
 
@@ -54,14 +54,14 @@ public partial class InventorySimulator
                 UpdatePlayerEconItemID(glove);
                 glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
                 glove.AttributeList.Attributes.RemoveAll();
-                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture prefab", item.Paint);
-                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture seed", item.Seed);
-                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes, "set item texture wear", item.Wear);
+                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture prefab", item.Paint);
+                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture seed", item.Seed);
+                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture wear", item.Wear);
                 // We also need to update AttributeList to overwrite owned glove attributes.
-                SetOrAddAttributeValueByName(glove.AttributeList, "set item texture prefab", item.Paint);
-                SetOrAddAttributeValueByName(glove.AttributeList, "set item texture seed", item.Seed);
-                SetOrAddAttributeValueByName(glove.AttributeList, "set item texture wear", item.Wear);
-                SetBodygroup(player, "default_gloves");
+                SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture prefab", item.Paint);
+                SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture seed", item.Seed);
+                SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture wear", item.Wear);
+                SetBodygroup(player.PlayerPawn.Value.Handle, "default_gloves", 1);
             });
         }
     }
@@ -102,11 +102,12 @@ public partial class InventorySimulator
         {
             if (entityDef != item.Def)
             {
-                SubclassChange(weapon, item.Def);
+                ChangeSubclass(weapon.Handle, item.Def.ToString());
             }
             weapon.AttributeManager.Item.ItemDefinitionIndex = item.Def;
             weapon.AttributeManager.Item.EntityQuality = 3;
-        } else
+        }
+        else
         {
             weapon.AttributeManager.Item.EntityQuality = item.Stattrak >= 0 ? 9 : 0;
         }
@@ -120,22 +121,22 @@ public partial class InventorySimulator
         weapon.AttributeManager.Item.AccountID = (uint)player.SteamID;
 
         weapon.AttributeManager.Item.NetworkedDynamicAttributes.Attributes.RemoveAll();
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture prefab", item.Paint);
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture seed", item.Seed);
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "set item texture wear", item.Wear);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "set item texture prefab", item.Paint);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "set item texture seed", item.Seed);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "set item texture wear", item.Wear);
         weapon.AttributeManager.Item.AttributeList.Attributes.RemoveAll();
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "set item texture prefab", item.Paint);
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "set item texture seed", item.Seed);
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "set item texture wear", item.Wear);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "set item texture prefab", item.Paint);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "set item texture seed", item.Seed);
+        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "set item texture wear", item.Wear);
+
         if (item.Stattrak >= 0)
         {
             weapon.FallbackStatTrak = item.Stattrak;
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "kill eater", ViewAsFloat(item.Stattrak));
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "kill eater score type", 0);
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "kill eater", ViewAsFloat(item.Stattrak));
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "kill eater score type", 0);
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "kill eater", ViewAsFloat(item.Stattrak));
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "kill eater score type", 0);
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "kill eater", ViewAsFloat(item.Stattrak));
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "kill eater score type", 0);
         }
-        
 
         if (!isKnife)
         {
@@ -146,8 +147,8 @@ public partial class InventorySimulator
                 // treat a uint as a float. For example, if the uint stickerId is 2229, we would interpret its value as
                 // if it were a float (e.g., float stickerId = 3.12349e-42f).
                 // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blame/main/game/shared/econ/econ_item_view.cpp#L194
-                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {sticker.Slot} id", ViewAsFloat(sticker.Def));
-                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, $"sticker slot {sticker.Slot} wear", sticker.Wear);
+                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, $"sticker slot {sticker.Slot} id", ViewAsFloat(sticker.Def));
+                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, $"sticker slot {sticker.Slot} wear", sticker.Wear);
             }
             UpdatePlayerWeaponMeshGroupMask(player, weapon, item.Legacy);
         }
@@ -178,8 +179,8 @@ public partial class InventorySimulator
             var newValue = weapon.FallbackStatTrak + 1;
             var def = weapon.AttributeManager.Item.ItemDefinitionIndex;
             weapon.FallbackStatTrak = newValue;
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes, "kill eater", ViewAsFloat(newValue));
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList, "kill eater", ViewAsFloat(newValue));
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "kill eater", ViewAsFloat(newValue));
+            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "kill eater", ViewAsFloat(newValue));
             var inventory = GetPlayerInventory(player);
             var item = isKnife ? inventory.GetKnife(player.TeamNum) : inventory.GetWeapon(player.Team, def);
             if (item != null)
@@ -187,7 +188,8 @@ public partial class InventorySimulator
                 item.Stattrak = newValue;
                 SendStatTrakIncrease(player.SteamID, item.Uid);
             }
-        } catch
+        }
+        catch
         {
             // Ignore any errors.
         }
