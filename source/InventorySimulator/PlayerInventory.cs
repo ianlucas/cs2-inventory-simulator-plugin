@@ -13,14 +13,7 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public readonly PlayerInventory EmptyInventory = new()
-    {
-        Knives = new(),
-        Gloves = new(),
-        TWeapons = new(),
-        CTWeapons = new(),
-        Agents = new()
-    };
+    public readonly PlayerInventory EmptyInventory = new();
 
     public void LoadPlayerInventories()
     {
@@ -144,19 +137,19 @@ public class AgentItem
 public class PlayerInventory
 {
     [JsonProperty("knives")]
-    public required Dictionary<byte, WeaponEconItem> Knives { get; set; }
+    public Dictionary<byte, WeaponEconItem> Knives { get; set; } = new();
 
     [JsonProperty("gloves")]
-    public required Dictionary<byte, BaseEconItem> Gloves { get; set; }
+    public Dictionary<byte, BaseEconItem> Gloves { get; set; } = new();
 
     [JsonProperty("tWeapons")]
-    public required Dictionary<ushort, WeaponEconItem> TWeapons { get; set; }
+    public Dictionary<ushort, WeaponEconItem> TWeapons { get; set; } = new();
 
     [JsonProperty("ctWeapons")]
-    public required Dictionary<ushort, WeaponEconItem> CTWeapons { get; set; }
+    public Dictionary<ushort, WeaponEconItem> CTWeapons { get; set; } = new();
 
     [JsonProperty("agents")]
-    public required Dictionary<byte, AgentItem> Agents { get; set; }
+    public Dictionary<byte, AgentItem> Agents { get; set; } = new();
 
     [JsonProperty("pin")]
     public uint? Pin { get; set; }
