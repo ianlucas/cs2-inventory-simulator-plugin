@@ -175,6 +175,9 @@ public partial class InventorySimulator
             if (weapon.AttributeManager.Item.ItemID != ulong.Parse(weaponItemId))
                 return;
 
+            if (weapon.FallbackStatTrak >= 999_999)
+                return;
+
             var isKnife = IsKnifeClassName(designerName);
             var newValue = weapon.FallbackStatTrak + 1;
             var def = weapon.AttributeManager.Item.ItemDefinitionIndex;
