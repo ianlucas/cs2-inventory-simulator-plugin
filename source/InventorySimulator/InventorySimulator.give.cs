@@ -15,8 +15,9 @@ public partial class InventorySimulator
     {
         if (!IsPlayerHumanAndValid(player)) return;
         if (player.InventoryServices == null) return;
-        if (PlayerMusicKit.TryGetValue(player.SteamID, out var musicKit))
+        if (MusicKitManager.TryGetValue(player.SteamID, out var musicKit))
         {
+            // We'll remove this once CounterStrikeSharp updates the schemas to the latest version.
             var extended = new InventorySimulator_CCSPlayerController(player.Handle);
             player.InventoryServices.MusicID = (ushort)musicKit.Def;
             extended.MusicKitID = musicKit.Def;
@@ -201,6 +202,15 @@ public partial class InventorySimulator
         catch
         {
             // Ignore any errors.
+        }
+    }
+
+    public void GivePlayerMusicKitStatTrakIncrease(CCSPlayerController player)
+    {
+        if (MusicKitManager.TryGetValue(player.SteamID, out var musicKit))
+        {
+            musicKit.Stattrak += 1;
+            SendStatTrakIncrease(player.SteamID, musicKit.Uid);
         }
     }
 }

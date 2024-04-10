@@ -13,8 +13,11 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public readonly PlayerInventory EmptyInventory = new();
-    public readonly Dictionary<ulong, MusicKitItem> PlayerMusicKit = new();
+    private readonly string InventoryFilePath = "csgo/css_inventories.json";
+    private readonly Dictionary<ulong, PlayerInventory> InventoryManager = new();
+    private readonly Dictionary<ulong, MusicKitItem> MusicKitManager = new();
+    private readonly HashSet<ulong> LoadedSteamIds = new();
+    private readonly PlayerInventory EmptyInventory = new();
 
     public void LoadPlayerInventories()
     {
@@ -45,8 +48,8 @@ public partial class InventorySimulator
     {
         InventoryManager.Add(steamId, inventory);
         if (inventory.MusicKit != null)
-            PlayerMusicKit.Add(steamId, inventory.MusicKit);
-        else PlayerMusicKit.Remove(steamId);
+            MusicKitManager.Add(steamId, inventory.MusicKit);
+        else MusicKitManager.Remove(steamId);
     }
 
     public void PlayerInventoryCleanUp()
@@ -64,7 +67,7 @@ public partial class InventorySimulator
         if (!LoadedSteamIds.Contains(steamId))
         {
             InventoryManager.Remove(steamId);
-            PlayerMusicKit.Remove(steamId);
+            MusicKitManager.Remove(steamId);
         }
     }
 

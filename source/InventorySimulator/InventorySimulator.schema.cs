@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Modules.Memory;
 
 namespace InventorySimulator;
 
-class InventorySimulator_CCSPlayerController : CBasePlayerController
+class InventorySimulator_CCSPlayerController : NativeObject
 {
     public InventorySimulator_CCSPlayerController(IntPtr pointer) : base(pointer) { }
 

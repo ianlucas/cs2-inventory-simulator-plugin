@@ -23,12 +23,6 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleName => "InventorySimulator";
     public override string ModuleVersion => "1.0.0-beta.18";
 
-    private readonly string InventoryFilePath = "csgo/css_inventories.json";
-    private readonly Dictionary<ulong, PlayerInventory> InventoryManager = new();
-    private readonly HashSet<ulong> LoadedSteamIds = new();
-    private static readonly ulong MinimumCustomItemID = 68719476736;
-    private ulong NextItemId = MinimumCustomItemID;
-
     private readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
     public FakeConVar<string> InvSimProtocolCvar = new("css_inventory_simulator_protocol", "Protocol used by Inventory Simulator to consume its API.", "https");
@@ -46,7 +40,7 @@ public partial class InventorySimulator : BasePlugin
             // Since the OnGiveNamedItemPost hook doesn't function reliably on Windows, we've opted to use the
             // OnEntityCreated hook instead. This approach should work adequately for standard game modes. However,
             // plugins might encounter compatibility issues if they frequently alter items, as observed in the
-            // MatchZy knife round, for example.
+            // MatchZy knife round, for example. (See CounterStrikeSharp#377)
             RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         }
         else
@@ -122,6 +116,18 @@ public partial class InventorySimulator : BasePlugin
             return HookResult.Continue;
 
         GivePlayerWeaponStatTrakIncrease(attacker, @event.Weapon, @event.WeaponItemid);
+
+        return HookResult.Continue;
+    }
+
+    [GameEventHandler(HookMode.Pre)]
+    public HookResult OnRoundMvp(EventRoundMvp @event, GameEventInfo _)
+    {
+        CCSPlayerController? player = @event.Userid;
+        if (!IsPlayerHumanAndValid(player) || !IsPlayerPawnValid(player))
+            return HookResult.Continue;
+
+        GivePlayerMusicKitStatTrakIncrease(player);
 
         return HookResult.Continue;
     }
