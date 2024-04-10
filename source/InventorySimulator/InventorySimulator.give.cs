@@ -11,14 +11,18 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public void GivePlayerMusicKit(CCSPlayerController player, PlayerInventory inventory)
+    public void GivePlayerMusicKit(CCSPlayerController player)
     {
+        if (!IsPlayerHumanAndValid(player)) return;
         if (player.InventoryServices == null) return;
-
-        var musicId = inventory.MusicKit;
-        if (musicId == null) return;
-
-        player.InventoryServices.MusicID = musicId.Value;
+        if (PlayerMusicKit.TryGetValue(player.SteamID, out var musicKit))
+        {
+            var extended = new InventorySimulator_CCSPlayerController(player.Handle);
+            player.InventoryServices.MusicID = (ushort)musicKit;
+            extended.MusicKitID = musicKit;
+            // @TODO: Add support to MusicKit MVP increment.
+            // extended.MusicKitMVPs = 0;
+        }
     }
 
     public void GivePlayerPin(CCSPlayerController player, PlayerInventory inventory)

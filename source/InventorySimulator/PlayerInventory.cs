@@ -14,6 +14,7 @@ namespace InventorySimulator;
 public partial class InventorySimulator
 {
     public readonly PlayerInventory EmptyInventory = new();
+    public readonly Dictionary<ulong, int> PlayerMusicKit = new();
 
     public void LoadPlayerInventories()
     {
@@ -30,7 +31,7 @@ public partial class InventorySimulator
                 foreach (var pair in inventories)
                 {
                     LoadedSteamIds.Add(pair.Key);
-                    InventoryManager.Add(pair.Key, pair.Value);
+                    AddPlayerInventory(pair.Key, pair.Value);
                 }
             }
         }
@@ -38,6 +39,14 @@ public partial class InventorySimulator
         {
             // Ignore any error.
         }
+    }
+
+    public void AddPlayerInventory(ulong steamId, PlayerInventory inventory)
+    {
+        InventoryManager.Add(steamId, inventory);
+        if (inventory.MusicKit != null)
+            PlayerMusicKit.Add(steamId, inventory.MusicKit.Value);
+        else PlayerMusicKit.Remove(steamId);
     }
 
     public void PlayerInventoryCleanUp()
@@ -55,6 +64,7 @@ public partial class InventorySimulator
         if (!LoadedSteamIds.Contains(steamId))
         {
             InventoryManager.Remove(steamId);
+            PlayerMusicKit.Remove(steamId);
         }
     }
 

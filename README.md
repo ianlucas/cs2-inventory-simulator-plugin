@@ -20,6 +20,7 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 ## Feature Roadmap
 
+- Music Kit StatTrak increment
 - ⛔ Graffiti
 
 > [!IMPORTANT]  
@@ -61,7 +62,7 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 * **Default:** `0`
 * **Values:**
 	- `0` - All agents allowed.
-	- `1` - Default agents for the current map. **Note:** Currently the same as `2` as Valve has not yet added them back.
+	- `1` - Default agents for the current map. **Note:** Same as `2` as Valve has not yet added them back.
 	- `2` - Only SAS and Phoenix agents allowed.
 
 ### Commands?
@@ -70,7 +71,8 @@ Not at the moment. I'm considering adding a command for refreshing the inventory
 
 ### Known Issues
 
-* MVP theme does not play for music kits.
+* ~~MVP theme does not play for music kits.~~ (Fixed?)
+* Agent voices inconsistencies. (e.g. Ava with male voice)
 
 ## See also
 

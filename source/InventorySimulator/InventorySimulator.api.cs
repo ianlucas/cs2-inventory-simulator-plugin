@@ -77,7 +77,7 @@ public partial class InventorySimulator
 
                 if (playerInventory != null)
                 {
-                    InventoryManager.Add(steamId, playerInventory);
+                    AddPlayerInventory(steamId, playerInventory);
                 }
 
                 FetchingInventory.Remove(steamId);

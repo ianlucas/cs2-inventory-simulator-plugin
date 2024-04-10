@@ -65,6 +65,8 @@ public partial class InventorySimulator : BasePlugin
             // have changed a weapon entity to avoid changing its attributes again.
             RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         }
+
+        RegisterListener<Listeners.OnTick>(OnTick);
     }
 
     [GameEventHandler]
@@ -101,7 +103,6 @@ public partial class InventorySimulator : BasePlugin
             return HookResult.Continue;
 
         var inventory = GetPlayerInventory(player);
-        GivePlayerMusicKit(player, inventory);
         GivePlayerAgent(player, inventory);
         GivePlayerGloves(player, inventory);
         GivePlayerPin(player, inventory);
@@ -137,6 +138,15 @@ public partial class InventorySimulator : BasePlugin
         PlayerInventoryCleanUp();
 
         return HookResult.Continue;
+    }
+
+    public void OnTick()
+    {
+        // Those familiar with the proper method of modification might find amusement in our temporary fix and
+        // workaround, which appears to be effective. (However, we're uncertain whether other players can hear
+        // the MVP sound, which needs verification.)
+        foreach (var player in Utilities.GetPlayers())
+            GivePlayerMusicKit(player);
     }
 
     public void OnEntityCreated(CEntityInstance entity)
