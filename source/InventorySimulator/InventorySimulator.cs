@@ -121,7 +121,7 @@ public partial class InventorySimulator : BasePlugin
         if ((StatTrakIgnoreBotsCvar.Value ? !IsPlayerHumanAndValid(victim) : !IsPlayerValid(victim)) || !IsPlayerPawnValid(victim))
             return HookResult.Continue;
 
-        GivePlayerStatTrakIncrease(attacker, @event.Weapon, @event.WeaponItemid);
+        GivePlayerWeaponStatTrakIncrease(attacker, @event.Weapon, @event.WeaponItemid);
 
         return HookResult.Continue;
     }

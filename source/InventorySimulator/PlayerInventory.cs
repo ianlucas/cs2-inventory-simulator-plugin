@@ -14,7 +14,7 @@ namespace InventorySimulator;
 public partial class InventorySimulator
 {
     public readonly PlayerInventory EmptyInventory = new();
-    public readonly Dictionary<ulong, int> PlayerMusicKit = new();
+    public readonly Dictionary<ulong, MusicKitItem> PlayerMusicKit = new();
 
     public void LoadPlayerInventories()
     {
@@ -45,7 +45,7 @@ public partial class InventorySimulator
     {
         InventoryManager.Add(steamId, inventory);
         if (inventory.MusicKit != null)
-            PlayerMusicKit.Add(steamId, inventory.MusicKit.Value);
+            PlayerMusicKit.Add(steamId, inventory.MusicKit);
         else PlayerMusicKit.Remove(steamId);
     }
 
@@ -144,6 +144,18 @@ public class AgentItem
     public required List<uint> Patches { get; set; }
 }
 
+public class MusicKitItem
+{
+    [JsonProperty("def")]
+    public int Def { get; set; }
+
+    [JsonProperty("stattrak")]
+    public required int Stattrak { get; set; }
+
+    [JsonProperty("uid")]
+    public required int Uid { get; set; }
+}
+
 public class PlayerInventory
 {
     [JsonProperty("knives")]
@@ -165,7 +177,7 @@ public class PlayerInventory
     public uint? Pin { get; set; }
 
     [JsonProperty("musicKit")]
-    public ushort? MusicKit { get; set; }
+    public MusicKitItem? MusicKit { get; set; }
 
     [JsonConstructor]
     public PlayerInventory(
@@ -175,7 +187,7 @@ public class PlayerInventory
         Dictionary<ushort, WeaponEconItem>? ctWeapons = null,
         Dictionary<byte, AgentItem>? agents = null,
         uint? pin = null,
-        ushort? musicKit = null)
+        MusicKitItem? musicKit = null)
     {
         Knives = knives ?? new();
         Gloves = gloves ?? new();

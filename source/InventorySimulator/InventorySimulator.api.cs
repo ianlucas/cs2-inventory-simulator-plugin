@@ -72,7 +72,7 @@ public partial class InventorySimulator
             try
             {
                 var playerInventory = await Fetch<PlayerInventory>(
-                    $"/api/equipped/v2/{steamId}.json", true
+                    $"/api/equipped/v3/{steamId}.json", true
                 );
 
                 if (playerInventory != null)

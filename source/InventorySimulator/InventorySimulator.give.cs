@@ -18,10 +18,9 @@ public partial class InventorySimulator
         if (PlayerMusicKit.TryGetValue(player.SteamID, out var musicKit))
         {
             var extended = new InventorySimulator_CCSPlayerController(player.Handle);
-            player.InventoryServices.MusicID = (ushort)musicKit;
-            extended.MusicKitID = musicKit;
-            // @TODO: Add support to MusicKit MVP increment.
-            // extended.MusicKitMVPs = 0;
+            player.InventoryServices.MusicID = (ushort)musicKit.Def;
+            extended.MusicKitID = musicKit.Def;
+            extended.MusicKitMVPs = musicKit.Stattrak;
         }
     }
 
@@ -158,7 +157,10 @@ public partial class InventorySimulator
         }
     }
 
-    public void GivePlayerStatTrakIncrease(CCSPlayerController player, string designerName, string weaponItemId)
+    public void GivePlayerWeaponStatTrakIncrease(
+        CCSPlayerController player,
+        string designerName,
+        string weaponItemId)
     {
         try
         {
