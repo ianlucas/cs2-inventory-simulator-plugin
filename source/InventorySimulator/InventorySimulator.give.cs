@@ -56,15 +56,17 @@ public partial class InventorySimulator
                 glove.Initialized = true;
                 glove.ItemDefinitionIndex = item.Def;
                 UpdatePlayerEconItemID(glove);
+
                 glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
-                glove.AttributeList.Attributes.RemoveAll();
                 SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture prefab", item.Paint);
                 SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture seed", item.Seed);
                 SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture wear", item.Wear);
-                // We also need to update AttributeList to overwrite owned glove attributes.
+                
+                glove.AttributeList.Attributes.RemoveAll();
                 SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture prefab", item.Paint);
                 SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture seed", item.Seed);
                 SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture wear", item.Wear);
+
                 SetBodygroup(player.PlayerPawn.Value.Handle, "default_gloves", 1);
             });
         }
@@ -128,6 +130,7 @@ public partial class InventorySimulator
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "set item texture prefab", item.Paint);
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "set item texture seed", item.Seed);
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "set item texture wear", item.Wear);
+
         weapon.AttributeManager.Item.AttributeList.Attributes.RemoveAll();
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "set item texture prefab", item.Paint);
         SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "set item texture seed", item.Seed);
