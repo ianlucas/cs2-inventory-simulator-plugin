@@ -146,6 +146,9 @@ public class AgentItem
     [JsonProperty("patches")]
     public required List<uint> Patches { get; set; }
 
+    [JsonProperty("vofallback")]
+    public required bool VoFallback { get; set; }
+
     [JsonProperty("vofemale")]
     public required bool VoFemale { get; set; }
 

@@ -61,7 +61,7 @@ public partial class InventorySimulator
                 SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture prefab", item.Paint);
                 SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture seed", item.Seed);
                 SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture wear", item.Wear);
-                
+
                 glove.AttributeList.Attributes.RemoveAll();
                 SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture prefab", item.Paint);
                 SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture seed", item.Seed);
@@ -79,10 +79,10 @@ public partial class InventorySimulator
             // For now any value non-zero will force SAS & Phoenix.
             // In the future: 1 - Map agents only, 2 - SAS & Phoenix.
             if (player.Team == CsTeam.Terrorist)
-                SetPlayerModel(player, "characters/models/tm_phoenix/tm_phoenix.vmdl", "phoenix", false);
+                SetPlayerModel(player, "characters/models/tm_phoenix/tm_phoenix.vmdl");
 
             if (player.Team == CsTeam.CounterTerrorist)
-                SetPlayerModel(player, "characters/models/ctm_sas/ctm_sas.vmdl", "sas", false);
+                SetPlayerModel(player, "characters/models/ctm_sas/ctm_sas.vmdl");
 
             return;
         }
@@ -90,7 +90,7 @@ public partial class InventorySimulator
         if (inventory.Agents.TryGetValue(player.TeamNum, out var item))
         {
             var patches = item.Patches.Count != 5 ? Enumerable.Repeat((uint)0, 5).ToList() : item.Patches;
-            SetPlayerModel(player, GetAgentModelPath(item.Model), item.VoPrefix, item.VoFemale, patches);
+            SetPlayerModel(player, GetAgentModelPath(item.Model), item.VoFallback, item.VoPrefix, item.VoFemale, patches);
         }
     }
 
