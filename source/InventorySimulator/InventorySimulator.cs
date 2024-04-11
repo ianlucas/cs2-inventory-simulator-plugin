@@ -21,7 +21,7 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleAuthor => "Ian Lucas";
     public override string ModuleDescription => "Inventory Simulator (inventory.cstrike.app)";
     public override string ModuleName => "InventorySimulator";
-    public override string ModuleVersion => "1.0.0-beta.18";
+    public override string ModuleVersion => "1.0.0-beta.19";
 
     private readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
