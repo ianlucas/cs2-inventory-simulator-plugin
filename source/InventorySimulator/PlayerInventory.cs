@@ -145,6 +145,12 @@ public class AgentItem
 
     [JsonProperty("patches")]
     public required List<uint> Patches { get; set; }
+
+    [JsonProperty("vofemale")]
+    public required bool VoFemale { get; set; }
+
+    [JsonProperty("voprefix")]
+    public required string VoPrefix { get; set; }
 }
 
 public class MusicKitItem

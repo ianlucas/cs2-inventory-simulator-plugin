@@ -79,10 +79,10 @@ public partial class InventorySimulator
             // For now any value non-zero will force SAS & Phoenix.
             // In the future: 1 - Map agents only, 2 - SAS & Phoenix.
             if (player.Team == CsTeam.Terrorist)
-                SetPlayerModel(player, "characters/models/tm_phoenix/tm_phoenix.vmdl");
+                SetPlayerModel(player, "characters/models/tm_phoenix/tm_phoenix.vmdl", "phoenix", false);
 
             if (player.Team == CsTeam.CounterTerrorist)
-                SetPlayerModel(player, "characters/models/ctm_sas/ctm_sas.vmdl");
+                SetPlayerModel(player, "characters/models/ctm_sas/ctm_sas.vmdl", "sas", false);
 
             return;
         }
@@ -90,7 +90,7 @@ public partial class InventorySimulator
         if (inventory.Agents.TryGetValue(player.TeamNum, out var item))
         {
             var patches = item.Patches.Count != 5 ? Enumerable.Repeat((uint)0, 5).ToList() : item.Patches;
-            SetPlayerModel(player, GetAgentModelPath(item.Model), patches);
+            SetPlayerModel(player, GetAgentModelPath(item.Model), item.VoPrefix, item.VoFemale, patches);
         }
     }
 
