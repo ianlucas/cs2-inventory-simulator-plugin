@@ -20,8 +20,4 @@ class InventorySimulator_CCSPlayerController : NativeObject
     // m_iMusicKitMVPs
     [SchemaMember("CCSPlayerController", "m_iMusicKitMVPs")]
     public ref Int32 MusicKitMVPs => ref Schema.GetRef<Int32>(this.Handle, "CCSPlayerController", "m_iMusicKitMVPs");
-
-    // m_iMVPs
-    [SchemaMember("CCSPlayerController", "m_iMVPs")]
-    public ref Int32 MVPs => ref Schema.GetRef<Int32>(this.Handle, "CCSPlayerController", "m_iMVPs");
 }
