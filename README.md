@@ -39,13 +39,13 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 #### `css_inventory_simulator` ConVar
 
-* Host of Inventory Simulator's API.
+* Inventory Simulator API's domain.
 * **Type:** `string`
 * **Default:** `inventory.cstrike.app`
 
 #### `css_inventory_simulator_apikey` ConVar
 
-* API Key for Inventory Simulator.
+* Inventory Simulator API's key.
 * **Type:** `string`
 * **Default:** _empty_
 

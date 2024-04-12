@@ -6,11 +6,15 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Cvars.Validators;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
+    public FakeConVar<int> MinModelsCvar = new("css_minmodels", "Limits the number of custom models allowed in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
+
     public void GivePlayerMusicKit(CCSPlayerController player)
     {
         if (!IsPlayerHumanAndValid(player)) return;

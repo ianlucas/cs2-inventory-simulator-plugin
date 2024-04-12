@@ -10,8 +10,8 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    private static readonly ulong MinimumCustomItemID = 68719476736;
-    private ulong NextItemId = MinimumCustomItemID;
+    public static readonly ulong MinimumCustomItemID = 68719476736;
+    public ulong NextItemId = MinimumCustomItemID;
 
     public void UpdateWeaponMeshGroupMask(CBaseEntity weapon, bool isLegacy)
     {

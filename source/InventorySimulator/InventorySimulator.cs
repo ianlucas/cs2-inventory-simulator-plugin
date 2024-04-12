@@ -6,7 +6,6 @@
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Cvars.Validators;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Memory;
@@ -23,13 +22,9 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleName => "InventorySimulator";
     public override string ModuleVersion => "1.0.0-beta.19";
 
-    private readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-
-    public FakeConVar<string> InvSimProtocolCvar = new("css_inventory_simulator_protocol", "Protocol used by Inventory Simulator to consume its API.", "https");
-    public FakeConVar<string> InvSimCvar = new("css_inventory_simulator", "Host of Inventory Simulator's API.", "inventory.cstrike.app");
-    public FakeConVar<string> InvSimApiKeyCvar = new("css_inventory_simulator_apikey", "API Key for Inventory Simulator.", "");
-    public FakeConVar<bool> StatTrakIgnoreBotsCvar = new("css_stattrak_ignore_bots", "Determines whether to ignore StatTrak increments for bot kills.", true);
-    public FakeConVar<int> MinModelsCvar = new("css_minmodels", "Limits the number of custom models allowed in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
+    public readonly FakeConVar<bool> StatTrakIgnoreBotsCvar = new("css_stattrak_ignore_bots", "Determines whether to ignore StatTrak increments for bot kills.", true);
+    
+    public readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
     public override void Load(bool hotReload)
     {

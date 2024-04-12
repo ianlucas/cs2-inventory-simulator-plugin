@@ -13,11 +13,11 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    private readonly string InventoryFilePath = "csgo/css_inventories.json";
-    private readonly Dictionary<ulong, PlayerInventory> InventoryManager = new();
-    private readonly Dictionary<ulong, MusicKitItem> MusicKitManager = new();
-    private readonly HashSet<ulong> LoadedSteamIds = new();
-    private readonly PlayerInventory EmptyInventory = new();
+    public readonly string InventoryFilePath = "csgo/css_inventories.json";
+    public readonly Dictionary<ulong, PlayerInventory> InventoryManager = new();
+    public readonly Dictionary<ulong, MusicKitItem> MusicKitManager = new();
+    public readonly HashSet<ulong> LoadedSteamIds = new();
+    public readonly PlayerInventory EmptyInventory = new();
 
     public void LoadPlayerInventories()
     {
