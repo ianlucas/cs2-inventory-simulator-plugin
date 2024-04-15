@@ -21,11 +21,9 @@ public partial class InventorySimulator
         if (player.InventoryServices == null) return;
         if (MusicKitManager.TryGetValue(player.SteamID, out var musicKit))
         {
-            // We'll remove this once CounterStrikeSharp updates the schemas to the latest version.
-            var extended = new InventorySimulator_CCSPlayerController(player.Handle);
             player.InventoryServices.MusicID = (ushort)musicKit.Def;
-            extended.MusicKitID = musicKit.Def;
-            extended.MusicKitMVPs = musicKit.Stattrak;
+            player.MusicKitID = musicKit.Def;
+            player.MusicKitMVPs = musicKit.Stattrak;
         }
     }
 
