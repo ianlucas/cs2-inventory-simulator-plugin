@@ -52,7 +52,7 @@ public partial class InventorySimulator
         else MusicKitManager.Remove(steamId);
     }
 
-    public void PlayerInventoryCleanUp()
+    public void ClearInventoryManager()
     {
         var connected = Utilities.GetPlayers().Select(player => player.SteamID).ToHashSet();
         var disconnected = InventoryManager.Keys.Except(connected).ToList();

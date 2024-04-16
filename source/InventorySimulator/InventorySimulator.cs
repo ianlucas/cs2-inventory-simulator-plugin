@@ -134,9 +134,8 @@ public partial class InventorySimulator : BasePlugin
         if (IsPlayerHumanAndValid(player))
         {
             RemovePlayerInventory(player.SteamID);
+            ClearInventoryManager();
         }
-
-        PlayerInventoryCleanUp();
 
         return HookResult.Continue;
     }
