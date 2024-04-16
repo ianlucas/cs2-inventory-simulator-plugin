@@ -6,8 +6,11 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InventorySimulator;
 
@@ -40,7 +43,7 @@ public partial class InventorySimulator
         }
         catch
         {
-            // Ignore any error.
+            Logger.LogError($"Error when processing \"css_inventories.json\".");
         }
     }
 
