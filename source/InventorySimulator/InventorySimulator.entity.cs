@@ -75,7 +75,7 @@ public partial class InventorySimulator
                         player.PlayerPawn.Value!.PlayerPatchEconIndices[index] = patches[index];
                     }
                 }
-                if (!voFallback)
+                if (!IsWindows && !voFallback)
                 {
                     player.PlayerPawn.Value!.StrVOPrefix = voPrefix;
                     player.PlayerPawn.Value.HasFemaleVoice = voFemale;
