@@ -72,7 +72,7 @@ Not at the moment. I'm considering adding a command for refreshing the inventory
 ### Known Issues
 
 * ~~MVP theme does not play for music kits.~~ (Fixed?)
-* ~~Agent voices inconsistencies. (e.g. Ava with male voice)~~ (Fixed?)
+* Agent voices inconsistencies. (e.g. Ava with male voice.) (Windows-only)
 
 ## See also
 
