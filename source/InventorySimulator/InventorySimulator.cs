@@ -14,13 +14,13 @@ using System.Runtime.InteropServices;
 
 namespace InventorySimulator;
 
-[MinimumApiVersion(211)]
+[MinimumApiVersion(215)]
 public partial class InventorySimulator : BasePlugin
 {
     public override string ModuleAuthor => "Ian Lucas";
     public override string ModuleDescription => "Inventory Simulator (inventory.cstrike.app)";
     public override string ModuleName => "InventorySimulator";
-    public override string ModuleVersion => "1.0.0-beta.21";
+    public override string ModuleVersion => "1.0.0-beta.22";
 
     public readonly FakeConVar<bool> StatTrakIgnoreBotsCvar = new("css_stattrak_ignore_bots", "Determines whether to ignore StatTrak increments for bot kills.", true);
     
