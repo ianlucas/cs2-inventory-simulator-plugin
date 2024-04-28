@@ -19,7 +19,7 @@ public partial class InventorySimulator
 
     public readonly HashSet<ulong> FetchingInventory = new();
 
-    public string GetApiUrlOrigin(string pathname)
+    public string GetApiUrl(string pathname)
     {
         return $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}{pathname}";
     }
@@ -29,7 +29,7 @@ public partial class InventorySimulator
         try
         {
             using HttpClient client = new();
-            var response = await client.GetAsync(GetApiUrlOrigin(pathname));
+            var response = await client.GetAsync(GetApiUrl(pathname));
             response.EnsureSuccessStatusCode();
 
             string jsonContent = response.Content.ReadAsStringAsync().Result;
@@ -51,7 +51,7 @@ public partial class InventorySimulator
             var json = JsonConvert.SerializeObject(data);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             using HttpClient client = new();
-            var response = await client.PostAsync(GetApiUrlOrigin(pathname), content);
+            var response = await client.PostAsync(GetApiUrl(pathname), content);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
                 Logger.LogError($"POST {pathname} failed, check your css_inventory_simulator_apikey's value.");
