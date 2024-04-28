@@ -15,7 +15,7 @@ public partial class InventorySimulator
 
     public void UpdateWeaponMeshGroupMask(CBaseEntity weapon, bool isLegacy)
     {
-        if (weapon.CBodyComponent != null && weapon.CBodyComponent.SceneNode != null)
+        if (weapon.CBodyComponent?.SceneNode != null)
         {
             var skeleton = weapon.CBodyComponent.SceneNode.GetSkeletonInstance();
             if (skeleton != null)
@@ -38,7 +38,7 @@ public partial class InventorySimulator
 
         // 2. If the current view model is displaying it, ensure that it has the correct MeshGroupMask.
         var viewModel = GetPlayerViewModel(player);
-        if (viewModel != null && viewModel.Weapon.Value != null && viewModel.Weapon.Value.Index == weapon.Index)
+        if (viewModel?.Weapon.Value != null && viewModel.Weapon.Value.Index == weapon.Index)
         {
             UpdateWeaponMeshGroupMask(viewModel, isLegacy);
             Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
@@ -52,7 +52,7 @@ public partial class InventorySimulator
         var itemId = NextItemId++;
         econItemView.ItemID = itemId;
 
-        // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blob/main/game/shared/econ/econ_item_view.h#L313
+        // See: https://gitlab.com/KittenPopo/csgo-2018-source/-/blob/main/game/shared/econ/econ_item_view.h#L313
         econItemView.ItemIDLow = (uint)itemId & 0xFFFFFFFF;
         econItemView.ItemIDHigh = (uint)itemId >> 32;
     }
@@ -62,25 +62,32 @@ public partial class InventorySimulator
         return weapon.AttributeManager.Item.ItemID >= MinimumCustomItemID;
     }
 
-    public void SetPlayerModel(CCSPlayerController player, string model, bool voFallback = true, string voPrefix = "", bool voFemale = false, List<uint>? patches = null)
+    public void SetPlayerModel(
+        CCSPlayerController player,
+        string model,
+        bool voFallback = true,
+        string voPrefix = "",
+        bool voFemale = false,
+        List<uint>? patches = null)
     {
         try
         {
             Server.NextFrame(() =>
             {
+                var pawn = player.PlayerPawn.Value!;
                 if (patches != null && patches.Count == 5)
                 {
                     for (var index = 0; index < patches.Count; index++)
                     {
-                        player.PlayerPawn.Value!.PlayerPatchEconIndices[index] = patches[index];
+                        pawn.PlayerPatchEconIndices[index] = patches[index];
                     }
                 }
                 if (!IsWindows && !voFallback)
                 {
-                    player.PlayerPawn.Value!.StrVOPrefix = voPrefix;
-                    player.PlayerPawn.Value.HasFemaleVoice = voFemale;
+                    pawn.StrVOPrefix = voPrefix;
+                    pawn.HasFemaleVoice = voFemale;
                 }
-                player.PlayerPawn.Value!.SetModel(model);
+                pawn.SetModel(model);
             });
         }
         catch
@@ -92,9 +99,13 @@ public partial class InventorySimulator
     public CCSPlayerController? GetPlayerFromItemServices(CCSPlayer_ItemServices itemServices)
     {
         var pawn = itemServices.Pawn.Value;
-        if (pawn == null || !pawn.IsValid || !pawn.Controller.IsValid || pawn.Controller.Value == null) return null;
+        if (!pawn.IsValid || !pawn.Controller.IsValid || pawn.Controller.Value == null)
+            return null;
+
         var player = new CCSPlayerController(pawn.Controller.Value.Handle);
-        if (!IsPlayerHumanAndValid(player)) return null;
+        if (!IsPlayerHumanAndValid(player))
+            return null;
+
         return player;
     }
 
@@ -110,6 +121,6 @@ public partial class InventorySimulator
 
     public bool IsPlayerPawnValid(CCSPlayerController player)
     {
-        return player.PlayerPawn != null && player.PlayerPawn.Value != null && player.PlayerPawn.IsValid;
+        return player.PlayerPawn?.Value != null && player.PlayerPawn.IsValid;
     }
 }

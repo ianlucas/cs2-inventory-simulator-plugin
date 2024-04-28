@@ -23,45 +23,28 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleVersion => "1.0.0-beta.22";
 
     public readonly FakeConVar<bool> StatTrakIgnoreBotsCvar = new("css_stattrak_ignore_bots", "Determines whether to ignore StatTrak increments for bot kills.", true);
-    
+
     public readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
     public override void Load(bool hotReload)
     {
         LoadPlayerInventories();
 
-        if (IsWindows)
+        if (!IsWindows)
         {
-            // Since the OnGiveNamedItemPost hook doesn't function reliably on Windows, we've opted to use the
-            // OnEntityCreated hook instead. This approach should work adequately for standard game modes. However,
-            // plugins might encounter compatibility issues if they frequently alter items, as observed in the
-            // MatchZy knife round, for example. (See CounterStrikeSharp#377)
-            RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
-        }
-        else
-        {
-            // Using the GiveNamedItem Post hook remains the optimal choice for updating an item's attributes, as
-            // using OnEntityCreated or OnEntitySpawned would necessitate calling Server.NextFrame, potentially
-            // leading to timing problems similar to those seen in MatchZy's knife round. However, it's worth
-            // noting that CounterStrikeSharp's DynamicHooks appears to have significant bugs on Windows. This
-            // issue may be related to quirks in the GiveNamedItem implementation on Windows, as initially observed
-            // with the inability to give knives on Windows compared to Linux, where the same function works as
-            // expected. Therefore, Linux is likely to offer better compatibility with other plugins.
+            // GiveNamedItemFunc hooking is not working on Windows due an issue with CounterStrikeSharp's
+            // DynamicHooks. See: https://github.com/roflmuffin/CounterStrikeSharp/issues/377
             VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
-
-            // We also hook into OnEntityCreated for cases where the plugin does not trigger the GiveNamedItem hook
-            // (e.g., CS2 Retakes). Most of the time, GiveNamedItem will be called first, and we will know that we
-            // have changed a weapon entity to avoid changing its attributes again.
-            RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         }
 
+        RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         RegisterListener<Listeners.OnTick>(OnTick);
     }
 
     [GameEventHandler]
     public HookResult OnPlayerConnect(EventPlayerConnect @event, GameEventInfo _)
     {
-        CCSPlayerController? player = @event.Userid;
+        var player = @event.Userid;
         if (!IsPlayerHumanAndValid(player))
             return HookResult.Continue;
 
@@ -74,7 +57,7 @@ public partial class InventorySimulator : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo _)
     {
-        CCSPlayerController? player = @event.Userid;
+        var player = @event.Userid;
         if (!IsPlayerHumanAndValid(player))
             return HookResult.Continue;
 
@@ -87,7 +70,7 @@ public partial class InventorySimulator : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo _)
     {
-        CCSPlayerController? player = @event.Userid;
+        var player = @event.Userid;
         if (!IsPlayerHumanAndValid(player) || !IsPlayerPawnValid(player))
             return HookResult.Continue;
 
@@ -102,11 +85,11 @@ public partial class InventorySimulator : BasePlugin
     [GameEventHandler(HookMode.Pre)]
     public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo _)
     {
-        CCSPlayerController? attacker = @event.Attacker;
+        var attacker = @event.Attacker;
         if (!IsPlayerHumanAndValid(attacker) || !IsPlayerPawnValid(attacker))
             return HookResult.Continue;
 
-        CCSPlayerController? victim = @event.Userid;
+        var victim = @event.Userid;
         if ((StatTrakIgnoreBotsCvar.Value ? !IsPlayerHumanAndValid(victim) : !IsPlayerValid(victim)) || !IsPlayerPawnValid(victim))
             return HookResult.Continue;
 
@@ -118,7 +101,7 @@ public partial class InventorySimulator : BasePlugin
     [GameEventHandler(HookMode.Pre)]
     public HookResult OnRoundMvp(EventRoundMvp @event, GameEventInfo _)
     {
-        CCSPlayerController? player = @event.Userid;
+        var player = @event.Userid;
         if (!IsPlayerHumanAndValid(player) || !IsPlayerPawnValid(player))
             return HookResult.Continue;
 
@@ -130,7 +113,7 @@ public partial class InventorySimulator : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo _)
     {
-        CCSPlayerController? player = @event.Userid;
+        var player = @event.Userid;
         if (IsPlayerHumanAndValid(player))
         {
             RemovePlayerInventory(player.SteamID);
@@ -142,9 +125,9 @@ public partial class InventorySimulator : BasePlugin
 
     public void OnTick()
     {
-        // Those familiar with the proper method of modification might find amusement in our temporary fix and
-        // workaround, which appears to be effective. (However, we're uncertain whether other players can hear
-        // the MVP sound, which needs verification.)
+        // According to @bklol the right way to change the Music Kit is to update the player's inventory, I'm
+        // pretty sure that's the best way to change anything inventory-related, but that's not something
+        // public and we brute force the setting of the Music Kit here.
         foreach (var player in Utilities.GetPlayers())
             GivePlayerMusicKit(player);
     }
@@ -152,7 +135,6 @@ public partial class InventorySimulator : BasePlugin
     public void OnEntityCreated(CEntityInstance entity)
     {
         var designerName = entity.DesignerName;
-
         if (designerName.Contains("weapon"))
         {
             Server.NextFrame(() =>
@@ -179,9 +161,7 @@ public partial class InventorySimulator : BasePlugin
         var player = GetPlayerFromItemServices(itemServices);
 
         if (player != null)
-        {
             GivePlayerWeaponSkin(player, weapon);
-        }
 
         return HookResult.Continue;
     }

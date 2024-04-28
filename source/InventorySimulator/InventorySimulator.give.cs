@@ -42,7 +42,8 @@ public partial class InventorySimulator
 
     public void GivePlayerGloves(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (player.PlayerPawn.Value!.Handle == IntPtr.Zero)
+        var pawn = player.PlayerPawn.Value!;
+        if (pawn.Handle == IntPtr.Zero)
         {
             // Some plugin or specific game scenario is throwing exceptions at this point whenever we try to access
             // any member from the Player Pawn. We perform the actual check that triggers the exception. (I've
@@ -52,7 +53,7 @@ public partial class InventorySimulator
 
         if (inventory.Gloves.TryGetValue(player.TeamNum, out var item))
         {
-            var glove = player.PlayerPawn.Value.EconGloves;
+            var glove = pawn.EconGloves;
             Server.NextFrame(() =>
             {
                 glove.Initialized = true;
@@ -69,7 +70,7 @@ public partial class InventorySimulator
                 SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture seed", item.Seed);
                 SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture wear", item.Wear);
 
-                SetBodygroup(player.PlayerPawn.Value.Handle, "default_gloves", 1);
+                SetBodygroup(pawn.Handle, "default_gloves", 1);
             });
         }
     }
@@ -171,10 +172,10 @@ public partial class InventorySimulator
         try
         {
             var weaponServices = player.PlayerPawn.Value!.WeaponServices;
-            if (weaponServices == null || weaponServices.ActiveWeapon == null)
+            if (weaponServices?.ActiveWeapon.Value == null)
                 return;
 
-            if (weaponServices.ActiveWeapon.Value == null || !weaponServices.ActiveWeapon.IsValid)
+            if (!weaponServices.ActiveWeapon.IsValid)
                 return;
 
             var weapon = weaponServices.ActiveWeapon.Value;
