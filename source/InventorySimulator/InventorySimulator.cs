@@ -45,11 +45,12 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerConnect(EventPlayerConnect @event, GameEventInfo _)
     {
         var player = @event.Userid;
-        if (!IsPlayerHumanAndValid(player))
-            return HookResult.Continue;
-
-        var steamId = player.SteamID;
-        FetchPlayerInventory(steamId);
+        if (
+            IsPlayerHumanAndValid(player) &&
+            player is { SteamID: var steamId })
+        {
+            FetchPlayerInventory(steamId);
+        }
 
         return HookResult.Continue;
     }
@@ -58,11 +59,12 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo _)
     {
         var player = @event.Userid;
-        if (!IsPlayerHumanAndValid(player))
-            return HookResult.Continue;
-
-        var steamId = player.SteamID;
-        FetchPlayerInventory(steamId);
+        if (
+            IsPlayerHumanAndValid(player) &&
+            player is { SteamID: var steamId })
+        {
+            FetchPlayerInventory(steamId);
+        }
 
         return HookResult.Continue;
     }
@@ -71,13 +73,15 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo _)
     {
         var player = @event.Userid;
-        if (!IsPlayerHumanAndValid(player) || !IsPlayerPawnValid(player))
-            return HookResult.Continue;
-
-        var inventory = GetPlayerInventory(player);
-        GivePlayerAgent(player, inventory);
-        GivePlayerGloves(player, inventory);
-        GivePlayerPin(player, inventory);
+        if (
+            IsPlayerHumanAndValid(player) &&
+            player is { PawnIsAlive: true })
+        {
+            var inventory = GetPlayerInventory(player);
+            GivePlayerAgent(player, inventory);
+            GivePlayerGloves(player, inventory);
+            GivePlayerPin(player, inventory);
+        }
 
         return HookResult.Continue;
     }
@@ -86,14 +90,19 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo _)
     {
         var attacker = @event.Attacker;
-        if (!IsPlayerHumanAndValid(attacker) || !IsPlayerPawnValid(attacker))
-            return HookResult.Continue;
-
+        var isValidAttacker = IsPlayerHumanAndValid(attacker);
         var victim = @event.Userid;
-        if ((StatTrakIgnoreBotsCvar.Value ? !IsPlayerHumanAndValid(victim) : !IsPlayerValid(victim)) || !IsPlayerPawnValid(victim))
-            return HookResult.Continue;
-
-        GivePlayerWeaponStatTrakIncrease(attacker, @event.Weapon, @event.WeaponItemid);
+        var isValidVictim = (
+            StatTrakIgnoreBotsCvar.Value
+                ? IsPlayerHumanAndValid(victim)
+                : IsPlayerValid(victim));
+        if (
+            isValidAttacker &&
+            isValidVictim &&
+            attacker is { Connected: PlayerConnectedState.PlayerConnected })
+        {
+            GivePlayerWeaponStatTrakIncrease(attacker, @event.Weapon, @event.WeaponItemid);
+        }
 
         return HookResult.Continue;
     }
@@ -102,10 +111,12 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnRoundMvp(EventRoundMvp @event, GameEventInfo _)
     {
         var player = @event.Userid;
-        if (!IsPlayerHumanAndValid(player) || !IsPlayerPawnValid(player))
-            return HookResult.Continue;
-
-        GivePlayerMusicKitStatTrakIncrease(player);
+        if (
+            IsPlayerHumanAndValid(player) &&
+            player is { Connected: PlayerConnectedState.PlayerConnected })
+        {
+            GivePlayerMusicKitStatTrakIncrease(player);
+        }
 
         return HookResult.Continue;
     }
@@ -114,9 +125,11 @@ public partial class InventorySimulator : BasePlugin
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo _)
     {
         var player = @event.Userid;
-        if (IsPlayerHumanAndValid(player))
+        if (
+            IsPlayerHumanAndValid(player) &&
+            player is { SteamID: var steamId })
         {
-            RemovePlayerInventory(player.SteamID);
+            RemovePlayerInventory(steamId);
             ClearInventoryManager();
         }
 

@@ -38,7 +38,7 @@ public partial class InventorySimulator
 
         // 2. If the current view model is displaying it, ensure that it has the correct MeshGroupMask.
         var viewModel = GetPlayerViewModel(player);
-        if (viewModel?.Weapon.Value != null && viewModel.Weapon.Value.Index == weapon.Index)
+        if (viewModel?.Weapon.Value?.Index == weapon.Index)
         {
             UpdateWeaponMeshGroupMask(viewModel, isLegacy);
             Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
@@ -74,7 +74,11 @@ public partial class InventorySimulator
         {
             Server.NextFrame(() =>
             {
-                var pawn = player.PlayerPawn.Value!;
+                var pawn = player.PlayerPawn.Value;
+                if (pawn == null)
+                {
+                    return;
+                }
                 if (patches != null && patches.Count == 5)
                 {
                     for (var index = 0; index < patches.Count; index++)
@@ -111,16 +115,16 @@ public partial class InventorySimulator
 
     public bool IsPlayerValid(CCSPlayerController? player)
     {
-        return player != null && player.IsValid && !player.IsHLTV;
+        return player != null && !player.IsHLTV;
     }
 
     public bool IsPlayerHumanAndValid(CCSPlayerController? player)
     {
-        return IsPlayerValid(player) && !player!.IsBot;
+        return IsPlayerValid(player) && player is { IsBot: false };
     }
 
     public bool IsPlayerPawnValid(CCSPlayerController player)
     {
-        return player.PlayerPawn?.Value != null && player.PlayerPawn.IsValid;
+        return player.PlayerPawn?.Value != null;
     }
 }

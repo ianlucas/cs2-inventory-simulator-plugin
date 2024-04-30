@@ -42,15 +42,14 @@ public partial class InventorySimulator
 
     public void GivePlayerGloves(CCSPlayerController player, PlayerInventory inventory)
     {
-        var pawn = player.PlayerPawn.Value!;
-        if (pawn.Handle == IntPtr.Zero)
+        var pawn = player.PlayerPawn.Value;
+        if (pawn == null || pawn.Handle == IntPtr.Zero)
         {
             // Some plugin or specific game scenario is throwing exceptions at this point whenever we try to access
             // any member from the Player Pawn. We perform the actual check that triggers the exception. (I've
             // tried catching it in the past, but it seems it won't work...)
             return;
         }
-
         if (inventory.Gloves.TryGetValue(player.TeamNum, out var item))
         {
             var glove = pawn.EconGloves;
@@ -171,25 +170,18 @@ public partial class InventorySimulator
     {
         try
         {
-            var weaponServices = player.PlayerPawn.Value!.WeaponServices;
-            if (weaponServices?.ActiveWeapon.Value == null)
-                return;
+            var weapon = player.PlayerPawn.Value?.WeaponServices?.ActiveWeapon.Value;
 
-            if (!weaponServices.ActiveWeapon.IsValid)
+            if (
+                weapon == null ||
+                !IsCustomWeaponItemID(weapon) ||
+                weapon.FallbackStatTrak < 0 ||
+                weapon.AttributeManager.Item.AccountID != (uint)player.SteamID ||
+                weapon.AttributeManager.Item.ItemID != ulong.Parse(weaponItemId) ||
+                weapon.FallbackStatTrak >= 999_999)
+            { 
                 return;
-
-            var weapon = weaponServices.ActiveWeapon.Value;
-            if (!IsCustomWeaponItemID(weapon) || weapon.FallbackStatTrak < 0)
-                return;
-
-            if (weapon.AttributeManager.Item.AccountID != (uint)player.SteamID)
-                return;
-
-            if (weapon.AttributeManager.Item.ItemID != ulong.Parse(weaponItemId))
-                return;
-
-            if (weapon.FallbackStatTrak >= 999_999)
-                return;
+            }
 
             var isKnife = IsKnifeClassName(designerName);
             var newValue = weapon.FallbackStatTrak + 1;
