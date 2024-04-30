@@ -37,8 +37,8 @@ public partial class InventorySimulator : BasePlugin
             VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
         }
 
-        RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         RegisterListener<Listeners.OnTick>(OnTick);
+        RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
     }
 
     [GameEventHandler]
