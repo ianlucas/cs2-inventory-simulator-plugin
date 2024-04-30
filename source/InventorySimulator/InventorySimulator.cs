@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 
 namespace InventorySimulator;
 
-[MinimumApiVersion(215)]
+[MinimumApiVersion(224)]
 public partial class InventorySimulator : BasePlugin
 {
     public override string ModuleAuthor => "Ian Lucas";
