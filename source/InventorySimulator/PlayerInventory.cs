@@ -14,7 +14,7 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public readonly string InventoryFilePath = "csgo/addons/counterstrikesharp/configs/inventory-simulator.json";
+    public readonly string InventoriesFilePath = "csgo/addons/counterstrikesharp/configs/plugins/InventorySimulator/inventories.json";
     public readonly Dictionary<ulong, PlayerInventory> InventoryManager = new();
     public readonly Dictionary<ulong, MusicKitItem> MusicKitManager = new();
     public readonly HashSet<ulong> LoadedSteamIds = new();
@@ -24,7 +24,7 @@ public partial class InventorySimulator
     {
         try
         {
-            var path = Path.Combine(Server.GameDirectory, InventoryFilePath);
+            var path = Path.Combine(Server.GameDirectory, InventoriesFilePath);
             if (!File.Exists(path))
                 return;
 
@@ -41,7 +41,7 @@ public partial class InventorySimulator
         }
         catch
         {
-            Logger.LogError($"Error when processing \"css_inventories.json\".");
+            Logger.LogError($"Error when processing \"inventories.json\".");
         }
     }
 
