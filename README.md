@@ -19,6 +19,11 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
   - StatTrak (with increment). 
 - Pins
 
+### Known Issues
+
+* `Windows` Incompatibility with MatchZy Knife Round ([open issue](https://github.com/roflmuffin/CounterStrikeSharp/issues/377)).
+* `Windows` Agent voices inconsistencies. (e.g. Ava with male voice.)
+
 ## Feature Roadmap
 
 - ⛔ Graffiti - Reversing needed.
@@ -107,10 +112,6 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 ### Commands?
 
 Not at the moment. I'm considering adding a command for refreshing the inventory, but it's not high priority for me. Since I'll be using this during competitive matches, I don't want players to be able to change skins mid-game. Currently, skins are only fetched when a player connects to the server.
-
-### Known Issues
-
-* `Windows` Agent voices inconsistencies. (e.g. Ava with male voice.)
 
 ## See also
 
