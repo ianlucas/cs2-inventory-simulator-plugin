@@ -13,10 +13,18 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public FakeConVar<int> MinModelsCvar = new("css_minmodels", "Limits the number of custom models allowed in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
+    public FakeConVar<int> css_minmodels = new("css_minmodels", "Limits the number of custom models allowed in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
+    public FakeConVar<bool> css_give_custom_music_kit = new("css_give_custom_music_kit", "Give custom Music Kit to players.", true);
+    public FakeConVar<bool> css_give_custom_pin = new("css_give_custom_pin", "Give custom Pin to players.", true);
+    public FakeConVar<bool> css_give_custom_gloves = new("css_give_custom_gloves", "Give custom Gloves to players.", true);
+    public FakeConVar<bool> css_give_custom_agent = new("css_give_custom_agent", "Give custom Agent to players.", true);
+    public FakeConVar<bool> css_give_custom_weapon = new("css_give_custom_weapon", "Give custom Weapon to players.", true);
+    public FakeConVar<bool> css_give_weapon_stattrak_increase = new("css_give_weapon_stattrak_increase", "Give Weapon StatTrak increase.", true);
+    public FakeConVar<bool> css_give_music_kit_stattrak_increase = new("css_give_music_kit_stattrak_increase", "Give Music Kit StatTrak increase.", true);
 
     public void GivePlayerMusicKit(CCSPlayerController player)
     {
+        if (!css_give_custom_music_kit.Value) return;
         if (!IsPlayerHumanAndValid(player)) return;
         if (player.InventoryServices == null) return;
         if (MusicKitManager.TryGetValue(player.SteamID, out var musicKit))
@@ -29,6 +37,7 @@ public partial class InventorySimulator
 
     public void GivePlayerPin(CCSPlayerController player, PlayerInventory inventory)
     {
+        if (!css_give_custom_pin.Value) return;
         if (player.InventoryServices == null) return;
 
         var pin = inventory.Pin;
@@ -42,6 +51,8 @@ public partial class InventorySimulator
 
     public void GivePlayerGloves(CCSPlayerController player, PlayerInventory inventory)
     {
+        if (!css_give_custom_gloves.Value) return;
+
         var pawn = player.PlayerPawn.Value;
         if (pawn == null || pawn.Handle == IntPtr.Zero)
         {
@@ -76,7 +87,9 @@ public partial class InventorySimulator
 
     public void GivePlayerAgent(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (MinModelsCvar.Value > 0)
+        if (!css_give_custom_agent.Value) return;
+
+        if (css_minmodels.Value > 0)
         {
             // For now any value non-zero will force SAS & Phoenix.
             // In the future: 1 - Map agents only, 2 - SAS & Phoenix.
@@ -99,6 +112,7 @@ public partial class InventorySimulator
     public void GivePlayerWeaponSkin(CCSPlayerController player, CBasePlayerWeapon weapon)
     {
         if (IsCustomWeaponItemID(weapon)) return;
+        if (!css_give_custom_weapon.Value) return;
 
         var isKnife = IsKnifeClassName(weapon.DesignerName);
         var entityDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
@@ -170,6 +184,8 @@ public partial class InventorySimulator
     {
         try
         {
+            if (!css_give_weapon_stattrak_increase.Value) return;
+
             var weapon = player.PlayerPawn.Value?.WeaponServices?.ActiveWeapon.Value;
 
             if (
@@ -205,6 +221,7 @@ public partial class InventorySimulator
 
     public void GivePlayerMusicKitStatTrakIncrease(CCSPlayerController player)
     {
+        if (!css_give_music_kit_stattrak_increase.Value) return;
         if (MusicKitManager.TryGetValue(player.SteamID, out var musicKit))
         {
             musicKit.Stattrak += 1;
