@@ -19,14 +19,12 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
   - StatTrak (with increment). 
 - Pins
 
-### Known Issues
-
-* `Windows` Incompatibility with MatchZy Knife Round ([open issue](https://github.com/roflmuffin/CounterStrikeSharp/issues/377)).
-* `Windows` Agent voices inconsistencies. (e.g. Ava with male voice.)
-
 ## Feature Roadmap
 
-- ⛔ Graffiti - Reversing needed.
+- ⛔ Graffiti
+
+> [!IMPORTANT]  
+> ⛔ indicates that I'm unaware of a way to modify using CSSharp or C++ and that it's highly unlikely to be implemented anytime soon.
 
 > [!WARNING]  
 > Currently, I'm accepting issue reports, but please refrain from opening feature requests or suggestion issues as they will be closed. While I may consider your comments, the issue will remain closed.
@@ -67,51 +65,14 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 	- `1` - Default agents for the current map. **Note:** Same as `2` as Valve has not yet added them back.
 	- `2` - Only SAS and Phoenix agents allowed.
 
-#### `css_give_custom_music_kit` ConVar
-
-* Give custom Music Kit to players.
-* **Type:** `bool`
-* **Default:** `true`
-
-#### `css_give_custom_pin` ConVar
-
-* Give custom Pin to players.
-* **Type:** `bool`
-* **Default:** `true`
-
-#### `css_give_custom_gloves` ConVar
-
-* Give custom Gloves to players.
-* **Type:** `bool`
-* **Default:** `true`
-
-#### `css_give_custom_agent` ConVar
-
-* Give custom Agent to players.
-* **Type:** `bool`
-* **Default:** `true`
-
-#### `css_give_custom_weapon` ConVar
-
-* Give custom Weapon to players.
-* **Type:** `bool`
-* **Default:** `true`
-
-#### `css_give_weapon_stattrak_increase` ConVar
-
-* Give Weapon StatTrak increase.
-* **Type:** `bool`
-* **Default:** `true`
-
-#### `css_give_music_kit_stattrak_increase` ConVar
-
-* Give Music Kit StatTrak increase.
-* **Type:** `bool`
-* **Default:** `true`
-
 ### Commands?
 
 Not at the moment. I'm considering adding a command for refreshing the inventory, but it's not high priority for me. Since I'll be using this during competitive matches, I don't want players to be able to change skins mid-game. Currently, skins are only fetched when a player connects to the server.
+
+### Known Issues
+
+* ~~MVP theme does not play for music kits.~~ (Fixed?)
+* Agent voices inconsistencies. (e.g. Ava with male voice.) (Windows-only)
 
 ## See also
 

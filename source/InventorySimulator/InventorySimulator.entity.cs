@@ -15,7 +15,7 @@ public partial class InventorySimulator
 
     public void UpdateWeaponMeshGroupMask(CBaseEntity weapon, bool isLegacy)
     {
-        if (weapon.CBodyComponent?.SceneNode != null)
+        if (weapon.CBodyComponent != null && weapon.CBodyComponent.SceneNode != null)
         {
             var skeleton = weapon.CBodyComponent.SceneNode.GetSkeletonInstance();
             if (skeleton != null)
@@ -38,7 +38,7 @@ public partial class InventorySimulator
 
         // 2. If the current view model is displaying it, ensure that it has the correct MeshGroupMask.
         var viewModel = GetPlayerViewModel(player);
-        if (viewModel?.Weapon.Value?.Index == weapon.Index)
+        if (viewModel != null && viewModel.Weapon.Value != null && viewModel.Weapon.Value.Index == weapon.Index)
         {
             UpdateWeaponMeshGroupMask(viewModel, isLegacy);
             Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
@@ -52,7 +52,7 @@ public partial class InventorySimulator
         var itemId = NextItemId++;
         econItemView.ItemID = itemId;
 
-        // See: https://gitlab.com/KittenPopo/csgo-2018-source/-/blob/main/game/shared/econ/econ_item_view.h#L313
+        // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blob/main/game/shared/econ/econ_item_view.h#L313
         econItemView.ItemIDLow = (uint)itemId & 0xFFFFFFFF;
         econItemView.ItemIDHigh = (uint)itemId >> 32;
     }
@@ -62,36 +62,25 @@ public partial class InventorySimulator
         return weapon.AttributeManager.Item.ItemID >= MinimumCustomItemID;
     }
 
-    public void SetPlayerModel(
-        CCSPlayerController player,
-        string model,
-        bool voFallback = true,
-        string voPrefix = "",
-        bool voFemale = false,
-        List<uint>? patches = null)
+    public void SetPlayerModel(CCSPlayerController player, string model, bool voFallback = true, string voPrefix = "", bool voFemale = false, List<uint>? patches = null)
     {
         try
         {
             Server.NextFrame(() =>
             {
-                var pawn = player.PlayerPawn.Value;
-                if (pawn == null)
-                {
-                    return;
-                }
                 if (patches != null && patches.Count == 5)
                 {
                     for (var index = 0; index < patches.Count; index++)
                     {
-                        pawn.PlayerPatchEconIndices[index] = patches[index];
+                        player.PlayerPawn.Value!.PlayerPatchEconIndices[index] = patches[index];
                     }
                 }
                 if (!IsWindows && !voFallback)
                 {
-                    pawn.StrVOPrefix = voPrefix;
-                    pawn.HasFemaleVoice = voFemale;
+                    player.PlayerPawn.Value!.StrVOPrefix = voPrefix;
+                    player.PlayerPawn.Value.HasFemaleVoice = voFemale;
                 }
-                pawn.SetModel(model);
+                player.PlayerPawn.Value!.SetModel(model);
             });
         }
         catch
@@ -103,28 +92,24 @@ public partial class InventorySimulator
     public CCSPlayerController? GetPlayerFromItemServices(CCSPlayer_ItemServices itemServices)
     {
         var pawn = itemServices.Pawn.Value;
-        if (!pawn.IsValid || !pawn.Controller.IsValid || pawn.Controller.Value == null)
-            return null;
-
+        if (pawn == null || !pawn.IsValid || !pawn.Controller.IsValid || pawn.Controller.Value == null) return null;
         var player = new CCSPlayerController(pawn.Controller.Value.Handle);
-        if (!IsPlayerHumanAndValid(player))
-            return null;
-
+        if (!IsPlayerHumanAndValid(player)) return null;
         return player;
     }
 
     public bool IsPlayerValid(CCSPlayerController? player)
     {
-        return player != null && !player.IsHLTV;
+        return player != null && player.IsValid && !player.IsHLTV;
     }
 
     public bool IsPlayerHumanAndValid(CCSPlayerController? player)
     {
-        return IsPlayerValid(player) && player is { IsBot: false };
+        return IsPlayerValid(player) && !player!.IsBot;
     }
 
     public bool IsPlayerPawnValid(CCSPlayerController player)
     {
-        return player.PlayerPawn?.Value != null;
+        return player.PlayerPawn != null && player.PlayerPawn.Value != null && player.PlayerPawn.IsValid;
     }
 }

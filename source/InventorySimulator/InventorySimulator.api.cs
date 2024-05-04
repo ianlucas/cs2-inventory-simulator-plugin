@@ -19,17 +19,17 @@ public partial class InventorySimulator
 
     public readonly HashSet<ulong> FetchingInventory = new();
 
-    public string GetApiUrl(string pathname)
+    public string GetApiUrl(string uri)
     {
-        return $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}{pathname}";
+        return $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}{uri}";
     }
 
-    public async Task<T?> Fetch<T>(string pathname, bool shouldThrow = false)
+    public async Task<T?> Fetch<T>(string uri, bool shouldThrow = false)
     {
         try
         {
             using HttpClient client = new();
-            var response = await client.GetAsync(GetApiUrl(pathname));
+            var response = await client.GetAsync(GetApiUrl(uri));
             response.EnsureSuccessStatusCode();
 
             string jsonContent = response.Content.ReadAsStringAsync().Result;
@@ -38,27 +38,27 @@ public partial class InventorySimulator
         }
         catch (Exception error)
         {
-            Logger.LogError($"GET {pathname} failed: {error.Message}");
+            Logger.LogError($"GET {uri} failed: {error.Message}");
             if (shouldThrow) throw;
             return default;
         }
     }
 
-    public async Task Send(string pathname, object data)
+    public async Task Send(string uri, object data)
     {
         try
         {
             var json = JsonConvert.SerializeObject(data);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             using HttpClient client = new();
-            var response = await client.PostAsync(GetApiUrl(pathname), content);
+            var response = await client.PostAsync(GetApiUrl(uri), content);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
-                Logger.LogError($"POST {pathname} failed, check your css_inventory_simulator_apikey's value.");
+                Logger.LogError($"POST {uri} failed, check your css_inventory_simulator_apikey's value.");
         }
         catch (Exception error)
         {
-            Logger.LogError($"POST {pathname} failed: {error.Message}");
+            Logger.LogError($"POST {uri} failed: {error.Message}");
         }
     }
 
@@ -81,7 +81,9 @@ public partial class InventorySimulator
                 );
 
                 if (playerInventory != null)
+                {
                     AddPlayerInventory(steamId, playerInventory);
+                }
 
                 FetchingInventory.Remove(steamId);
                 return;
