@@ -13,7 +13,7 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public FakeConVar<int> invsim_minmodels = new("invsim_minmodels", "Allows agents or use specific models for each team.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
+    public readonly FakeConVar<int> invsim_minmodels = new("invsim_minmodels", "Allows agents or use specific models for each team.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
 
     public void GivePlayerMusicKit(CCSPlayerController player)
     {
