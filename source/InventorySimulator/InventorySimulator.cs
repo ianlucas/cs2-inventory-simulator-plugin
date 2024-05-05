@@ -15,7 +15,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 
 namespace InventorySimulator;
 
-[MinimumApiVersion(215)]
+[MinimumApiVersion(227)]
 public partial class InventorySimulator : BasePlugin
 {
     public override string ModuleAuthor => "Ian Lucas";
@@ -27,7 +27,7 @@ public partial class InventorySimulator : BasePlugin
     public readonly Dictionary<ulong, long> PlayerCooldownManager = new();
 
     public readonly FakeConVar<bool> invsim_stattrak_ignore_bots = new("invsim_stattrak_ignore_bots", "Whether to ignore StatTrak increments for bot kills.", true);
-    public readonly FakeConVar<bool> invsim_ws_enabled = new("invsim_ws_enabled", "Whether player can refresh their inventory using !ws.", false);
+    public readonly FakeConVar<bool> invsim_ws_enabled = new("invsim_ws_enabled", "Whether players can refresh their inventory using !ws.", false);
     public readonly FakeConVar<int> invsim_ws_cooldown = new("invsim_ws_cooldown", "Cooldown in seconds between player inventory refreshes.", 30);
 
     public override void Load(bool hotReload)
