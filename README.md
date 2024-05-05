@@ -17,7 +17,7 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
   - Patches.
 - Music Kit
   - StatTrak (with increment). 
-- Pins
+- Pin
 
 ### Known Issues
 
