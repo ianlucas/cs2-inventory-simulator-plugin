@@ -13,7 +13,7 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
   - Paint Kit, Wear, Seed, Name tag, and StatTrak (with increment).
 - Gloves
   - Paint Kit, Wear, Seed.
-- Agents
+- Agent
   - Patches.
 - Music Kit
   - StatTrak (with increment). 
