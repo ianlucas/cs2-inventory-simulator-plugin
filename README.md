@@ -1,8 +1,8 @@
 # CS2 Inventory Simulator Plugin
 
-A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory.cstrike.app). It features all we know (publically) so far to give economy items in-game.
+A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https://inventory.cstrike.app). It features all we know, so far, to give economy items on the server-side.
 
-> [!CAUTION]
+> [!CAUTION]  
 > This plugin has not been fully and thoroughly tested. Compatibility with other plugins has also not been tested. Your server can be banned by Valve for using this plugin, [see the server guidelines](https://blog.counter-strike.net/index.php/server_guidelines). Use at your own risk.
 
 ## Current Features
@@ -19,12 +19,14 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
   - StatTrak (with increment). 
 - Pins
 
+### Known Issues
+
+* `Windows` Incompatibility with MatchZy Knife Round ([open issue](https://github.com/roflmuffin/CounterStrikeSharp/issues/377)).
+* `Windows` Agent voices inconsistencies. (e.g. Ava with male voice.)
+
 ## Feature Roadmap
 
-- ⛔ Graffiti
-
-> [!IMPORTANT]  
-> ⛔ indicates that I'm unaware of a way to modify using CSSharp or C++ and that it's highly unlikely to be implemented anytime soon.
+- ⛔ Graffiti - Reversing needed.
 
 > [!WARNING]  
 > Currently, I'm accepting issue reports, but please refrain from opening feature requests or suggestion issues as they will be closed. While I may consider your comments, the issue will remain closed.
@@ -37,27 +39,27 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 
 ### Configuration
 
-#### `css_inventory_simulator` ConVar
+#### `invsim_hostname` ConVar
 
 * Inventory Simulator API's domain.
 * **Type:** `string`
 * **Default:** `inventory.cstrike.app`
 
-#### `css_inventory_simulator_apikey` ConVar
+#### `invsim_apikey` ConVar
 
 * Inventory Simulator API's key.
 * **Type:** `string`
 * **Default:** _empty_
 
-#### `css_stattrak_ignore_bots` ConVar
+#### `invsim_stattrak_ignore_bots` ConVar
 
-* Determines whether to ignore StatTrak increments for bot kills.
+* Whether to ignore StatTrak increments for bot kills.
 * **Type:** `bool`
 * **Default:** `true`
 
-#### `css_minmodels` ConVar
+#### `invsim_minmodels` ConVar
 
-* Limits the number of custom models allowed in-game.
+* Allows agents or use specific models for each team.
 * **Type:** `int`
 * **Default:** `0`
 * **Values:**
@@ -68,11 +70,6 @@ A simple plugin for integrating with [CS2 Inventory Simulator](https://inventory
 ### Commands?
 
 Not at the moment. I'm considering adding a command for refreshing the inventory, but it's not high priority for me. Since I'll be using this during competitive matches, I don't want players to be able to change skins mid-game. Currently, skins are only fetched when a player connects to the server.
-
-### Known Issues
-
-* ~~MVP theme does not play for music kits.~~ (Fixed?)
-* Agent voices inconsistencies. (e.g. Ava with male voice.) (Windows-only)
 
 ## See also
 
