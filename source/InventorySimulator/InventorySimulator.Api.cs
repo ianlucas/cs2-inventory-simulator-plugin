@@ -13,23 +13,23 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public readonly FakeConVar<string> InvSimProtocolCvar = new("css_inventory_simulator_protocol", "Inventory Simulator API's protocol.", "https");
-    public readonly FakeConVar<string> InvSimCvar = new("css_inventory_simulator", "Inventory Simulator API's domain.", "inventory.cstrike.app");
-    public readonly FakeConVar<string> InvSimApiKeyCvar = new("css_inventory_simulator_apikey", "Inventory Simulator API's key.", "");
+    public readonly FakeConVar<string> invsim_protocol = new("invsim_protocol", "Inventory Simulator API's protocol.", "https");
+    public readonly FakeConVar<string> invsim_hostname = new("invsim_hostname", "Inventory Simulator API's domain.", "inventory.cstrike.app");
+    public readonly FakeConVar<string> invsim_apikey = new("invsim_apikey", "Inventory Simulator API's key.", "");
 
     public readonly HashSet<ulong> FetchingInventory = new();
 
-    public string GetApiUrl(string uri)
+    public string GetApiUrl(string pathname)
     {
-        return $"{InvSimProtocolCvar.Value}://{InvSimCvar.Value}{uri}";
+        return $"{invsim_protocol.Value}://{invsim_hostname.Value}{pathname}";
     }
 
-    public async Task<T?> Fetch<T>(string uri, bool shouldThrow = false)
+    public async Task<T?> Fetch<T>(string pathname, bool rethrow = false)
     {
         try
         {
             using HttpClient client = new();
-            var response = await client.GetAsync(GetApiUrl(uri));
+            var response = await client.GetAsync(GetApiUrl(pathname));
             response.EnsureSuccessStatusCode();
 
             string jsonContent = response.Content.ReadAsStringAsync().Result;
@@ -38,27 +38,27 @@ public partial class InventorySimulator
         }
         catch (Exception error)
         {
-            Logger.LogError($"GET {uri} failed: {error.Message}");
-            if (shouldThrow) throw;
+            Logger.LogError($"GET {pathname} failed: {error.Message}");
+            if (rethrow) throw;
             return default;
         }
     }
 
-    public async Task Send(string uri, object data)
+    public async Task Send(string pathname, object data)
     {
         try
         {
             var json = JsonConvert.SerializeObject(data);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             using HttpClient client = new();
-            var response = await client.PostAsync(GetApiUrl(uri), content);
+            var response = await client.PostAsync(GetApiUrl(pathname), content);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
-                Logger.LogError($"POST {uri} failed, check your css_inventory_simulator_apikey's value.");
+                Logger.LogError($"POST {pathname} failed, check your invsim_apikey's value.");
         }
         catch (Exception error)
         {
-            Logger.LogError($"POST {uri} failed: {error.Message}");
+            Logger.LogError($"POST {pathname} failed: {error.Message}");
         }
     }
 
@@ -97,12 +97,12 @@ public partial class InventorySimulator
 
     public async void SendStatTrakIncrease(ulong userId, int targetUid)
     {
-        if (InvSimApiKeyCvar.Value == "")
+        if (invsim_apikey.Value == "")
             return;
 
         await Send($"/api/increment-item-stattrak", new
         {
-            apiKey = InvSimApiKeyCvar.Value,
+            apiKey = invsim_apikey.Value,
             targetUid,
             userId = userId.ToString()
         });

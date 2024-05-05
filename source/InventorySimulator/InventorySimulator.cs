@@ -22,9 +22,9 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleName => "InventorySimulator";
     public override string ModuleVersion => "1.0.0-beta.22";
 
-    public readonly FakeConVar<bool> StatTrakIgnoreBotsCvar = new("css_stattrak_ignore_bots", "Determines whether to ignore StatTrak increments for bot kills.", true);
-
     public readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+    public readonly FakeConVar<bool> invsim_stattrak_ignore_bots = new("invsim_stattrak_ignore_bots", "Determines whether to ignore StatTrak increments for bot kills.", true);
 
     public override void Load(bool hotReload)
     {
@@ -93,7 +93,7 @@ public partial class InventorySimulator : BasePlugin
         {
             var isValidAttacker = IsPlayerHumanAndValid(attacker) && !IsPlayerPawnValid(attacker);
             var isValidVictim = (
-                StatTrakIgnoreBotsCvar.Value
+                invsim_stattrak_ignore_bots.Value
                     ? IsPlayerHumanAndValid(victim)
                     : IsPlayerValid(victim)) &&
                 IsPlayerPawnValid(victim);

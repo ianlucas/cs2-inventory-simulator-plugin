@@ -13,7 +13,7 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public FakeConVar<int> MinModelsCvar = new("css_minmodels", "Limits the number of custom models allowed in-game.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
+    public FakeConVar<int> invsim_minmodels = new("invsim_minmodels", "Allow agents or use specific models for each team.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
 
     public void GivePlayerMusicKit(CCSPlayerController player)
     {
@@ -80,7 +80,7 @@ public partial class InventorySimulator
 
     public void GivePlayerAgent(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (MinModelsCvar.Value > 0)
+        if (invsim_minmodels.Value > 0)
         {
             // For now any value non-zero will force SAS & Phoenix.
             // In the future: 1 - Map agents only, 2 - SAS & Phoenix.
