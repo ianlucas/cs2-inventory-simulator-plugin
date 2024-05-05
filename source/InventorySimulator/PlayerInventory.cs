@@ -47,9 +47,9 @@ public partial class InventorySimulator
 
     public void AddPlayerInventory(ulong steamId, PlayerInventory inventory)
     {
-        InventoryManager.Add(steamId, inventory);
+        InventoryManager[steamId] = inventory;
         if (inventory.MusicKit != null)
-            MusicKitManager.Add(steamId, inventory.MusicKit);
+            MusicKitManager[steamId] = inventory.MusicKit;
         else MusicKitManager.Remove(steamId);
     }
 

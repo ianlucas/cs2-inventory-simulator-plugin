@@ -12,4 +12,11 @@
 		<PackageReference Include="newtonsoft.json" Version="13.0.3" />
 	</ItemGroup>
 
+	<Target Name="CopyLangFiles" AfterTargets="Build">
+		<ItemGroup>
+			<LangFiles Include="source\InventorySimulator\lang\**\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(LangFiles)" DestinationFolder="$(OutputPath)\lang" />
+	</Target>
+
 </Project>

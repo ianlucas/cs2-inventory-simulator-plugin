@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Cvars;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -17,9 +19,9 @@ public partial class InventorySimulator
     public readonly FakeConVar<string> invsim_hostname = new("invsim_hostname", "Inventory Simulator API's domain.", "inventory.cstrike.app");
     public readonly FakeConVar<string> invsim_apikey = new("invsim_apikey", "Inventory Simulator API's key.", "");
 
-    public readonly HashSet<ulong> FetchingInventory = new();
+    public readonly HashSet<ulong> FetchingPlayerInventory = new();
 
-    public string GetApiUrl(string pathname)
+    public string GetApiUrl(string pathname = "")
     {
         return $"{invsim_protocol.Value}://{invsim_hostname.Value}{pathname}";
     }
@@ -62,15 +64,15 @@ public partial class InventorySimulator
         }
     }
 
-    public async void FetchPlayerInventory(ulong steamId, bool force = false)
+    public async Task FetchPlayerInventory(ulong steamId, bool force = false)
     {
         if (!force && InventoryManager.ContainsKey(steamId))
             return;
 
-        if (FetchingInventory.Contains(steamId))
+        if (FetchingPlayerInventory.Contains(steamId))
             return;
 
-        FetchingInventory.Add(steamId);
+        FetchingPlayerInventory.Add(steamId);
 
         for (var attempt = 0; attempt < 3; attempt++)
         {
@@ -82,17 +84,35 @@ public partial class InventorySimulator
 
                 if (playerInventory != null)
                 {
+                    PlayerCooldownManager[steamId] = Now();
                     AddPlayerInventory(steamId, playerInventory);
                 }
 
-                FetchingInventory.Remove(steamId);
-                return;
+                break;
             }
             catch
             {
                 // Try again to fetch data (up to 3 times).
             }
         }
+        
+        FetchingPlayerInventory.Remove(steamId);
+    }
+
+    public async void RefreshPlayerInventory(CCSPlayerController player, bool force = false)
+    {
+        if (!force)
+        {
+            await FetchPlayerInventory(player.SteamID);
+            return;
+        }
+
+        await FetchPlayerInventory(player.SteamID, true);
+        Server.NextFrame(() =>
+        {
+            player.PrintToChat(Localizer["invsim.ws_completed"]);
+            GiveOnPlayerInventoryRefresh(player);
+        });
     }
 
     public async void SendStatTrakIncrease(ulong userId, int targetUid)

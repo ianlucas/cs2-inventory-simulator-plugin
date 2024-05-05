@@ -1,6 +1,6 @@
 # CS2 Inventory Simulator Plugin
 
-A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https://inventory.cstrike.app). It features all we know, so far, to give economy items on the server-side.
+A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https://inventory.cstrike.app). It features all current knowledge on how to give economy items to players from the server-side.
 
 > [!CAUTION]  
 > This plugin has not been fully and thoroughly tested. Compatibility with other plugins has also not been tested. Your server can be banned by Valve for using this plugin, [see the server guidelines](https://blog.counter-strike.net/index.php/server_guidelines). Use at your own risk.
@@ -21,7 +21,7 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
 
 ### Known Issues
 
-* `Windows` Incompatibility with MatchZy Knife Round ([open issue](https://github.com/roflmuffin/CounterStrikeSharp/issues/377)).
+* `Windows` Incompatibility with MatchZy's Knife Round ([view issue](https://github.com/roflmuffin/CounterStrikeSharp/issues/377)).
 * `Windows` Agent voices inconsistencies. (e.g. Ava with male voice.)
 
 ## Feature Roadmap
@@ -67,9 +67,23 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
 	- `1` - Default agents for the current map. **Note:** Same as `2` as Valve has not yet added them back.
 	- `2` - Only SAS and Phoenix agents allowed.
 
-### Commands?
+#### `invsim_ws_enabled` ConVar
 
-Not at the moment. I'm considering adding a command for refreshing the inventory, but it's not high priority for me. Since I'll be using this during competitive matches, I don't want players to be able to change skins mid-game. Currently, skins are only fetched when a player connects to the server.
+* Whether player can refresh their inventory using `!ws` command.
+* **Type:** `bool`
+* **Default:** `false`
+
+#### `invsim_ws_cooldown` ConVar
+
+* Cooldown in seconds between player inventory refreshes.
+* **Type:** `int`
+* **Default:** `30`
+
+### Commands
+
+#### `!ws`
+
+* Prints Inventory Simlulator's website and refreshes player's inventory if `invsim_ws_enabled` ConVar is `true`.
 
 ## See also
 

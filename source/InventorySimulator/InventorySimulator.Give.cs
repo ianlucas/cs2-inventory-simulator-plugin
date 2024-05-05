@@ -218,4 +218,18 @@ public partial class InventorySimulator
             SendStatTrakIncrease(player.SteamID, musicKit.Uid);
         }
     }
+
+    public void GiveOnPlayerSpawn(CCSPlayerController player)
+    {
+        var inventory = GetPlayerInventory(player);
+        GivePlayerPin(player, inventory);
+        GivePlayerAgent(player, inventory);
+        GivePlayerGloves(player, inventory);
+    }
+
+    public void GiveOnPlayerInventoryRefresh(CCSPlayerController player)
+    {
+        var inventory = GetPlayerInventory(player);
+        GivePlayerPin(player, inventory);
+    }
 }

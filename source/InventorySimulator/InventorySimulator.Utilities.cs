@@ -16,4 +16,9 @@ public partial class InventorySimulator
     {
         return className.Contains("bayonet") || className.Contains("knife");
     }
+
+    public long Now()
+    {
+        return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    }
 }
