@@ -12,11 +12,25 @@
 		<PackageReference Include="newtonsoft.json" Version="13.0.3" />
 	</ItemGroup>
 
+	<PropertyGroup>
+		<BaseOutputPath>bin\</BaseOutputPath>
+		<OutputPath>$(BaseOutputPath)Release\plugins\InventorySimulator</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	</PropertyGroup>
+
 	<Target Name="CopyLangFiles" AfterTargets="Build">
 		<ItemGroup>
 			<LangFiles Include="source\InventorySimulator\lang\**\*.*" />
 		</ItemGroup>
 		<Copy SourceFiles="@(LangFiles)" DestinationFolder="$(OutputPath)\lang" />
+	</Target>
+
+	<Target Name="CopyGamedataFile" AfterTargets="Build">
+		<Copy SourceFiles="gamedata\inventory-simulator.json" DestinationFolder="$(OutputPath)\..\..\gamedata" />
+	</Target>
+
+	<Target Name="CopyDependencyFiles" AfterTargets="Build">
+		<Copy SourceFiles="$(NuGetPackageRoot)\newtonsoft.json\13.0.3\lib\net6.0\Newtonsoft.Json.dll" DestinationFolder="$(OutputPath)" />
 	</Target>
 
 </Project>
