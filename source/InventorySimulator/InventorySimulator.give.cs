@@ -22,8 +22,11 @@ public partial class InventorySimulator
         if (MusicKitManager.TryGetValue(player.SteamID, out var musicKit))
         {
             player.InventoryServices.MusicID = (ushort)musicKit.Def;
+            Utilities.SetStateChanged(player, "CCSPlayerController", "m_pInventoryServices");
             player.MusicKitID = musicKit.Def;
+            Utilities.SetStateChanged(player, "CCSPlayerController", "m_iMusicKitID");
             player.MusicKitMVPs = musicKit.Stattrak;
+            Utilities.SetStateChanged(player, "CCSPlayerController", "m_iMusicKitMVPs");
         }
     }
 
@@ -37,6 +40,7 @@ public partial class InventorySimulator
         for (var index = 0; index < player.InventoryServices.Rank.Length; index++)
         {
             player.InventoryServices.Rank[index] = index == 5 ? (MedalRank_t)pin.Value : MedalRank_t.MEDAL_RANK_NONE;
+            Utilities.SetStateChanged(player, "CCSPlayerController", "m_pInventoryServices");
         }
     }
 

@@ -139,10 +139,7 @@ public partial class InventorySimulator : BasePlugin
         // pretty sure that's the best way to change anything inventory-related, but that's not something
         // public and we brute force the setting of the Music Kit here.
         foreach (var player in Utilities.GetPlayers())
-        {
             GivePlayerMusicKit(player);
-            // GivePlayerPin(player, GetPlayerInventory(player));
-        }
     }
 
     public void OnEntityCreated(CEntityInstance entity)
