@@ -68,19 +68,21 @@ public partial class InventorySimulator
         {
             Server.NextFrame(() =>
             {
+                var pawn = player.PlayerPawn.Value;
+                if (pawn == null) return;
                 if (patches != null && patches.Count == 5)
                 {
                     for (var index = 0; index < patches.Count; index++)
                     {
-                        player.PlayerPawn.Value!.PlayerPatchEconIndices[index] = patches[index];
+                        pawn.PlayerPatchEconIndices[index] = patches[index];
                     }
                 }
                 if (!IsWindows && !voFallback)
                 {
-                    player.PlayerPawn.Value!.StrVOPrefix = voPrefix;
-                    player.PlayerPawn.Value.HasFemaleVoice = voFemale;
+                    pawn.StrVOPrefix = voPrefix;
+                    pawn.HasFemaleVoice = voFemale;
                 }
-                player.PlayerPawn.Value!.SetModel(model);
+                pawn.SetModel(model);
             });
         }
         catch
