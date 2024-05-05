@@ -83,7 +83,7 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
 
 #### `!ws` Command
 
-* Prints Inventory Simlulator's website and refreshes player's inventory if `invsim_ws_enabled` ConVar is `true`.
+* Prints Inventory Simulator's website and refreshes player's inventory if `invsim_ws_enabled` ConVar is `true`.
 
 ## See also
 
