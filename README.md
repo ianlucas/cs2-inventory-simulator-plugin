@@ -41,7 +41,7 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
 
 #### `invsim_hostname` ConVar
 
-* Inventory Simulator API's domain.
+* Inventory Simulator API's hostname.
 * **Type:** `string`
 * **Default:** `inventory.cstrike.app`
 
@@ -69,7 +69,7 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
 
 #### `invsim_ws_enabled` ConVar
 
-* Whether player can refresh their inventory using `!ws` command.
+* Whether players can refresh their inventory using `!ws` command.
 * **Type:** `bool`
 * **Default:** `false`
 
@@ -81,7 +81,7 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
 
 ### Commands
 
-#### `!ws`
+#### `!ws` Command
 
 * Prints Inventory Simlulator's website and refreshes player's inventory if `invsim_ws_enabled` ConVar is `true`.
 
