@@ -24,7 +24,7 @@ public partial class InventorySimulator : BasePlugin
 
     public readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-    public readonly FakeConVar<bool> invsim_stattrak_ignore_bots = new("invsim_stattrak_ignore_bots", "Determines whether to ignore StatTrak increments for bot kills.", true);
+    public readonly FakeConVar<bool> invsim_stattrak_ignore_bots = new("invsim_stattrak_ignore_bots", "Whether to ignore StatTrak increments for bot kills.", true);
 
     public override void Load(bool hotReload)
     {
