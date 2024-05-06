@@ -111,7 +111,7 @@ public partial class InventorySimulator
         Server.NextFrame(() =>
         {
             player.PrintToChat(Localizer["invsim.ws_completed"]);
-            GiveOnPlayerInventoryRefresh(player);
+            GiveOnRefreshPlayerInventory(player);
         });
     }
 

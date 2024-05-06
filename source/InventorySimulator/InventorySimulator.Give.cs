@@ -227,7 +227,7 @@ public partial class InventorySimulator
         GivePlayerGloves(player, inventory);
     }
 
-    public void GiveOnPlayerInventoryRefresh(CCSPlayerController player)
+    public void GiveOnRefreshPlayerInventory(CCSPlayerController player)
     {
         var inventory = GetPlayerInventory(player);
         GivePlayerPin(player, inventory);
