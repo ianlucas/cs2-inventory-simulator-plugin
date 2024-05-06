@@ -77,10 +77,13 @@ public partial class InventorySimulator
                         pawn.PlayerPatchEconIndices[index] = patches[index];
                     }
                 }
-                if (!IsWindows && !voFallback)
+                if (!voFallback)
                 {
-                    pawn.StrVOPrefix = voPrefix;
-                    pawn.HasFemaleVoice = voFemale;
+                    Server.NextFrame(() =>
+                    {
+                        pawn.StrVOPrefix = voPrefix;
+                        pawn.HasFemaleVoice = voFemale;
+                    });
                 }
                 pawn.SetModel(model);
             });

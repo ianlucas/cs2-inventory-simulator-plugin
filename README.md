@@ -22,7 +22,6 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
 ### Known Issues
 
 * `Windows` Incompatibility with MatchZy's Knife Round ([view issue](https://github.com/roflmuffin/CounterStrikeSharp/issues/377)).
-* `Windows` Agent voices inconsistencies. (e.g. Ava with male voice.)
 
 ## Feature Roadmap
 
