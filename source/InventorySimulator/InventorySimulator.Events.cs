@@ -80,7 +80,7 @@ public partial class InventorySimulator
                 IsPlayerPawnValid(victim);
             if (isValidAttacker && isValidVictim)
             {
-                GivePlayerWeaponStatTrakIncrease(attacker, @event.Weapon, @event.WeaponItemid);
+                GivePlayerWeaponStatTrakIncrement(attacker, @event.Weapon, @event.WeaponItemid);
             }
         }
 
@@ -95,7 +95,7 @@ public partial class InventorySimulator
             IsPlayerHumanAndValid(player) &&
             IsPlayerPawnValid(player))
         {
-            GivePlayerMusicKitStatTrakIncrease(player);
+            GivePlayerMusicKitStatTrakIncrement(player);
         }
 
         return HookResult.Continue;

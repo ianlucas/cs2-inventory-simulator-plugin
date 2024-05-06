@@ -159,7 +159,7 @@ public partial class InventorySimulator
         }
     }
 
-    public void GivePlayerWeaponStatTrakIncrease(
+    public void GivePlayerWeaponStatTrakIncrement(
         CCSPlayerController player,
         string designerName,
         string weaponItemId)
@@ -197,7 +197,7 @@ public partial class InventorySimulator
             if (item != null)
             {
                 item.Stattrak = newValue;
-                SendStatTrakIncrease(player.SteamID, item.Uid);
+                SendStatTrakIncrement(player.SteamID, item.Uid);
             }
         }
         catch
@@ -206,12 +206,12 @@ public partial class InventorySimulator
         }
     }
 
-    public void GivePlayerMusicKitStatTrakIncrease(CCSPlayerController player)
+    public void GivePlayerMusicKitStatTrakIncrement(CCSPlayerController player)
     {
         if (PlayerMusicKitManager.TryGetValue(player.SteamID, out var musicKit))
         {
             musicKit.Stattrak += 1;
-            SendStatTrakIncrease(player.SteamID, musicKit.Uid);
+            SendStatTrakIncrement(player.SteamID, musicKit.Uid);
         }
     }
 

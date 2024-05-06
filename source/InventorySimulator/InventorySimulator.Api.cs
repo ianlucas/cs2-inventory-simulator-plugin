@@ -108,7 +108,7 @@ public partial class InventorySimulator
         });
     }
 
-    public async void SendStatTrakIncrease(ulong userId, int targetUid)
+    public async void SendStatTrakIncrement(ulong userId, int targetUid)
     {
         if (invsim_apikey.Value == "")
             return;
