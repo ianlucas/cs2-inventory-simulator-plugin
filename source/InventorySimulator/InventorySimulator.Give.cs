@@ -166,25 +166,18 @@ public partial class InventorySimulator
     {
         try
         {
-            var weaponServices = player.PlayerPawn.Value!.WeaponServices;
-            if (weaponServices == null || weaponServices.ActiveWeapon == null)
-                return;
+            var weapon = player.PlayerPawn.Value?.WeaponServices?.ActiveWeapon.Value;
 
-            if (weaponServices.ActiveWeapon.Value == null || !weaponServices.ActiveWeapon.IsValid)
+            if (
+                weapon == null ||
+                !IsCustomWeaponItemID(weapon) ||
+                weapon.FallbackStatTrak < 0 ||
+                weapon.AttributeManager.Item.AccountID != (uint)player.SteamID ||
+                weapon.AttributeManager.Item.ItemID != ulong.Parse(weaponItemId) ||
+                weapon.FallbackStatTrak >= 999_999)
+            {
                 return;
-
-            var weapon = weaponServices.ActiveWeapon.Value;
-            if (!IsCustomWeaponItemID(weapon) || weapon.FallbackStatTrak < 0)
-                return;
-
-            if (weapon.AttributeManager.Item.AccountID != (uint)player.SteamID)
-                return;
-
-            if (weapon.AttributeManager.Item.ItemID != ulong.Parse(weaponItemId))
-                return;
-
-            if (weapon.FallbackStatTrak >= 999_999)
-                return;
+            }
 
             var isKnife = IsKnifeClassName(designerName);
             var newValue = weapon.FallbackStatTrak + 1;

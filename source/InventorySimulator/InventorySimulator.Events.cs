@@ -72,7 +72,9 @@ public partial class InventorySimulator
         var victim = @event.Userid;
         if (attacker != null && victim != null)
         {
-            var isValidAttacker = IsPlayerHumanAndValid(attacker) && !IsPlayerPawnValid(attacker);
+            var isValidAttacker = (
+                IsPlayerHumanAndValid(attacker) &&
+                IsPlayerPawnValid(attacker));
             var isValidVictim = (
                 invsim_stattrak_ignore_bots.Value
                     ? IsPlayerHumanAndValid(victim)
