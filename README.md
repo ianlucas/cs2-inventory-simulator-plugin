@@ -19,10 +19,6 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
   - StatTrak (with increment). 
 - Pin
 
-### Known Issues
-
-* `Windows` Incompatibility with MatchZy's Knife Round ([view issue](https://github.com/roflmuffin/CounterStrikeSharp/issues/377)).
-
 ## Feature Roadmap
 
 - ⛔ Graffiti - Reversing needed.
