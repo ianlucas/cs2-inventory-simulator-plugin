@@ -21,7 +21,7 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleAuthor => "Ian Lucas";
     public override string ModuleDescription => "Inventory Simulator (inventory.cstrike.app)";
     public override string ModuleName => "InventorySimulator";
-    public override string ModuleVersion => "1.0.0-beta.23";
+    public override string ModuleVersion => "1.0.0-beta.24";
 
     public readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
     public readonly Dictionary<ulong, long> PlayerCooldownManager = new();
