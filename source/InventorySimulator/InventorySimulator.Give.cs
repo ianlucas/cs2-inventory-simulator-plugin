@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Cvars.Validators;
-using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API;
 
@@ -13,13 +11,11 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public readonly FakeConVar<int> invsim_minmodels = new("invsim_minmodels", "Allows agents or use specific models for each team.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
-
     public void GivePlayerMusicKit(CCSPlayerController player)
     {
         if (!IsPlayerHumanAndValid(player)) return;
         if (player.InventoryServices == null) return;
-        if (MusicKitManager.TryGetValue(player.SteamID, out var musicKit))
+        if (PlayerMusicKitManager.TryGetValue(player.SteamID, out var musicKit))
         {
             player.InventoryServices.MusicID = (ushort)musicKit.Def;
             Utilities.SetStateChanged(player, "CCSPlayerController", "m_pInventoryServices");
@@ -212,7 +208,7 @@ public partial class InventorySimulator
 
     public void GivePlayerMusicKitStatTrakIncrease(CCSPlayerController player)
     {
-        if (MusicKitManager.TryGetValue(player.SteamID, out var musicKit))
+        if (PlayerMusicKitManager.TryGetValue(player.SteamID, out var musicKit))
         {
             musicKit.Stattrak += 1;
             SendStatTrakIncrease(player.SteamID, musicKit.Uid);

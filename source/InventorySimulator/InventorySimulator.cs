@@ -7,11 +7,9 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API;
-using System.Runtime.InteropServices;
 
 namespace InventorySimulator;
 
@@ -22,13 +20,6 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleDescription => "Inventory Simulator (inventory.cstrike.app)";
     public override string ModuleName => "InventorySimulator";
     public override string ModuleVersion => "1.0.0-beta.24";
-
-    public readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-    public readonly Dictionary<ulong, long> PlayerCooldownManager = new();
-
-    public readonly FakeConVar<bool> invsim_stattrak_ignore_bots = new("invsim_stattrak_ignore_bots", "Whether to ignore StatTrak increments for bot kills.", true);
-    public readonly FakeConVar<bool> invsim_ws_enabled = new("invsim_ws_enabled", "Whether players can refresh their inventory using !ws.", false);
-    public readonly FakeConVar<int> invsim_ws_cooldown = new("invsim_ws_cooldown", "Cooldown in seconds between player inventory refreshes.", 30);
 
     public override void Load(bool hotReload)
     {

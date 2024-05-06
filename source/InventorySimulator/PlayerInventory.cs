@@ -14,12 +14,6 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public readonly string InventoryFilePath = "csgo/addons/counterstrikesharp/configs/plugins/InventorySimulator/inventories.json";
-    public readonly Dictionary<ulong, PlayerInventory> InventoryManager = new();
-    public readonly Dictionary<ulong, MusicKitItem> MusicKitManager = new();
-    public readonly HashSet<ulong> LoadedSteamIds = new();
-    public readonly PlayerInventory EmptyInventory = new();
-
     public void LoadPlayerInventories()
     {
         try
@@ -34,7 +28,7 @@ public partial class InventorySimulator
             {
                 foreach (var pair in inventories)
                 {
-                    LoadedSteamIds.Add(pair.Key);
+                    LoadedPlayerInventory.Add(pair.Key);
                     AddPlayerInventory(pair.Key, pair.Value);
                 }
             }
@@ -47,16 +41,16 @@ public partial class InventorySimulator
 
     public void AddPlayerInventory(ulong steamId, PlayerInventory inventory)
     {
-        InventoryManager[steamId] = inventory;
+        PlayerInventoryManager[steamId] = inventory;
         if (inventory.MusicKit != null)
-            MusicKitManager[steamId] = inventory.MusicKit;
-        else MusicKitManager.Remove(steamId);
+            PlayerMusicKitManager[steamId] = inventory.MusicKit;
+        else PlayerMusicKitManager.Remove(steamId);
     }
 
     public void ClearInventoryManager()
     {
         var connected = Utilities.GetPlayers().Select(player => player.SteamID).ToHashSet();
-        var disconnected = InventoryManager.Keys.Except(connected).ToList();
+        var disconnected = PlayerInventoryManager.Keys.Except(connected).ToList();
         foreach (var steamId in disconnected)
         {
             RemovePlayerInventory(steamId);
@@ -65,16 +59,16 @@ public partial class InventorySimulator
 
     public void RemovePlayerInventory(ulong steamId)
     {
-        if (!LoadedSteamIds.Contains(steamId))
+        if (!LoadedPlayerInventory.Contains(steamId))
         {
-            InventoryManager.Remove(steamId);
-            MusicKitManager.Remove(steamId);
+            PlayerInventoryManager.Remove(steamId);
+            PlayerMusicKitManager.Remove(steamId);
         }
     }
 
     public PlayerInventory GetPlayerInventory(CCSPlayerController player)
     {
-        if (InventoryManager.TryGetValue(player.SteamID, out var inventory))
+        if (PlayerInventoryManager.TryGetValue(player.SteamID, out var inventory))
         {
             return inventory;
         }

@@ -5,7 +5,6 @@
 
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Cvars;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Net;
@@ -15,12 +14,6 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public readonly FakeConVar<string> invsim_protocol = new("invsim_protocol", "Inventory Simulator API's protocol.", "https");
-    public readonly FakeConVar<string> invsim_hostname = new("invsim_hostname", "Inventory Simulator API's hostname.", "inventory.cstrike.app");
-    public readonly FakeConVar<string> invsim_apikey = new("invsim_apikey", "Inventory Simulator API's key.", "");
-
-    public readonly HashSet<ulong> FetchingPlayerInventory = new();
-
     public string GetApiUrl(string pathname = "")
     {
         return $"{invsim_protocol.Value}://{invsim_hostname.Value}{pathname}";
@@ -66,7 +59,7 @@ public partial class InventorySimulator
 
     public async Task FetchPlayerInventory(ulong steamId, bool force = false)
     {
-        if (!force && InventoryManager.ContainsKey(steamId))
+        if (!force && PlayerInventoryManager.ContainsKey(steamId))
             return;
 
         if (FetchingPlayerInventory.Contains(steamId))
