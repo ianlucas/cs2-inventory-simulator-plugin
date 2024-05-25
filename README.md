@@ -1,9 +1,11 @@
 # CS2 Inventory Simulator Plugin
 
-A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https://inventory.cstrike.app). It features all current knowledge on how to give economy items to players from the server-side.
+> A [CounterStrikeSharp](https://docs.cssharp.dev) plugin for integrating with [CS2 Inventory Simulator](https://inventory.cstrike.app)
+
+This plugin features all current (and public) knowledge on how to give economy items to players from the server-side.
 
 > [!CAUTION]  
-> This plugin has not been fully and thoroughly tested. Compatibility with other plugins has also not been tested. Your server can be banned by Valve for using this plugin, [see the server guidelines](https://blog.counter-strike.net/index.php/server_guidelines). Use at your own risk.
+> This plugin tries its best to be compatible with most of the plugins. Your server can be banned by Valve for using this plugin (see the [server guidelines](https://blog.counter-strike.net/index.php/server_guidelines)) and the plugin may be broken or nuked by any game update. Use at your own risk.
 
 ## Current Features
 
@@ -28,9 +30,10 @@ A CounterStrikeSharp plugin for integrating with [CS2 Inventory Simulator](https
 
 ## Installation
 
-1. Make sure `FollowCS2ServerGuidelines` is `false` in `addons/counterstrikesharp/configs/core.json`.
-2. [Download the latest release](https://github.com/ianlucas/cs2-inventory-simulator-plugin/releases) of CS2 Inventory Simulator Plugin.
-3. Extract the ZIP file contents into `addons/counterstrikesharp`.
+1. Install [CounterStrikeSharp and Metamod](https://docs.cssharp.dev/docs/guides/getting-started.html).
+2. Make sure `FollowCS2ServerGuidelines` is `false` in `addons/counterstrikesharp/configs/core.json`.
+3. [Download the latest release](https://github.com/ianlucas/cs2-inventory-simulator-plugin/releases) of CS2 Inventory Simulator Plugin.
+4. Extract the ZIP file contents into `addons/counterstrikesharp`.
 
 ### Configuration
 
