@@ -222,6 +222,10 @@ public partial class InventorySimulator
         GivePlayerPin(player, inventory);
     }
 
+    // 2024-05-25: After the Fire Sale update I'm observing a couple of issues, one of them is that our
+    // GiveNamedItemPost is no longer enough for timely update the subclass and skin of knives, so now
+    // we're using this method for Linux as well. We need CSSharp to stabilize first before trying to find
+    // what happened.
     // Nuke this when roflmuffin/CounterStrikeSharp#377 is resolved. This workaround makes sure the
     // subclass of a knife will be changed as soon as the player receives it. Only needed on Windows
     // because on Linux we hook GiveNamedItem that happens a bit early than this event.
