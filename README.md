@@ -30,7 +30,7 @@ This plugin features all current (and public) knowledge on how to give economy i
 
 ## Installation
 
-1. Install [CounterStrikeSharp and Metamod](https://docs.cssharp.dev/docs/guides/getting-started.html).
+1. Install [Metamod and CounterStrikeSharp](https://docs.cssharp.dev/docs/guides/getting-started.html).
 2. Make sure `FollowCS2ServerGuidelines` is `false` in `addons/counterstrikesharp/configs/core.json`.
 3. [Download the latest release](https://github.com/ianlucas/cs2-inventory-simulator-plugin/releases) of CS2 Inventory Simulator Plugin.
 4. Extract the ZIP file contents into `addons/counterstrikesharp`.
