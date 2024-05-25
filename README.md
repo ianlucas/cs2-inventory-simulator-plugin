@@ -5,7 +5,7 @@
 This plugin features all current (and public) knowledge on how to give economy items to players from the server-side.
 
 > [!CAUTION]  
-> This plugin tries its best to be compatible with most of the plugins. Your server can be banned by Valve for using this plugin (see the [server guidelines](https://blog.counter-strike.net/index.php/server_guidelines)) and the plugin may be broken or nuked by any game update. Use at your own risk.
+> Your server can be banned by Valve for using this plugin (see their [server guidelines](https://blog.counter-strike.net/index.php/server_guidelines)). Use at your own risk.
 
 ## Current Features
 
@@ -20,6 +20,11 @@ This plugin features all current (and public) knowledge on how to give economy i
 - Music Kit
   - StatTrak (with increment). 
 - Pin
+
+### Known Issues
+
+* Sometimes skin paints won't be applied. (Seems to happen with Fade paints? Observed on **Glock | Fade** and **★ Flip Knife | Fade**.)
+  (CSSharp still needs to stabilize after Fire Sale update.)
 
 ## Feature Roadmap
 
