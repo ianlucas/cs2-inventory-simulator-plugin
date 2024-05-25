@@ -15,7 +15,7 @@ public partial class InventorySimulator : BasePlugin
     public override string ModuleAuthor => "Ian Lucas";
     public override string ModuleDescription => "Inventory Simulator (inventory.cstrike.app)";
     public override string ModuleName => "InventorySimulator";
-    public override string ModuleVersion => "1.0.0-beta.25";
+    public override string ModuleVersion => "1.0.0-beta.26";
 
     public override void Load(bool hotReload)
     {
