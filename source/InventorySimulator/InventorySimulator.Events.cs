@@ -51,12 +51,15 @@ public partial class InventorySimulator
     [GameEventHandler]
     public HookResult OnItemPickup(EventItemPickup @event, GameEventInfo _)
     {
-        var player = @event.Userid;
-        if (player != null &&
-            IsPlayerHumanAndValid(player) &&
-            IsPlayerPawnValid(player))
+        if (IsWindows)
         {
-            GiveOnItemPickup(player);
+            var player = @event.Userid;
+            if (player != null &&
+                IsPlayerHumanAndValid(player) &&
+                IsPlayerPawnValid(player))
+            {
+                GiveOnItemPickup(player);
+            }
         }
 
         return HookResult.Continue;

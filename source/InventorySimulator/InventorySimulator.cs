@@ -9,7 +9,7 @@ using CounterStrikeSharp.API.Modules.Memory;
 
 namespace InventorySimulator;
 
-[MinimumApiVersion(234)]
+[MinimumApiVersion(235)]
 public partial class InventorySimulator : BasePlugin
 {
     public override string ModuleAuthor => "Ian Lucas";
