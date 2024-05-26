@@ -56,16 +56,16 @@ public partial class InventorySimulator
                 UpdatePlayerEconItemID(glove);
 
                 glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
-                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture prefab", item.Paint);
-                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture seed", item.Seed);
-                SetOrAddAttributeValueByName(glove.NetworkedDynamicAttributes.Handle, "set item texture wear", item.Wear);
+                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
+                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
+                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
 
                 glove.AttributeList.Attributes.RemoveAll();
-                SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture prefab", item.Paint);
-                SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture seed", item.Seed);
-                SetOrAddAttributeValueByName(glove.AttributeList.Handle, "set item texture wear", item.Wear);
+                glove.AttributeList.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
+                glove.AttributeList.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
+                glove.AttributeList.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
 
-                SetBodygroup(pawn.Handle, "default_gloves", 1);
+                pawn.SetBodygroup("default_gloves", 1);
             });
         }
     }
@@ -125,22 +125,22 @@ public partial class InventorySimulator
         weapon.AttributeManager.Item.AccountID = (uint)player.SteamID;
 
         weapon.AttributeManager.Item.NetworkedDynamicAttributes.Attributes.RemoveAll();
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "set item texture prefab", item.Paint);
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "set item texture seed", item.Seed);
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "set item texture wear", item.Wear);
+        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
+        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
+        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
 
         weapon.AttributeManager.Item.AttributeList.Attributes.RemoveAll();
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "set item texture prefab", item.Paint);
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "set item texture seed", item.Seed);
-        SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "set item texture wear", item.Wear);
+        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
+        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
+        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
 
         if (item.Stattrak >= 0)
         {
             weapon.FallbackStatTrak = item.Stattrak;
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "kill eater", ViewAsFloat(item.Stattrak));
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "kill eater score type", 0);
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "kill eater", ViewAsFloat(item.Stattrak));
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "kill eater score type", 0);
+            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(item.Stattrak));
+            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater score type", 0);
+            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(item.Stattrak));
+            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("kill eater score type", 0);
         }
 
         if (!isKnife)
@@ -152,8 +152,8 @@ public partial class InventorySimulator
                 // treat a uint as a float. For example, if the uint stickerId is 2229, we would interpret its value as
                 // if it were a float (e.g., float stickerId = 3.12349e-42f).
                 // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blame/main/game/shared/econ/econ_item_view.cpp#L194
-                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, $"sticker slot {sticker.Slot} id", ViewAsFloat(sticker.Def));
-                SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, $"sticker slot {sticker.Slot} wear", sticker.Wear);
+                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"sticker slot {sticker.Slot} id", ViewAsFloat(sticker.Def));
+                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"sticker slot {sticker.Slot} wear", sticker.Wear);
             }
             UpdatePlayerWeaponMeshGroupMask(player, weapon, item.Legacy);
         }
@@ -183,8 +183,8 @@ public partial class InventorySimulator
             var newValue = weapon.FallbackStatTrak + 1;
             var def = weapon.AttributeManager.Item.ItemDefinitionIndex;
             weapon.FallbackStatTrak = newValue;
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.NetworkedDynamicAttributes.Handle, "kill eater", ViewAsFloat(newValue));
-            SetOrAddAttributeValueByName(weapon.AttributeManager.Item.AttributeList.Handle, "kill eater", ViewAsFloat(newValue));
+            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(newValue));
+            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(newValue));
             var inventory = GetPlayerInventory(player);
             var item = isKnife ? inventory.GetKnife(player.TeamNum) : inventory.GetWeapon(player.Team, def);
             if (item != null)
