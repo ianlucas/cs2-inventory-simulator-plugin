@@ -12,7 +12,7 @@ namespace InventorySimulator;
 public partial class InventorySimulator
 {
     [ConsoleCommand("css_ws", "Refreshes player's inventory.")]
-    public void OnCommandWS(CCSPlayerController? player, CommandInfo _)
+    public void OnWSCommand(CCSPlayerController? player, CommandInfo _)
     {
         player?.PrintToChat(Localizer["invsim.announce", GetApiUrl()]);
 
