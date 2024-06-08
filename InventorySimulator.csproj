@@ -14,6 +14,7 @@
 		<PackageReference Include="CounterStrikeSharp.API" Version="1.0.234" />
 		<PackageReference Include="newtonsoft.json" Version="13.0.3" />
 		<LangFiles Include="source\InventorySimulator\lang\**\*.*" />
+		<None Include=".github\workflows\build-and-release.yml" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="Build">

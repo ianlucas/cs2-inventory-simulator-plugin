@@ -1,0 +1,50 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+
+env:
+  project_name: InventorySimulator
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate build number
+        id: buildnumber
+        uses: onyxmueller/build-tag-number@v1
+        with:
+          token: ${{ secrets.github_token }}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Update module version
+        run: |
+          sed -i 's/ModuleVersion => "1.0.0"/ModuleVersion => "1.${{ steps.buildnumber.outputs.build_number }}.0"/g' source/${{ env.project_name }}/${{ env.project_name }}.cs
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build the project
+        run: dotnet build
+
+      - name: Zip release
+        run: |
+          (cd bin/Release && zip -r ../../${{ env.project_name }}-v${{ steps.buildnumber.outputs.build_number }}.zip .)
+
+      - name: Release
+        id: release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{ env.project_name }} (v${{ steps.buildnumber.outputs.build_number }})
+          tag_name: v${{ steps.buildnumber.outputs.build_number }}
+          files: |
+            ${{ env.project_name }}-v${{ steps.buildnumber.outputs.build_number }}.zip
