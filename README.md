@@ -23,7 +23,7 @@ This plugin features all current (and public) knowledge on how to give economy i
 
 ### Known Issues
 
-* `Linux` `Windows` Sometimes skin paints won't be applied. (Seems to happen with Fade paints? Observed on **Glock-18 | Fade** and **★ Flip Knife | Fade**.)
+* `Linux` `Windows` After Fire Sale update (2024/05/23), sometimes skin paints won't be applied. (Seems to happen with Fade paints? Observed when having **Glock-18 | Fade** equipped as T and **★ Flip Knife | Fade** equipped as CT.)
 
 ## Feature Roadmap
 
