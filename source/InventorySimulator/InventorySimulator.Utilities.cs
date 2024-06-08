@@ -21,4 +21,15 @@ public partial class InventorySimulator
     {
         return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     }
+
+    public float ViewAsFloat<T>(T value) where T : struct
+    {
+        byte[] bytes = value switch
+        {
+            int intValue => BitConverter.GetBytes(intValue),
+            uint uintValue => BitConverter.GetBytes(uintValue),
+            _ => throw new ArgumentException("Unsupported type")
+        };
+        return BitConverter.ToSingle(bytes, 0);
+    }
 }

@@ -74,18 +74,6 @@ public partial class InventorySimulator
         }
         return EmptyInventory;
     }
-
-    public float ViewAsFloat(int value)
-    {
-        byte[] bytes = BitConverter.GetBytes(value);
-        return BitConverter.ToSingle(bytes, 0);
-    }
-
-    public float ViewAsFloat(uint value)
-    {
-        byte[] bytes = BitConverter.GetBytes(value);
-        return BitConverter.ToSingle(bytes, 0);
-    }
 }
 
 public class StickerItem
