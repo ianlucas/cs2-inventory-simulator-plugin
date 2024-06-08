@@ -3,14 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    [GameEventHandler]
     public HookResult OnPlayerConnect(EventPlayerConnect @event, GameEventInfo _)
     {
         var player = @event.Userid;
@@ -22,7 +20,6 @@ public partial class InventorySimulator
         return HookResult.Continue;
     }
 
-    [GameEventHandler]
     public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo _)
     {
         var player = @event.Userid;
@@ -34,7 +31,6 @@ public partial class InventorySimulator
         return HookResult.Continue;
     }
 
-    [GameEventHandler]
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo _)
     {
         var player = @event.Userid;
@@ -48,7 +44,6 @@ public partial class InventorySimulator
         return HookResult.Continue;
     }
 
-    [GameEventHandler]
     public HookResult OnItemPickup(EventItemPickup @event, GameEventInfo _)
     {
         if (IsWindows)
@@ -65,8 +60,7 @@ public partial class InventorySimulator
         return HookResult.Continue;
     }
 
-    [GameEventHandler(HookMode.Pre)]
-    public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo _)
+    public HookResult OnPlayerDeathPre(EventPlayerDeath @event, GameEventInfo _)
     {
         var attacker = @event.Attacker;
         var victim = @event.Userid;
@@ -89,8 +83,7 @@ public partial class InventorySimulator
         return HookResult.Continue;
     }
 
-    [GameEventHandler(HookMode.Pre)]
-    public HookResult OnRoundMvp(EventRoundMvp @event, GameEventInfo _)
+    public HookResult OnRoundMvpPre(EventRoundMvp @event, GameEventInfo _)
     {
         var player = @event.Userid;
         if (player != null &&
@@ -103,7 +96,6 @@ public partial class InventorySimulator
         return HookResult.Continue;
     }
 
-    [GameEventHandler]
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo _)
     {
         var player = @event.Userid;
