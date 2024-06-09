@@ -118,8 +118,25 @@ public partial class InventorySimulator
 
         UpdatePlayerEconItemID(weapon.AttributeManager.Item);
 
+        // After Fire Sale update (2024-05-23) we have a really weird issue with Fade skins. I happaned to find
+        // this because I had a Glock-18 | Fade equipped as a T and a Flip Knife | Fade as a CT: the first
+        // spawn as a T would have the skin applied to the Glock, however if I switched to CT my knife would
+        // not have the skin applied. Likewise, if I first spawn as CT, the Glock would not have the skin
+        // applied if I switched. I only spotted this behavior with Fade skins, but it may happen for other
+        // paint kits, but I'm going to apply this wonky workaround only for Fade skins. If people face issues
+        // with other skins we may need to generalize this to all skins. Thanks @bklol for the insight.
+        // If this happens to be a Valve bug, then we need to check every update if it was fixed.
+        if (item.Paint == 38 && item.FadeSeed == null)
+        {
+            // Here's what I found: if FallbackSeed < 3, then no skin will be applied when switching team even if
+            // we still increment NextFadeSeed (0, 1, 2). If a fade skin has the same seed as other fade skin it
+            // won't apply, so that's why we're incrementing NextFadeSeed here.
+            // Let me know if you find the real issue and fix (if any).
+            item.FadeSeed = NextFadeSeed++;
+        }
+
         weapon.FallbackPaintKit = item.Paint;
-        weapon.FallbackSeed = item.Seed;
+        weapon.FallbackSeed = item.FadeSeed != null ? item.FadeSeed.Value : item.Seed;
         weapon.FallbackWear = item.Wear;
         weapon.AttributeManager.Item.CustomName = item.Nametag;
         weapon.AttributeManager.Item.AccountID = (uint)player.SteamID;

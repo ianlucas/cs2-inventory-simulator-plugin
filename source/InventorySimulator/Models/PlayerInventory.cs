@@ -34,6 +34,8 @@ public class BaseEconItem
 
     [JsonProperty("wear")]
     public float Wear { get; set; }
+
+    public int? FadeSeed;
 }
 
 public class WeaponEconItem : BaseEconItem

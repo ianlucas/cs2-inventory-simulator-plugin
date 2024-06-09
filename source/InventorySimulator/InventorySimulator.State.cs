@@ -34,4 +34,5 @@ public partial class InventorySimulator
     public static readonly ulong MinimumCustomItemID = 68719476736;
 
     public ulong NextItemId = MinimumCustomItemID;
+    public int NextFadeSeed = 3;
 }
