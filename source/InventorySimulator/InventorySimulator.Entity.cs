@@ -42,7 +42,7 @@ public partial class InventorySimulator
         }
     }
 
-    public void UpdatePlayerEconItemID(CEconItemView econItemView)
+    public void UpdateEconItemID(CEconItemView econItemView)
     {
         // Alright, so the ItemID serves as a global identifier for items. Since we're simulating it, we're
         // using arbitrary large numbers.

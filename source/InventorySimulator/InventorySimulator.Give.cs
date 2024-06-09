@@ -53,7 +53,7 @@ public partial class InventorySimulator
             {
                 glove.Initialized = true;
                 glove.ItemDefinitionIndex = item.Def;
-                UpdatePlayerEconItemID(glove);
+                UpdateEconItemID(glove);
 
                 glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
                 glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
@@ -116,7 +116,7 @@ public partial class InventorySimulator
             weapon.AttributeManager.Item.EntityQuality = item.Stattrak >= 0 ? 9 : 0;
         }
 
-        UpdatePlayerEconItemID(weapon.AttributeManager.Item);
+        UpdateEconItemID(weapon.AttributeManager.Item);
 
         // After Fire Sale update (2024-05-23) we have a really weird issue with Fade skins. I happaned to find
         // this because I had a Glock-18 | Fade equipped as a T and a Flip Knife | Fade as a CT: the first
