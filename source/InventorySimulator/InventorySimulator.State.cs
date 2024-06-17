@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Cvars.Validators;
 using System.Runtime.InteropServices;
@@ -24,7 +25,7 @@ public partial class InventorySimulator
     public readonly HashSet<ulong> LoadedPlayerInventory = new();
 
     public readonly Dictionary<ulong, long> PlayerCooldownManager = new();
-    public readonly Dictionary<ulong, MusicKitItem> PlayerMusicKitManager = new();
+    public readonly Dictionary<ulong, (CCSPlayerController?, PlayerInventory)> PlayerOnTickManager = new();
     public readonly Dictionary<ulong, PlayerInventory> PlayerInventoryManager = new();
 
     public readonly PlayerInventory EmptyInventory = new();

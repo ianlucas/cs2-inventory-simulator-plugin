@@ -11,17 +11,19 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public void GivePlayerMusicKit(CCSPlayerController player)
+    public void GivePlayerMusicKit(CCSPlayerController player, PlayerInventory inventory)
     {
         if (!IsPlayerHumanAndValid(player)) return;
         if (player.InventoryServices == null) return;
-        if (PlayerMusicKitManager.TryGetValue(player.SteamID, out var musicKit))
+
+        var item = inventory.MusicKit;
+        if (item != null)
         {
-            player.InventoryServices.MusicID = (ushort)musicKit.Def;
+            player.InventoryServices.MusicID = (ushort)item.Def;
             Utilities.SetStateChanged(player, "CCSPlayerController", "m_pInventoryServices");
-            player.MusicKitID = musicKit.Def;
+            player.MusicKitID = item.Def;
             Utilities.SetStateChanged(player, "CCSPlayerController", "m_iMusicKitID");
-            player.MusicKitMVPs = musicKit.Stattrak;
+            player.MusicKitMVPs = item.Stattrak;
             Utilities.SetStateChanged(player, "CCSPlayerController", "m_iMusicKitMVPs");
         }
     }
@@ -218,10 +220,14 @@ public partial class InventorySimulator
 
     public void GivePlayerMusicKitStatTrakIncrement(CCSPlayerController player)
     {
-        if (PlayerMusicKitManager.TryGetValue(player.SteamID, out var musicKit))
+        if (PlayerInventoryManager.TryGetValue(player.SteamID, out var inventory))
         {
-            musicKit.Stattrak += 1;
-            SendStatTrakIncrement(player.SteamID, musicKit.Uid);
+            var item = inventory.MusicKit;
+            if (item != null)
+            {
+                item.Stattrak += 1;
+                SendStatTrakIncrement(player.SteamID, item.Uid);
+            }
         }
     }
 

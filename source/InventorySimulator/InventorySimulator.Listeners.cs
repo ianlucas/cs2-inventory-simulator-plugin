@@ -15,8 +15,11 @@ public partial class InventorySimulator
         // According to @bklol the right way to change the Music Kit is to update the player's inventory, I'm
         // pretty sure that's the best way to change anything inventory-related, but that's not something
         // public and we brute force the setting of the Music Kit here.
-        foreach (var player in Utilities.GetPlayers())
-            GivePlayerMusicKit(player);
+        foreach (var (player, inventory) in PlayerOnTickManager.Values)
+            if (player != null)
+            {
+                GivePlayerMusicKit(player, inventory);
+            }
     }
 
     public void OnEntityCreated(CEntityInstance entity)
