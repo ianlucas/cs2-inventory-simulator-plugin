@@ -14,9 +14,9 @@ public partial class InventorySimulator
         var player = @event.Userid;
         if (player != null && IsPlayerHumanAndValid(player))
         {
-            if (PlayerOnTickManager.TryGetValue(player.SteamID, out var tuple))
+            if (PlayerOnTickInventoryManager.TryGetValue(player.SteamID, out var tuple))
             {
-                PlayerOnTickManager[player.SteamID] = (player, tuple.Item2);
+                PlayerOnTickInventoryManager[player.SteamID] = (player, tuple.Item2);
             }
             RefreshPlayerInventory(player);
         }

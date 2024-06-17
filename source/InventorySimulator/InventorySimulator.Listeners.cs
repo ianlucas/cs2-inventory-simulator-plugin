@@ -15,7 +15,7 @@ public partial class InventorySimulator
         // According to @bklol the right way to change the Music Kit is to update the player's inventory, I'm
         // pretty sure that's the best way to change anything inventory-related, but that's not something
         // public and we brute force the setting of the Music Kit here.
-        foreach (var (player, inventory) in PlayerOnTickManager.Values)
+        foreach (var (player, inventory) in PlayerOnTickInventoryManager.Values)
             if (player != null)
             {
                 GivePlayerMusicKit(player, inventory);

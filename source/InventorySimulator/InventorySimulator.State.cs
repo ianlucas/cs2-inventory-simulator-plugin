@@ -25,7 +25,7 @@ public partial class InventorySimulator
     public readonly HashSet<ulong> LoadedPlayerInventory = new();
 
     public readonly Dictionary<ulong, long> PlayerCooldownManager = new();
-    public readonly Dictionary<ulong, (CCSPlayerController?, PlayerInventory)> PlayerOnTickManager = new();
+    public readonly Dictionary<ulong, (CCSPlayerController?, PlayerInventory)> PlayerOnTickInventoryManager = new();
     public readonly Dictionary<ulong, PlayerInventory> PlayerInventoryManager = new();
 
     public readonly PlayerInventory EmptyInventory = new();
