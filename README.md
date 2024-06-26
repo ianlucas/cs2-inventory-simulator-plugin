@@ -21,6 +21,10 @@ This plugin features all current (and public) knowledge on how to give economy i
   - StatTrak (with increment). 
 - Pin
 
+### Known Issues
+
+- Updated stickers for an equipped weapon will not be applied until reconnected to the server. ([#13](https://github.com/ianlucas/cs2-inventory-simulator-plugin/issues/13))
+
 ## Feature Roadmap
 
 - Select Team
