@@ -21,19 +21,12 @@ public partial class InventorySimulator : BasePlugin
     {
         LoadPlayerInventories();
 
-        if (!IsWindows)
-        {
-            // GiveNamedItemFunc hooking is not working on Windows due an issue with CounterStrikeSharp's
-            // DynamicHooks. See: https://github.com/roflmuffin/CounterStrikeSharp/issues/377
-            VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
-        }
-
         RegisterListener<Listeners.OnTick>(OnTick);
         RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         RegisterEventHandler<EventPlayerConnect>(OnPlayerConnect);
         RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull);
         RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
-        RegisterEventHandler<EventItemPickup>(OnItemPickup);
+        VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeathPre, HookMode.Pre);
         RegisterEventHandler<EventRoundMvp>(OnRoundMvpPre, HookMode.Pre);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);

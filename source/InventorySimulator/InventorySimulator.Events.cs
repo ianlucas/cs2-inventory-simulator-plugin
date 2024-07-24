@@ -48,22 +48,6 @@ public partial class InventorySimulator
         return HookResult.Continue;
     }
 
-    public HookResult OnItemPickup(EventItemPickup @event, GameEventInfo _)
-    {
-        if (IsWindows)
-        {
-            var player = @event.Userid;
-            if (player != null &&
-                IsPlayerHumanAndValid(player) &&
-                IsPlayerPawnValid(player))
-            {
-                GiveOnItemPickup(player);
-            }
-        }
-
-        return HookResult.Continue;
-    }
-
     public HookResult OnPlayerDeathPre(EventPlayerDeath @event, GameEventInfo _)
     {
         var attacker = @event.Attacker;

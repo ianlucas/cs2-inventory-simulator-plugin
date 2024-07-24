@@ -21,16 +21,15 @@ public partial class InventorySimulator
     public readonly FakeConVar<string> invsim_hostname = new("invsim_hostname", "Inventory Simulator API's hostname.", "inventory.cstrike.app");
     public readonly FakeConVar<string> invsim_protocol = new("invsim_protocol", "Inventory Simulator API's protocol.", "https");
 
-    public readonly HashSet<ulong> FetchingPlayerInventory = new();
-    public readonly HashSet<ulong> LoadedPlayerInventory = new();
+    public readonly HashSet<ulong> FetchingPlayerInventory = [];
+    public readonly HashSet<ulong> LoadedPlayerInventory = [];
 
-    public readonly Dictionary<ulong, long> PlayerCooldownManager = new();
-    public readonly Dictionary<ulong, (CCSPlayerController?, PlayerInventory)> PlayerOnTickInventoryManager = new();
-    public readonly Dictionary<ulong, PlayerInventory> PlayerInventoryManager = new();
+    public readonly Dictionary<ulong, long> PlayerCooldownManager = [];
+    public readonly Dictionary<ulong, (CCSPlayerController?, PlayerInventory)> PlayerOnTickInventoryManager = [];
+    public readonly Dictionary<ulong, PlayerInventory> PlayerInventoryManager = [];
 
     public readonly PlayerInventory EmptyInventory = new();
 
-    public static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
     public static readonly string InventoryFilePath = "csgo/addons/counterstrikesharp/configs/plugins/InventorySimulator/inventories.json";
     public static readonly ulong MinimumCustomItemID = 68719476736;
 

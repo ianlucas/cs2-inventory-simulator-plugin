@@ -244,27 +244,4 @@ public partial class InventorySimulator
         var inventory = GetPlayerInventory(player);
         GivePlayerPin(player, inventory);
     }
-
-    // Nuke this when roflmuffin/CounterStrikeSharp#377 is resolved. This workaround makes sure the
-    // subclass of a knife will be changed as soon as the player receives it. Only needed on Windows
-    // because on Linux we hook GiveNamedItem that happens a bit early than this event.
-    public void GiveOnItemPickup(CCSPlayerController player)
-    {
-        var pawn = player.PlayerPawn.Value;
-        if (pawn != null)
-        {
-            var myWeapons = pawn.WeaponServices?.MyWeapons;
-            if (myWeapons != null)
-            {
-                foreach (var handle in myWeapons)
-                {
-                    var weapon = handle.Value;
-                    if (weapon != null && IsKnifeClassName(weapon.DesignerName))
-                    {
-                        GivePlayerWeaponSkin(player, weapon);
-                    }
-                }
-            }
-        }
-    }
 }
