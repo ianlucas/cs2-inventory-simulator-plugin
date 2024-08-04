@@ -16,7 +16,7 @@ public partial class InventorySimulator
 {
     public string GetApiUrl(string pathname = "")
     {
-        return $"{invsim_protocol.Value}://{invsim_hostname.Value}{pathname}";
+        return $"{Config.Invsim_protocol}://{Config.Invsim_hostname}{pathname}";
     }
 
     public async Task<T?> Fetch<T>(string pathname, bool rethrow = false)
@@ -88,7 +88,7 @@ public partial class InventorySimulator
                 // Try again to fetch data (up to 3 times).
             }
         }
-        
+
         FetchingPlayerInventory.Remove(steamId);
     }
 
@@ -110,12 +110,12 @@ public partial class InventorySimulator
 
     public async void SendStatTrakIncrement(ulong userId, int targetUid)
     {
-        if (invsim_apikey.Value == "")
+        if (Config.Invsim_apikey == "")
             return;
 
         await Send($"/api/increment-item-stattrak", new
         {
-            apiKey = invsim_apikey.Value,
+            apiKey = Config.Invsim_apikey,
             targetUid,
             userId = userId.ToString()
         });

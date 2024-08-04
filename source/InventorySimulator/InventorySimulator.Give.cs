@@ -74,7 +74,7 @@ public partial class InventorySimulator
 
     public void GivePlayerAgent(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (invsim_minmodels.Value > 0)
+        if (Config.Invsim_minmodels > 0)
         {
             // For now any value non-zero will force SAS & Phoenix.
             // In the future: 1 - Map agents only, 2 - SAS & Phoenix.

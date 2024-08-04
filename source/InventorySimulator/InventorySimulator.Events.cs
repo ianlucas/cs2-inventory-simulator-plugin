@@ -58,7 +58,7 @@ public partial class InventorySimulator
                 IsPlayerHumanAndValid(attacker) &&
                 IsPlayerPawnValid(attacker));
             var isValidVictim = (
-                invsim_stattrak_ignore_bots.Value
+                Config.Invsim_stattrak_ignore_bots
                     ? IsPlayerHumanAndValid(victim)
                     : IsPlayerValid(victim)) &&
                 IsPlayerPawnValid(victim);

@@ -11,30 +11,30 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    [ConsoleCommand("css_ws", "Refreshes player's inventory.")]
-    public void OnWSCommand(CCSPlayerController? player, CommandInfo _)
+  [ConsoleCommand("css_ws", "Refreshes player's inventory.")]
+  public void OnWSCommand(CCSPlayerController? player, CommandInfo _)
+  {
+    player?.PrintToChat(Localizer["invsim.announce", GetApiUrl()]);
+
+    if (!Config.Invsim_ws_enabled || player == null) return;
+    if (PlayerCooldownManager.TryGetValue(player.SteamID, out var timestamp))
     {
-        player?.PrintToChat(Localizer["invsim.announce", GetApiUrl()]);
-
-        if (!invsim_ws_enabled.Value || player == null) return;
-        if (PlayerCooldownManager.TryGetValue(player.SteamID, out var timestamp))
-        {
-            var cooldown = invsim_ws_cooldown.Value;
-            var diff = Now() - timestamp;
-            if (diff < cooldown)
-            {
-                player.PrintToChat(Localizer["invsim.ws_cooldown", cooldown - diff]);
-                return;
-            }
-        }
-
-        if (FetchingPlayerInventory.Contains(player.SteamID))
-        {
-            player.PrintToChat(Localizer["invsim.ws_in_progress"]);
-            return;
-        }
-
-        RefreshPlayerInventory(player, true);
-        player.PrintToChat(Localizer["invsim.ws_new"]);
+      var cooldown = Config.Invsim_ws_cooldown;
+      var diff = Now() - timestamp;
+      if (diff < cooldown)
+      {
+        player.PrintToChat(Localizer["invsim.ws_cooldown", cooldown - diff]);
+        return;
+      }
     }
+
+    if (FetchingPlayerInventory.Contains(player.SteamID))
+    {
+      player.PrintToChat(Localizer["invsim.ws_in_progress"]);
+      return;
+    }
+
+    RefreshPlayerInventory(player, true);
+    player.PrintToChat(Localizer["invsim.ws_new"]);
+  }
 }
