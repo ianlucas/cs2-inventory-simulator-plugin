@@ -108,7 +108,7 @@ public partial class InventorySimulator
         {
             if (entityDef != item.Def)
             {
-                ChangeSubclass(weapon.Handle, item.Def.ToString());
+                weapon.ChangeSubclass(item.Def);
             }
             weapon.AttributeManager.Item.ItemDefinitionIndex = item.Def;
             weapon.AttributeManager.Item.EntityQuality = 3;
