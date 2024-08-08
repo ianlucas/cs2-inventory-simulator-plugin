@@ -4,35 +4,34 @@
  *--------------------------------------------------------------------------------------------*/
 
 using CounterStrikeSharp.API.Modules.Utils;
-using Newtonsoft.Json;
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace InventorySimulator;
 
 public class StickerItem
 {
-    [JsonProperty("def")]
+    [JsonPropertyName("def")]
     public uint Def { get; set; }
 
-    [JsonProperty("slot")]
+    [JsonPropertyName("slot")]
     public ushort Slot { get; set; }
 
-    [JsonProperty("wear")]
+    [JsonPropertyName("wear")]
     public float Wear { get; set; }
 }
 
 public class BaseEconItem
 {
-    [JsonProperty("def")]
+    [JsonPropertyName("def")]
     public ushort Def { get; set; }
 
-    [JsonProperty("paint")]
+    [JsonPropertyName("paint")]
     public int Paint { get; set; }
 
-    [JsonProperty("seed")]
+    [JsonPropertyName("seed")]
     public int Seed { get; set; }
 
-    [JsonProperty("wear")]
+    [JsonPropertyName("wear")]
     public float Wear { get; set; }
 
     public int? FadeSeed;
@@ -40,73 +39,73 @@ public class BaseEconItem
 
 public class WeaponEconItem : BaseEconItem
 {
-    [JsonProperty("legacy")]
+    [JsonPropertyName("legacy")]
     public bool Legacy { get; set; }
 
-    [JsonProperty("nametag")]
+    [JsonPropertyName("nametag")]
     public required string Nametag { get; set; }
 
-    [JsonProperty("stattrak")]
+    [JsonPropertyName("stattrak")]
     public required int Stattrak { get; set; }
 
-    [JsonProperty("stickers")]
+    [JsonPropertyName("stickers")]
     public required List<StickerItem> Stickers { get; set; }
 
-    [JsonProperty("uid")]
+    [JsonPropertyName("uid")]
     public required int Uid { get; set; }
 }
 
 public class AgentItem
 {
-    [JsonProperty("model")]
+    [JsonPropertyName("model")]
     public required string Model { get; set; }
 
-    [JsonProperty("patches")]
+    [JsonPropertyName("patches")]
     public required List<uint> Patches { get; set; }
 
-    [JsonProperty("vofallback")]
+    [JsonPropertyName("vofallback")]
     public required bool VoFallback { get; set; }
 
-    [JsonProperty("vofemale")]
+    [JsonPropertyName("vofemale")]
     public required bool VoFemale { get; set; }
 
-    [JsonProperty("voprefix")]
+    [JsonPropertyName("voprefix")]
     public required string VoPrefix { get; set; }
 }
 
 public class MusicKitItem
 {
-    [JsonProperty("def")]
+    [JsonPropertyName("def")]
     public int Def { get; set; }
 
-    [JsonProperty("stattrak")]
+    [JsonPropertyName("stattrak")]
     public required int Stattrak { get; set; }
 
-    [JsonProperty("uid")]
+    [JsonPropertyName("uid")]
     public required int Uid { get; set; }
 }
 
 public class PlayerInventory
 {
-    [JsonProperty("knives")]
+    [JsonPropertyName("knives")]
     public Dictionary<byte, WeaponEconItem> Knives { get; set; }
 
-    [JsonProperty("gloves")]
+    [JsonPropertyName("gloves")]
     public Dictionary<byte, BaseEconItem> Gloves { get; set; }
 
-    [JsonProperty("tWeapons")]
+    [JsonPropertyName("tWeapons")]
     public Dictionary<ushort, WeaponEconItem> TWeapons { get; set; }
 
-    [JsonProperty("ctWeapons")]
+    [JsonPropertyName("ctWeapons")]
     public Dictionary<ushort, WeaponEconItem> CTWeapons { get; set; }
 
-    [JsonProperty("agents")]
+    [JsonPropertyName("agents")]
     public Dictionary<byte, AgentItem> Agents { get; set; }
 
-    [JsonProperty("pin")]
+    [JsonPropertyName("pin")]
     public uint? Pin { get; set; }
 
-    [JsonProperty("musicKit")]
+    [JsonPropertyName("musicKit")]
     public MusicKitItem? MusicKit { get; set; }
 
     [JsonConstructor]

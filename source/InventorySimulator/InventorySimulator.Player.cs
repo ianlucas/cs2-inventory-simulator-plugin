@@ -6,7 +6,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace InventorySimulator;
 
@@ -21,7 +21,7 @@ public partial class InventorySimulator
                 return;
 
             string json = File.ReadAllText(path);
-            var inventories = JsonConvert.DeserializeObject<Dictionary<ulong, PlayerInventory>>(json);
+            var inventories = JsonSerializer.Deserialize<Dictionary<ulong, PlayerInventory>>(json);
             if (inventories != null)
             {
                 foreach (var pair in inventories)

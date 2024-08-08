@@ -6,9 +6,9 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 
 namespace InventorySimulator;
 
@@ -28,7 +28,7 @@ public partial class InventorySimulator
             response.EnsureSuccessStatusCode();
 
             string jsonContent = response.Content.ReadAsStringAsync().Result;
-            T? data = JsonConvert.DeserializeObject<T>(jsonContent);
+            T? data = JsonSerializer.Deserialize<T>(jsonContent);
             return data;
         }
         catch (Exception error)
@@ -43,7 +43,7 @@ public partial class InventorySimulator
     {
         try
         {
-            var json = JsonConvert.SerializeObject(data);
+            var json = JsonSerializer.Serialize(data);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             using HttpClient client = new();
             var response = await client.PostAsync(GetApiUrl(pathname), content);

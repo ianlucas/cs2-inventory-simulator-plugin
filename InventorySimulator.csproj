@@ -12,7 +12,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="CounterStrikeSharp.API" Version="1.0.234" />
-		<PackageReference Include="newtonsoft.json" Version="13.0.3" />
 		<LangFiles Include="source\InventorySimulator\lang\**\*.*" />
 		<None Include=".github\workflows\build-and-release.yml" />
 	</ItemGroup>
@@ -20,7 +19,6 @@
 	<Target Name="PostBuild" AfterTargets="Build">
 		<Copy SourceFiles="@(LangFiles)" DestinationFolder="$(OutputPath)\lang" />
 		<Copy SourceFiles="gamedata\inventory-simulator.json" DestinationFolder="$(OutputPath)\..\..\gamedata" />
-		<Copy SourceFiles="$(NuGetPackageRoot)\newtonsoft.json\13.0.3\lib\net6.0\Newtonsoft.Json.dll" DestinationFolder="$(OutputPath)" />
 	</Target>
 
 </Project>
