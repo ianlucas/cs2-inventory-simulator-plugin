@@ -19,14 +19,14 @@ jobs:
           token: ${{ secrets.github_token }}
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Update module version
         run: |
           sed -i 's/ModuleVersion => "1.0.0"/ModuleVersion => "1.${{ steps.buildnumber.outputs.build_number }}.0"/g' source/${{ env.project_name }}/${{ env.project_name }}.cs
 
       - name: Set up .NET 8
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
 
