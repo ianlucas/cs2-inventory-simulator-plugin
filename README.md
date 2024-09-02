@@ -20,16 +20,17 @@ This plugin features all current (and public) knowledge on how to give economy i
 - Music Kit
   - StatTrak (with increment). 
 - Pin
+- Graffiti*
 
 ### Known Issues
 
+- *Graffiti requires an equipped graffiti (and will consume it).
 - Updated stickers for an equipped weapon will not be applied until reconnected to the server. ([#13](https://github.com/ianlucas/cs2-inventory-simulator-plugin/issues/13))
 
 ## Feature Roadmap
 
 - Select Team
 - Team Intro
-- ⛔ Graffiti - Reversing needed.
 
 > [!WARNING]  
 > Currently, I'm accepting issue reports, but please refrain from opening feature requests or suggestion issues as they will be closed. While I may consider your comments, the issue will remain closed.

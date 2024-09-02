@@ -244,4 +244,18 @@ public partial class InventorySimulator
         var inventory = GetPlayerInventory(player);
         GivePlayerPin(player, inventory);
     }
+
+    public void GivePlayerGraffiti(CCSPlayerController player, CPlayerSprayDecal sprayDecal)
+    {
+        var inventory = GetPlayerInventory(player);
+        var item = inventory.Graffiti;
+
+        if (item != null)
+        {
+            sprayDecal.Player = item.Def;
+            Utilities.SetStateChanged(sprayDecal, "CPlayerSprayDecal", "m_nPlayer");
+            sprayDecal.TintID = item.Tint;
+            Utilities.SetStateChanged(sprayDecal, "CPlayerSprayDecal", "m_nTintID");
+        }
+    }
 }

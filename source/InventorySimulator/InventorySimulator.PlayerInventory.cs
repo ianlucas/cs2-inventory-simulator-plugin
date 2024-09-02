@@ -85,47 +85,49 @@ public class MusicKitItem
     public required int Uid { get; set; }
 }
 
-public class PlayerInventory
+public class GraffitiItem
+{
+    [JsonPropertyName("def")]
+    public required int Def { get; set; }
+
+    [JsonPropertyName("tint")]
+    public required int Tint { get; set; }
+}
+
+[method: JsonConstructor]
+public class PlayerInventory(
+    Dictionary<byte, WeaponEconItem>? knives = null,
+    Dictionary<byte, BaseEconItem>? gloves = null,
+    Dictionary<ushort, WeaponEconItem>? tWeapons = null,
+    Dictionary<ushort, WeaponEconItem>? ctWeapons = null,
+    Dictionary<byte, AgentItem>? agents = null,
+    uint? pin = null,
+    MusicKitItem? musicKit = null,
+    GraffitiItem? graffiti = null)
 {
     [JsonPropertyName("knives")]
-    public Dictionary<byte, WeaponEconItem> Knives { get; set; }
+    public Dictionary<byte, WeaponEconItem> Knives { get; set; } = knives ?? [];
 
     [JsonPropertyName("gloves")]
-    public Dictionary<byte, BaseEconItem> Gloves { get; set; }
+    public Dictionary<byte, BaseEconItem> Gloves { get; set; } = gloves ?? [];
 
     [JsonPropertyName("tWeapons")]
-    public Dictionary<ushort, WeaponEconItem> TWeapons { get; set; }
+    public Dictionary<ushort, WeaponEconItem> TWeapons { get; set; } = tWeapons ?? [];
 
     [JsonPropertyName("ctWeapons")]
-    public Dictionary<ushort, WeaponEconItem> CTWeapons { get; set; }
+    public Dictionary<ushort, WeaponEconItem> CTWeapons { get; set; } = ctWeapons ?? [];
 
     [JsonPropertyName("agents")]
-    public Dictionary<byte, AgentItem> Agents { get; set; }
+    public Dictionary<byte, AgentItem> Agents { get; set; } = agents ?? [];
 
     [JsonPropertyName("pin")]
-    public uint? Pin { get; set; }
+    public uint? Pin { get; set; } = pin;
 
     [JsonPropertyName("musicKit")]
-    public MusicKitItem? MusicKit { get; set; }
+    public MusicKitItem? MusicKit { get; set; } = musicKit;
 
-    [JsonConstructor]
-    public PlayerInventory(
-        Dictionary<byte, WeaponEconItem>? knives = null,
-        Dictionary<byte, BaseEconItem>? gloves = null,
-        Dictionary<ushort, WeaponEconItem>? tWeapons = null,
-        Dictionary<ushort, WeaponEconItem>? ctWeapons = null,
-        Dictionary<byte, AgentItem>? agents = null,
-        uint? pin = null,
-        MusicKitItem? musicKit = null)
-    {
-        Knives = knives ?? [];
-        Gloves = gloves ?? [];
-        TWeapons = tWeapons ?? [];
-        CTWeapons = ctWeapons ?? [];
-        Agents = agents ?? [];
-        Pin = pin;
-        MusicKit = musicKit;
-    }
+    [JsonPropertyName("graffiti")]
+    public GraffitiItem? Graffiti { get; set; } = graffiti;
 
     public WeaponEconItem? GetKnife(byte team)
     {

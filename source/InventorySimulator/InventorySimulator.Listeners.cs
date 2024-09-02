@@ -33,10 +33,22 @@ public partial class InventorySimulator
                 var weapon = new CBasePlayerWeapon(entity.Handle);
                 if (!weapon.IsValid || weapon.OriginalOwnerXuidLow == 0) return;
 
-                var player = Utilities.GetPlayerFromSteamId((ulong)weapon.OriginalOwnerXuidLow);
+                var player = Utilities.GetPlayerFromSteamId(weapon.OriginalOwnerXuidLow);
                 if (player == null || !IsPlayerHumanAndValid(player)) return;
 
                 GivePlayerWeaponSkin(player, weapon);
+            });
+        } else if (designerName == "player_spray_decal")
+        {
+            Server.NextFrame(() =>
+            {
+                var sprayDecal = new CPlayerSprayDecal(entity.Handle);
+                if (!sprayDecal.IsValid || sprayDecal.AccountID == 0) return;
+
+                var player = Utilities.GetPlayerFromSteamId(sprayDecal.AccountID);
+                if (player == null || !IsPlayerHumanAndValid(player)) return;
+
+                GivePlayerGraffiti(player, sprayDecal);
             });
         }
     }
