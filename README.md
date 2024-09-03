@@ -103,7 +103,7 @@ This plugin features all current (and public) knowledge on how to give economy i
 
 #### `!spray` Command
 
-* Sprays the player in the nearest wall if possible. Player can bind it using to `T` key using `bind t css_spray`.
+* Sprays player's graffiti in the nearest wall if possible. Player can bind it using to `T` key using `bind t css_spray`.
 
 ## See also
 
