@@ -269,8 +269,8 @@ public partial class InventorySimulator
         if (pawn == null || pawn.LifeState != (int)LifeState_t.LIFE_ALIVE) return;
         var absOrigin = pawn.AbsOrigin;
         var cameraServices = pawn.CameraServices;
-        var movimentServices = pawn.MovementServices?.As<CCSPlayer_MovementServices>();
-        if (absOrigin == null || cameraServices == null || movimentServices == null) return;
+        var movementServices = pawn.MovementServices?.As<CCSPlayer_MovementServices>();
+        if (absOrigin == null || cameraServices == null || movementServices == null) return;
         if (!pawn.IsAbleToApplySpray()) return;
         player.ExecuteClientCommand("play sounds/items/spraycan_shake");
         PlayerSprayCooldownManager[player.SteamID] = Now();
@@ -288,7 +288,7 @@ public partial class InventorySimulator
             {
                 sprayDecal.EndPos.Add(endPos);
                 sprayDecal.Start.Add(endPos);
-                sprayDecal.Left.Add(movimentServices.Left);
+                sprayDecal.Left.Add(movementServices.Left);
                 sprayDecal.Normal.Add(normalPos);
                 sprayDecal.AccountID = (uint)player.SteamID;
                 sprayDecal.Player = item.Def;
