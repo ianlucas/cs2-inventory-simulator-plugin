@@ -63,6 +63,8 @@ public partial class InventorySimulator
         if (!LoadedPlayerInventory.Contains(steamId))
         {
             PlayerInventoryManager.Remove(steamId, out _);
+            PlayerCooldownManager.Remove(steamId, out _);
+            PlayerSprayCooldownManager.Remove(steamId, out _);
             PlayerOnTickInventoryManager.Remove(steamId, out _);
         }
         if (PlayerOnTickInventoryManager.TryGetValue(steamId, out var tuple))
