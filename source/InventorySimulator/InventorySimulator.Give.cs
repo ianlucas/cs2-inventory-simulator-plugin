@@ -258,4 +258,44 @@ public partial class InventorySimulator
             Utilities.SetStateChanged(sprayDecal, "CPlayerSprayDecal", "m_nTintID");
         }
     }
+
+    public void SprayPlayerGraffiti(CCSPlayerController player)
+    {
+        if (!IsPlayerHumanAndValid(player)) return;
+        var inventory = GetPlayerInventory(player);
+        var item = inventory.Graffiti;
+        if (item == null) return;
+        var pawn = player.PlayerPawn.Value;
+        if (pawn == null || pawn.LifeState != (int)LifeState_t.LIFE_ALIVE) return;
+        var absOrigin = pawn.AbsOrigin;
+        var cameraServices = pawn.CameraServices;
+        var movimentServices = pawn.MovementServices?.As<CCSPlayer_MovementServices>();
+        if (absOrigin == null || cameraServices == null || movimentServices == null) return;
+        if (!pawn.IsAbleToApplySpray()) return;
+        player.ExecuteClientCommand("play sounds/items/spraycan_shake");
+        PlayerSprayCooldownManager[player.SteamID] = Now();
+        var trace = GameTraceManager.Trace(
+            new Vector(absOrigin.X, absOrigin.Y, absOrigin.Z + cameraServices.OldPlayerViewOffsetZ),
+            pawn.EyeAngles,
+            false,
+            true);
+        if (trace != null)
+        {
+            var endPos = trace.Value.Item1;
+            var normalPos = trace.Value.Item2;
+            var sprayDecal = Utilities.CreateEntityByName<CPlayerSprayDecal>("player_spray_decal");
+            if (sprayDecal != null)
+            {
+                sprayDecal.EndPos.Add(endPos);
+                sprayDecal.Start.Add(endPos);
+                sprayDecal.Left.Add(movimentServices.Left);
+                sprayDecal.Normal.Add(normalPos);
+                sprayDecal.AccountID = (uint)player.SteamID;
+                sprayDecal.Player = item.Def;
+                sprayDecal.TintID = item.Tint;
+                sprayDecal.DispatchSpawn();
+                player.ExecuteClientCommand("play sounds/items/spraycan_spray");
+            }
+        }
+    }
 }

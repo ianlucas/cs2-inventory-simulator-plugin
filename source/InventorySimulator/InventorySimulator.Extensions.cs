@@ -30,6 +30,11 @@ public static class Extensions
 
     public static readonly Func<IntPtr, string, int, int> SetBodygroupFunc = SetBodygroupMemFunc.Invoke;
 
+    public static readonly MemoryFunctionWithReturn<IntPtr, IntPtr, IntPtr, IntPtr, IntPtr> IsAbleToApplySprayMemFunc = new(
+        GameData.GetSignature("CCSPlayerPawn_IsAbleToApplySpray"));
+
+    public static readonly Func<IntPtr, IntPtr, IntPtr, IntPtr, IntPtr> IsAbleToApplySprayFunc = IsAbleToApplySprayMemFunc.Invoke;
+
     public static int ChangeSubclass(this CBasePlayerWeapon weapon, ushort itemDef)
     {
         return ChangeSubclassFunc(weapon.Handle, itemDef.ToString());
@@ -43,5 +48,10 @@ public static class Extensions
     public static int SetBodygroup(this CCSPlayerPawn pawn, string group, int value)
     {
         return SetBodygroupFunc(pawn.Handle, group, value);
+    }
+
+    public static bool IsAbleToApplySpray(this CCSPlayerPawn pawn)
+    {
+        return IsAbleToApplySprayFunc(pawn.Handle, 0, 0, 0) == IntPtr.Zero;
     }
 }

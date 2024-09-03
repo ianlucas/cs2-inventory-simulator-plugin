@@ -37,4 +37,24 @@ public partial class InventorySimulator
         RefreshPlayerInventory(player, true);
         player.PrintToChat(Localizer["invsim.ws_new"]);
     }
+
+    [ConsoleCommand("css_spray", "Spray player's graffiti.")]
+    public void OnSprayCommand(CCSPlayerController? player, CommandInfo _)
+    {
+        if (player != null)
+        {
+            if (PlayerSprayCooldownManager.TryGetValue(player.SteamID, out var timestamp))
+            {
+                var cooldown = invsim_spray_cooldown.Value;
+                var diff = Now() - timestamp;
+                if (diff < cooldown)
+                {
+                    player.PrintToChat(Localizer["invsim.spray_cooldown", cooldown - diff]);
+                    return;
+                }
+            }
+
+            SprayPlayerGraffiti(player);
+        }
+    }
 }

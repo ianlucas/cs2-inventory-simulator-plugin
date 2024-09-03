@@ -40,6 +40,9 @@ public partial class InventorySimulator
             });
         } else if (designerName == "player_spray_decal")
         {
+            if (!invsim_spraychanger_enabled.Value)
+                return;
+
             Server.NextFrame(() =>
             {
                 var sprayDecal = new CPlayerSprayDecal(entity.Handle);

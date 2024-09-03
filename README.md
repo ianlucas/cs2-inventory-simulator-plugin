@@ -20,11 +20,10 @@ This plugin features all current (and public) knowledge on how to give economy i
 - Music Kit
   - StatTrak (with increment). 
 - Pin
-- Graffiti*
+- Graffiti
 
 ### Known Issues
 
-- *Graffiti requires an equipped graffiti (and will consume it).
 - Updated stickers for an equipped weapon will not be applied until reconnected to the server. ([#13](https://github.com/ianlucas/cs2-inventory-simulator-plugin/issues/13))
 
 ## Feature Roadmap
@@ -84,11 +83,27 @@ This plugin features all current (and public) knowledge on how to give economy i
 * **Type:** `int`
 * **Default:** `30`
 
+#### `invsim_spraychanger_enabled` ConVar
+
+* Whether to change player vanilla spray if they have a graffiti equipped.
+* **Type:** `bool`
+* **Default:** `false`
+
+#### `invsim_spray_cooldown` ConVar
+
+* Cooldown in seconds between player sprays.
+* **Type:** `int`
+* **Default:** `30`
+
 ### Commands
 
 #### `!ws` Command
 
 * Prints Inventory Simulator's website and refreshes player's inventory if `invsim_ws_enabled` ConVar is `true`.
+
+#### `!spray` Command
+
+* Sprays the player in the nearest wall if possible. Player can bind it using to `T` key using `bind t css_spray`.
 
 ## See also
 
