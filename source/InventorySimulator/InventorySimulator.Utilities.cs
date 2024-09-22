@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using CounterStrikeSharp.API.Core;
+
 namespace InventorySimulator;
 
 public partial class InventorySimulator
@@ -31,5 +33,21 @@ public partial class InventorySimulator
             _ => throw new ArgumentException("Unsupported type")
         };
         return BitConverter.ToSingle(bytes, 0);
+    }
+
+    public bool IsGiveNextSpawn(CCSPlayerController player)
+    {
+        if (invsim_validate_spawn.Value && !PlayerInventoryManager.ContainsKey(player.SteamID))
+        {
+            PlayerGiveNextSpawn[player.SteamID] = true;
+            return true;
+        }
+        PlayerGiveNextSpawn.Remove(player.SteamID, out bool _);
+        return false;
+    }
+
+    public bool CanGivePlayer(CCSPlayerController player)
+    {
+        return !PlayerGiveNextSpawn.ContainsKey(player.SteamID);
     }
 }

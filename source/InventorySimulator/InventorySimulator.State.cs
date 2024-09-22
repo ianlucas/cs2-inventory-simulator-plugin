@@ -16,6 +16,7 @@ public partial class InventorySimulator
     public readonly FakeConVar<bool> invsim_stattrak_ignore_bots = new("invsim_stattrak_ignore_bots", "Whether to ignore StatTrak increments for bot kills.", true);
     public readonly FakeConVar<bool> invsim_spraychanger_enabled = new("invsim_spraychanger_enabled", "Whether to change player vanilla spray if they have a graffiti equipped.", false);
     public readonly FakeConVar<bool> invsim_ws_enabled = new("invsim_ws_enabled", "Whether players can refresh their inventory using !ws.", false);
+    public readonly FakeConVar<bool> invsim_validate_spawn = new("invsim_validate_spawn", "Whether to validate the player's inventory on spawn.", false);
     public readonly FakeConVar<int> invsim_minmodels = new("invsim_minmodels", "Allows agents or use specific models for each team.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
     public readonly FakeConVar<int> invsim_ws_cooldown = new("invsim_ws_cooldown", "Cooldown in seconds between player inventory refreshes.", 30);
     public readonly FakeConVar<int> invsim_spray_cooldown = new("invsim_spray_cooldown", "Cooldown in seconds between player sprays.", 30);
@@ -31,6 +32,7 @@ public partial class InventorySimulator
     public readonly ConcurrentDictionary<ulong, long> PlayerSprayCooldownManager = [];
     public readonly ConcurrentDictionary<ulong, (CCSPlayerController?, PlayerInventory)> PlayerOnTickInventoryManager = [];
     public readonly ConcurrentDictionary<ulong, PlayerInventory> PlayerInventoryManager = [];
+    public readonly ConcurrentDictionary<ulong, bool> PlayerGiveNextSpawn = [];
 
     public readonly PlayerInventory EmptyInventory = new();
 
