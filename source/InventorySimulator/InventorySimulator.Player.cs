@@ -33,7 +33,7 @@ public partial class InventorySimulator
         }
         catch
         {
-            Logger.LogError($"Error when processing \"inventories.json\".");
+            Logger.LogError($"Error when processing \"{invsim_file.Value}\".");
         }
     }
 

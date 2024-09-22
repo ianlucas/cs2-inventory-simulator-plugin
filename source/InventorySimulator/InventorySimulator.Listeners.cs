@@ -55,4 +55,9 @@ public partial class InventorySimulator
             });
         }
     }
+
+    public void OnInvsimFileChanged(object? _, string __)
+    {
+        LoadPlayerInventories();
+    }
 }

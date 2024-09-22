@@ -19,8 +19,6 @@ public partial class InventorySimulator : BasePlugin
 
     public override void Load(bool hotReload)
     {
-        LoadPlayerInventories();
-
         RegisterListener<Listeners.OnTick>(OnTick);
         RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         RegisterEventHandler<EventPlayerConnect>(OnPlayerConnect);
@@ -30,5 +28,8 @@ public partial class InventorySimulator : BasePlugin
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeathPre, HookMode.Pre);
         RegisterEventHandler<EventRoundMvp>(OnRoundMvpPre, HookMode.Pre);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
+        
+        LoadPlayerInventories();
+        invsim_file.ValueChanged += OnInvsimFileChanged;
     }
 }
