@@ -22,6 +22,7 @@ public partial class InventorySimulator
     public readonly FakeConVar<string> invsim_apikey = new("invsim_apikey", "Inventory Simulator API's key.", "");
     public readonly FakeConVar<string> invsim_hostname = new("invsim_hostname", "Inventory Simulator API's hostname.", "inventory.cstrike.app");
     public readonly FakeConVar<string> invsim_protocol = new("invsim_protocol", "Inventory Simulator API's protocol.", "https");
+    public readonly FakeConVar<string> invsim_file = new("invsim_file", "File to load when plugin is loaded.", "inventories.json");
 
     public readonly HashSet<ulong> FetchingPlayerInventory = [];
     public readonly HashSet<ulong> LoadedPlayerInventory = [];
@@ -33,7 +34,7 @@ public partial class InventorySimulator
 
     public readonly PlayerInventory EmptyInventory = new();
 
-    public static readonly string InventoryFilePath = "csgo/addons/counterstrikesharp/configs/plugins/InventorySimulator/inventories.json";
+    public static readonly string InventoryFileDir = "csgo/addons/counterstrikesharp/configs/plugins/InventorySimulator";
     public static readonly ulong MinimumCustomItemID = 68719476736;
 
     public ulong NextItemId = MinimumCustomItemID;

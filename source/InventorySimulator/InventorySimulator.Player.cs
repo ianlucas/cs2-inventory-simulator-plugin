@@ -16,7 +16,7 @@ public partial class InventorySimulator
     {
         try
         {
-            var path = Path.Combine(Server.GameDirectory, InventoryFilePath);
+            var path = Path.Combine(Server.GameDirectory, InventoryFileDir, invsim_file.Value);
             if (!File.Exists(path))
                 return;
 
