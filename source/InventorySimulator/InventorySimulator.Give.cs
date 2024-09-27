@@ -13,7 +13,6 @@ public partial class InventorySimulator
 {
     public void GivePlayerMusicKit(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (!CanGivePlayer(player)) return;
         if (!IsPlayerHumanAndValid(player)) return;
         if (player.InventoryServices == null) return;
 
@@ -31,7 +30,6 @@ public partial class InventorySimulator
 
     public void GivePlayerPin(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (!CanGivePlayer(player)) return;
         if (player.InventoryServices == null) return;
 
         var pin = inventory.Pin;
@@ -46,8 +44,6 @@ public partial class InventorySimulator
 
     public void GivePlayerGloves(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (!CanGivePlayer(player)) return;
-
         var pawn = player.PlayerPawn.Value;
         if (pawn == null || pawn.Handle == IntPtr.Zero)
             return;
@@ -78,7 +74,6 @@ public partial class InventorySimulator
 
     public void GivePlayerAgent(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (!CanGivePlayer(player)) return;
         if (invsim_minmodels.Value > 0)
         {
             // For now any value non-zero will force SAS & Phoenix.
@@ -101,7 +96,6 @@ public partial class InventorySimulator
 
     public void GivePlayerWeaponSkin(CCSPlayerController player, CBasePlayerWeapon weapon)
     {
-        if (!CanGivePlayer(player)) return;
         if (IsCustomWeaponItemID(weapon)) return;
 
         var isKnife = IsKnifeClassName(weapon.DesignerName);
@@ -191,7 +185,6 @@ public partial class InventorySimulator
     {
         try
         {
-            if (!CanGivePlayer(player)) return;
             var weapon = player.PlayerPawn.Value?.WeaponServices?.ActiveWeapon.Value;
 
             if (
@@ -227,7 +220,6 @@ public partial class InventorySimulator
 
     public void GivePlayerMusicKitStatTrakIncrement(CCSPlayerController player)
     {
-        if (!CanGivePlayer(player)) return;
         if (PlayerInventoryManager.TryGetValue(player.SteamID, out var inventory))
         {
             var item = inventory.MusicKit;
@@ -242,8 +234,6 @@ public partial class InventorySimulator
     public void GiveOnPlayerSpawn(CCSPlayerController player)
     {
         var inventory = GetPlayerInventory(player);
-        if (IsGiveNextSpawn(player))
-            return;
         GivePlayerPin(player, inventory);
         GivePlayerAgent(player, inventory);
         GivePlayerGloves(player, inventory);
@@ -257,8 +247,6 @@ public partial class InventorySimulator
 
     public void GivePlayerGraffiti(CCSPlayerController player, CPlayerSprayDecal sprayDecal)
     {
-        if (!CanGivePlayer(player)) return;
-
         var inventory = GetPlayerInventory(player);
         var item = inventory.Graffiti;
 
@@ -273,7 +261,6 @@ public partial class InventorySimulator
 
     public void SprayPlayerGraffiti(CCSPlayerController player)
     {
-        if (!CanGivePlayer(player)) return;
         if (!IsPlayerHumanAndValid(player)) return;
         var inventory = GetPlayerInventory(player);
         var item = inventory.Graffiti;

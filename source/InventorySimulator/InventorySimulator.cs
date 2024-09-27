@@ -23,6 +23,7 @@ public partial class InventorySimulator : BasePlugin
         RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         RegisterEventHandler<EventPlayerConnect>(OnPlayerConnect);
         RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull);
+        Extensions.FPlayerCanRespawnMemFunc.Hook(OnPlayerCanRespawnPost, HookMode.Post);
         RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
         VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeathPre, HookMode.Pre);

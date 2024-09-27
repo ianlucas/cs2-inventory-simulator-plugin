@@ -42,9 +42,14 @@ public partial class InventorySimulator
         PlayerInventoryManager[steamId] = inventory;
         Server.NextFrame(() =>
         {
+            var player = Utilities.GetPlayerFromSteamId(steamId);
             if (inventory.MusicKit != null)
-                PlayerOnTickInventoryManager[steamId] = (Utilities.GetPlayerFromSteamId(steamId), inventory);
+                PlayerOnTickInventoryManager[steamId] = (player, inventory);
             else PlayerOnTickInventoryManager.Remove(steamId, out _);
+            var gameRules = GetGameRules();
+            var pawn = player?.PlayerPawn.Value;
+            if (gameRules != null && pawn != null && gameRules.FPlayerCanRespawn(pawn))
+                player?.Respawn();
         });
     }
 
