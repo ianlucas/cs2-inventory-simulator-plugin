@@ -10,24 +10,17 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    public CCSGameRulesProxy? GameRulesProxy;
+    static CCSGameRulesProxy? GameRulesProxy;
 
-    public string GetAgentModelPath(string model)
-    {
-        return $"characters/models/{model}.vmdl";
-    }
+    public static string GetAgentModelPath(string model) =>
+        $"characters/models/{model}.vmdl";
 
-    public bool IsKnifeClassName(string className)
-    {
-        return className.Contains("bayonet") || className.Contains("knife");
-    }
+    public static bool IsKnifeClassName(string className) =>
+        className.Contains("bayonet") || className.Contains("knife");
 
-    public long Now()
-    {
-        return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-    }
+    public static long Now() => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-    public float ViewAsFloat<T>(T value) where T : struct
+    public static float ViewAsFloat<T>(T value) where T : struct
     {
         byte[] bytes = value switch
         {
@@ -38,7 +31,7 @@ public partial class InventorySimulator
         return BitConverter.ToSingle(bytes, 0);
     }
 
-    public CCSGameRules? GetGameRules() =>
+    public static CCSGameRules? GetGameRules() =>
         (
             GameRulesProxy?.IsValid == true
                 ? GameRulesProxy.GameRules
