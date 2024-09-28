@@ -53,6 +53,7 @@ public partial class InventorySimulator
                 if (
                     gameRules != null &&
                     pawn != null &&
+                    pawn.IsValid &&
                     pawn.LifeState != (int)LifeState_t.LIFE_ALIVE &&
                     gameRules.FPlayerCanRespawn(pawn))
                     player?.Respawn();
