@@ -24,6 +24,7 @@ public partial class InventorySimulator
             var inventories = JsonSerializer.Deserialize<Dictionary<ulong, PlayerInventory>>(json);
             if (inventories != null)
             {
+                LoadedPlayerInventory.Clear();
                 foreach (var pair in inventories)
                 {
                     LoadedPlayerInventory.Add(pair.Key);
