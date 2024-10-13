@@ -35,11 +35,6 @@ public static class Extensions
 
     public static readonly Func<IntPtr, IntPtr, IntPtr, IntPtr, IntPtr> IsAbleToApplySprayFunc = IsAbleToApplySprayMemFunc.Invoke;
 
-    public static readonly MemoryFunctionWithReturn<IntPtr, IntPtr, bool> FPlayerCanRespawnMemFunc = new(
-        GameData.GetSignature("CCSGameRules_FPlayerCanRespawn"));
-
-    public static readonly Func<IntPtr, IntPtr, bool> FPlayerCanRespawnFunc = FPlayerCanRespawnMemFunc.Invoke;
-
     public static int ChangeSubclass(this CBasePlayerWeapon weapon, ushort itemDef)
     {
         return ChangeSubclassFunc(weapon.Handle, itemDef.ToString());
@@ -58,10 +53,5 @@ public static class Extensions
     public static bool IsAbleToApplySpray(this CCSPlayerPawn pawn)
     {
         return IsAbleToApplySprayFunc(pawn.Handle, 0, 0, 0) == IntPtr.Zero;
-    }
-
-    public static bool FPlayerCanRespawn(this CCSGameRules gameRules, CCSPlayerPawn pawn)
-    {
-        return FPlayerCanRespawnFunc(gameRules.Handle, pawn.Handle);
     }
 }

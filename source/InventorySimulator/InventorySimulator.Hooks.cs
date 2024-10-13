@@ -27,20 +27,4 @@ public partial class InventorySimulator
 
         return HookResult.Continue;
     }
-
-    public HookResult OnPlayerCanRespawnPost(DynamicHook hook)
-    {
-        if (!invsim_validation_enabled.Value)
-            return HookResult.Continue;
-
-        var pawn = hook.GetParam<CCSPlayerPawn>(1);
-        var controller = pawn.Controller.Value?.As<CCSPlayerController>();
-
-        if (controller != null && !controller.IsBot && !PlayerInventoryManager.ContainsKey(controller.SteamID))
-        {
-            hook.SetReturn(false);
-        }
-
-        return HookResult.Continue;
-    }
 }

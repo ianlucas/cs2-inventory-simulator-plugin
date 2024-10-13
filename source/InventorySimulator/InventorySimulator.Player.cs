@@ -47,18 +47,6 @@ public partial class InventorySimulator
             if (inventory.MusicKit != null)
                 PlayerOnTickInventoryManager[steamId] = (player, inventory);
             else PlayerOnTickInventoryManager.Remove(steamId, out _);
-            AddTimer(1.0f, () =>
-            {
-                var gameRules = GetGameRules();
-                var pawn = player?.PlayerPawn.Value;
-                if (
-                    gameRules != null &&
-                    pawn != null &&
-                    pawn.IsValid &&
-                    pawn.LifeState != (int)LifeState_t.LIFE_ALIVE &&
-                    gameRules.FPlayerCanRespawn(pawn))
-                    player?.Respawn();
-            });
         });
     }
 
