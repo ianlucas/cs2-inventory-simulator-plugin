@@ -43,13 +43,14 @@ public partial class InventorySimulator
     {
         try
         {
+            var url = GetApiUrl(pathname);
             var json = JsonSerializer.Serialize(data);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             using HttpClient client = new();
-            var response = await client.PostAsync(GetApiUrl(pathname), content);
+            var response = await client.PostAsync(url, content);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
-                Logger.LogError($"POST {pathname} failed, check your invsim_apikey's value.");
+                Logger.LogError($"POST {url} failed, check your invsim_apikey's value.");
         }
         catch (Exception error)
         {
