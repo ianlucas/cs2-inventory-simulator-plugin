@@ -60,7 +60,9 @@ public partial class InventorySimulator
 
     public async Task FetchPlayerInventory(ulong steamId, bool force = false)
     {
-        if (!force && PlayerInventoryManager.ContainsKey(steamId))
+        var existing = PlayerInventoryManager.TryGetValue(steamId, out var i) ? i : null;
+
+        if (!force && existing != null)
             return;
 
         if (FetchingPlayerInventory.Contains(steamId))
@@ -78,6 +80,8 @@ public partial class InventorySimulator
 
                 if (playerInventory != null)
                 {
+                    if (existing != null)
+                        playerInventory.CachedWeaponEconItems = existing.CachedWeaponEconItems;
                     PlayerCooldownManager[steamId] = Now();
                     AddPlayerInventory(steamId, playerInventory);
                 }

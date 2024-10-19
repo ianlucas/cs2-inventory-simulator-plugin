@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Text.Json.Serialization;
 
@@ -34,7 +35,7 @@ public class BaseEconItem
     [JsonPropertyName("wear")]
     public float Wear { get; set; }
 
-    public int? FadeSeed;
+    public float? WearOverride;
 }
 
 public class WeaponEconItem : BaseEconItem
@@ -145,5 +146,31 @@ public class PlayerInventory(
             return weapon;
         }
         return null;
+    }
+
+    // It looks like CS2's client caches the weapon materials based on wear and seed. Until we figure out
+    // the proper way to force a material update, we need to ensure that every paint has a unique wear so
+    // that: 1) it gets regenerated, and 2) there are no rendering issues. As a drawback, every time
+    // players use !ws, their weapon's wear will decay, but I think it's a good trade-off since it also
+    // forces the sticker to regenerate. This approach is based on workarounds by @stefanx111 and @bklol.
+
+    public Dictionary<int, Dictionary<float, (ushort, string)>> CachedWeaponEconItems = [];
+    public float GetWeaponEconItemWear(WeaponEconItem item)
+    {
+        var wear = item.Wear;
+        var stickers = string.Join("_", item.Stickers.Select(s => s.Def));
+        var cachedByWear = CachedWeaponEconItems.TryGetValue(item.Paint, out var c) ? c : [];
+        while (true)
+        {
+            (ushort, string)? pair = cachedByWear.TryGetValue(wear, out var p) ? p : null;
+            var cached = pair?.Item1 == item.Def && pair?.Item2 == stickers;
+            if (pair == null || cached)
+            {
+                cachedByWear[wear] = (item.Def, stickers);
+                CachedWeaponEconItems[item.Paint] = cachedByWear;
+                return wear;
+            }
+            wear += 0.001f;
+        }
     }
 }
