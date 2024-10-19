@@ -24,8 +24,9 @@ This plugin features all current (and public) knowledge on how to give economy i
 
 ### Known Issues
 
-- Updated stickers for an equipped weapon will not be applied until reconnected to the server. ([#13](https://github.com/ianlucas/cs2-inventory-simulator-plugin/issues/13))
-- Fade skins are stuck on random seeds. We need to find a way to force skin update (a `regenerate_weapon_skins` from the server), or [just find out what is actually happening](https://github.com/ianlucas/cs2-inventory-simulator-plugin/blob/8ee6c5dcc4c7dc83728149902d8a044b86b05b72/source/InventorySimulator/InventorySimulator.Give.cs#L123-L138).
+Submit a PR or open an issue if you happen to know a workaround for them.
+
+- When using `!ws`, the wear of skins may [get worse over time](https://github.com/ianlucas/cs2-inventory-simulator-plugin/blob/cadd90dd859604e5de7908169f63ae7ca4b6d206/source/InventorySimulator/InventorySimulator.PlayerInventory.cs#L151-L175) if player doesn't reconnect.
 
 ## Feature Roadmap
 
@@ -104,7 +105,7 @@ This plugin features all current (and public) knowledge on how to give economy i
 
 #### `!spray` Command
 
-* Sprays player's graffiti in the nearest wall if possible. Player can bind it using to `T` key using `bind t css_spray`.
+* Sprays player's graffiti in the nearest wall if possible. Players can bind to `T` key using `bind t css_spray`.
 
 ## See also
 
