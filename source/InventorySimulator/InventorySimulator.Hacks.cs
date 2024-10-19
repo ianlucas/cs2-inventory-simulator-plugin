@@ -18,8 +18,8 @@ public static class HackExtensions
     public static unsafe CBaseViewModel? GetViewModel(this CCSPlayerController player)
     {
         if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.ViewModelServices == null) return null;
-        CCSPlayer_ViewModelServices viewModelServices = new(player.PlayerPawn.Value.ViewModelServices.Handle);
-        IntPtr ptr = viewModelServices.Handle + Schema.GetSchemaOffset("CCSPlayer_ViewModelServices", "m_hViewModel");
+        var viewModelServices = new CCSPlayer_ViewModelServices(player.PlayerPawn.Value.ViewModelServices.Handle);
+        var ptr = viewModelServices.Handle + Schema.GetSchemaOffset("CCSPlayer_ViewModelServices", "m_hViewModel");
         var references = MemoryMarshal.CreateSpan(ref ptr, 3);
         var viewModel = (CHandle<CBaseViewModel>)Activator.CreateInstance(typeof(CHandle<CBaseViewModel>), references[0])!;
         if (viewModel == null || viewModel.Value == null) return null;
