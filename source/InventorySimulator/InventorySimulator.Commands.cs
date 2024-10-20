@@ -14,7 +14,8 @@ public partial class InventorySimulator
     [ConsoleCommand("css_ws", "Refreshes player's inventory.")]
     public void OnWSCommand(CCSPlayerController? player, CommandInfo _)
     {
-        player?.PrintToChat(Localizer["invsim.announce", GetApiUrl()]);
+        var url = invsim_ws_print_full_url.Value ? GetApiUrl() : invsim_hostname.Value;
+        player?.PrintToChat(Localizer["invsim.announce", url]);
 
         if (!invsim_ws_enabled.Value || player == null) return;
         if (PlayerCooldownManager.TryGetValue(player.SteamID, out var timestamp))

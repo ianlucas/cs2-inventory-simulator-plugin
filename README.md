@@ -86,6 +86,12 @@ Submit a PR or open an issue if you happen to know a workaround for them.
 * **Type:** `int`
 * **Default:** `30`
 
+#### `invsim_ws_print_full_url` ConVar
+
+* Whether print full URL when the player uses `!ws` command.
+* **Type:** `bool`
+* **Default:** `true`
+
 #### `invsim_spraychanger_enabled` ConVar
 
 * Whether to change player vanilla spray if they have a graffiti equipped.
