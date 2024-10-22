@@ -114,4 +114,17 @@ public partial class InventorySimulator
     {
         return player.PlayerPawn != null && player.PlayerPawn.Value != null && player.PlayerPawn.IsValid;
     }
+
+    public bool IsPlayerUseCmdBusy(CCSPlayerController player)
+    {
+        if (player.PlayerPawn.Value?.IsBuyMenuOpen == true)
+            return true;
+        if (player.PlayerPawn.Value?.IsDefusing == true)
+            return true;
+        var weapon = player.PlayerPawn.Value?.WeaponServices?.ActiveWeapon.Value;
+        if (weapon?.DesignerName != "weapon_c4")
+            return false;
+        var c4 = weapon.As<CC4>();
+        return c4.IsPlantingViaUse;
+    }
 }

@@ -24,6 +24,7 @@ public partial class InventorySimulator : BasePlugin
         RegisterEventHandler<EventPlayerConnect>(OnPlayerConnect);
         RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull);
         RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
+        Extensions.ProcessUsercmds.Hook(OnProcessUsercmdsPost, HookMode.Post);
         VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeathPre, HookMode.Pre);
         RegisterEventHandler<EventRoundMvp>(OnRoundMvpPre, HookMode.Pre);

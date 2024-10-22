@@ -243,7 +243,7 @@ public partial class InventorySimulator
         }
     }
 
-    public void SprayPlayerGraffiti(CCSPlayerController player)
+    public unsafe void SprayPlayerGraffiti(CCSPlayerController player)
     {
         if (!IsPlayerHumanAndValid(player)) return;
         var inventory = GetPlayerInventory(player);
@@ -255,31 +255,24 @@ public partial class InventorySimulator
         var cameraServices = pawn.CameraServices;
         var movementServices = pawn.MovementServices?.As<CCSPlayer_MovementServices>();
         if (absOrigin == null || cameraServices == null || movementServices == null) return;
-        if (!pawn.IsAbleToApplySpray()) return;
+        var trace = stackalloc GameTrace[1];
+        if (!pawn.IsAbleToApplySpray((IntPtr)trace) || (IntPtr)trace == IntPtr.Zero) return;
         player.ExecuteClientCommand("play sounds/items/spraycan_shake");
         PlayerSprayCooldownManager[player.SteamID] = Now();
-        var trace = GameTraceManager.Trace(
-            new Vector(absOrigin.X, absOrigin.Y, absOrigin.Z + cameraServices.OldPlayerViewOffsetZ),
-            pawn.EyeAngles,
-            false,
-            true);
-        if (trace != null)
+        var endPos = Vector3toVector(trace->EndPos);
+        var normalPos = Vector3toVector(trace->Normal);
+        var sprayDecal = Utilities.CreateEntityByName<CPlayerSprayDecal>("player_spray_decal");
+        if (sprayDecal != null)
         {
-            var endPos = trace.Value.Item1;
-            var normalPos = trace.Value.Item2;
-            var sprayDecal = Utilities.CreateEntityByName<CPlayerSprayDecal>("player_spray_decal");
-            if (sprayDecal != null)
-            {
-                sprayDecal.EndPos.Add(endPos);
-                sprayDecal.Start.Add(endPos);
-                sprayDecal.Left.Add(movementServices.Left);
-                sprayDecal.Normal.Add(normalPos);
-                sprayDecal.AccountID = (uint)player.SteamID;
-                sprayDecal.Player = item.Def;
-                sprayDecal.TintID = item.Tint;
-                sprayDecal.DispatchSpawn();
-                player.ExecuteClientCommand("play sounds/items/spraycan_spray");
-            }
+            sprayDecal.EndPos.Add(endPos);
+            sprayDecal.Start.Add(endPos);
+            sprayDecal.Left.Add(movementServices.Left);
+            sprayDecal.Normal.Add(normalPos);
+            sprayDecal.AccountID = (uint)player.SteamID;
+            sprayDecal.Player = item.Def;
+            sprayDecal.TintID = item.Tint;
+            sprayDecal.DispatchSpawn();
+            player.ExecuteClientCommand("play sounds/items/spraycan_spray");
         }
     }
 }

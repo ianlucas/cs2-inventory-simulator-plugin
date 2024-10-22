@@ -98,6 +98,12 @@ Submit a PR or open an issue if you happen to know a workaround for them.
 * **Type:** `bool`
 * **Default:** `false`
 
+#### `invsim_spray_on_use` ConVar
+
+* Whether to try to apply spray when player presses use.
+* **Type:** `bool`
+* **Default:** `false`
+
 #### `invsim_spray_cooldown` ConVar
 
 * Cooldown in seconds between player sprays.

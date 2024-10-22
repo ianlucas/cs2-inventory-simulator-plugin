@@ -35,6 +35,9 @@ public static class Extensions
 
     public static readonly Func<IntPtr, IntPtr, IntPtr, IntPtr, IntPtr> IsAbleToApplySprayFunc = IsAbleToApplySprayMemFunc.Invoke;
 
+    public static readonly MemoryFunctionWithReturn<IntPtr, IntPtr, int, bool, float> ProcessUsercmds = new(
+        GameData.GetSignature("CCSPlayerController_ProcessUsercmds"));
+
     public static int ChangeSubclass(this CBasePlayerWeapon weapon, ushort itemDef)
     {
         return ChangeSubclassFunc(weapon.Handle, itemDef.ToString());
@@ -50,8 +53,8 @@ public static class Extensions
         return SetBodygroupFunc(pawn.Handle, group, value);
     }
 
-    public static bool IsAbleToApplySpray(this CCSPlayerPawn pawn)
+    public static bool IsAbleToApplySpray(this CCSPlayerPawn pawn, IntPtr ptr = 0)
     {
-        return IsAbleToApplySprayFunc(pawn.Handle, 0, 0, 0) == IntPtr.Zero;
+        return IsAbleToApplySprayFunc(pawn.Handle, ptr, 0, 0) == IntPtr.Zero;
     }
 }

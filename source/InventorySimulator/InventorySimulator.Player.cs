@@ -75,6 +75,12 @@ public partial class InventorySimulator
         }
     }
 
+    public void ClearPlayerUseCmd(ulong steamId)
+    {
+        PlayerUseCmdManager.Remove(steamId, out var _);
+        PlayerUseCmdBlockManager.Remove(steamId, out var _);
+    }
+
     public PlayerInventory GetPlayerInventory(CCSPlayerController player)
     {
         if (PlayerInventoryManager.TryGetValue(player.SteamID, out var inventory))

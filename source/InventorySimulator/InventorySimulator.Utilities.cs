@@ -5,6 +5,8 @@
 
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using System.Numerics;
+using NativeVector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
 namespace InventorySimulator;
 
@@ -43,4 +45,6 @@ public partial class InventorySimulator
                     ? GameRulesProxy?.GameRules
                     : null
         );
+
+    public static NativeVector Vector3toVector(Vector3 vec) => new(vec.X, vec.Y, vec.Z);
 }
