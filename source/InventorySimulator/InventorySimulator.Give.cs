@@ -251,10 +251,8 @@ public partial class InventorySimulator
         if (item == null) return;
         var pawn = player.PlayerPawn.Value;
         if (pawn == null || pawn.LifeState != (int)LifeState_t.LIFE_ALIVE) return;
-        var absOrigin = pawn.AbsOrigin;
-        var cameraServices = pawn.CameraServices;
         var movementServices = pawn.MovementServices?.As<CCSPlayer_MovementServices>();
-        if (absOrigin == null || cameraServices == null || movementServices == null) return;
+        if (movementServices == null) return;
         var trace = stackalloc GameTrace[1];
         if (!pawn.IsAbleToApplySpray((IntPtr)trace) || (IntPtr)trace == IntPtr.Zero) return;
         player.ExecuteClientCommand("play sounds/items/spraycan_shake");
