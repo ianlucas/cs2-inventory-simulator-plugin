@@ -30,7 +30,10 @@ public partial class InventorySimulator : BasePlugin
         RegisterEventHandler<EventRoundMvp>(OnRoundMvpPre, HookMode.Pre);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
         
-        LoadPlayerInventories();
         invsim_file.ValueChanged += OnInvsimFileChanged;
+        OnInvsimFileChanged(null, invsim_file.Value);
+
+        invsim_require_inventory.ValueChanged += OnInvSimRequireInventoryChange;
+        OnInvSimRequireInventoryChange(null, invsim_require_inventory.Value);
     }
 }

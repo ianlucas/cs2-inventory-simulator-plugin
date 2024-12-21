@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 
 namespace InventorySimulator;
@@ -37,6 +38,12 @@ public static class Extensions
 
     public static readonly MemoryFunctionWithReturn<IntPtr, IntPtr, int, bool, float> ProcessUsercmds = new(
         GameData.GetSignature("CCSPlayerController_ProcessUsercmds"));
+
+    public static readonly MemoryFunctionWithReturn<IntPtr, IntPtr, IntPtr, short, IntPtr, byte, int, int, byte> ConnectFunc =
+        new(GameData.GetSignature("CServerSideClientBase_Connect"), Addresses.EnginePath);
+
+    public static readonly MemoryFunctionWithReturn<IntPtr, uint, byte> SetSignonStateFunc =
+        new(GameData.GetSignature("CServerSideClientBase_SetSignonState"), Addresses.EnginePath);
 
     public static int ChangeSubclass(this CBasePlayerWeapon weapon, ushort itemDef)
     {

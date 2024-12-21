@@ -11,6 +11,33 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
+    public HookResult OnConnect(DynamicHook hook)
+    {
+        ServerSideClientUserid[hook.GetParam<IntPtr>(0)] = hook.GetParam<short>(3);
+        return HookResult.Continue;
+    }
+
+    public HookResult OnSetSignonState(DynamicHook hook)
+    {
+        short? userid = ServerSideClientUserid.TryGetValue(hook.GetParam<IntPtr>(0), out var u) ? u : null;
+        var state = hook.GetParam<uint>(1);
+        if (userid != null)
+        {
+            var player = Utilities.GetPlayerFromUserid((int)userid);
+            if (player != null && !player.IsBot)
+            {
+                if (!FetchingPlayerInventory.Contains(player.SteamID))
+                    RefreshPlayerInventory(player);
+                var allowed = PlayerInventoryManager.ContainsKey(player.SteamID);
+                if (state >= 0 && !allowed)
+                {
+                    return HookResult.Stop;
+                }
+            }
+        }
+        return HookResult.Continue;
+    }
+
     public HookResult OnProcessUsercmdsPost(DynamicHook hook)
     {
         if (!invsim_spray_on_use.Value)

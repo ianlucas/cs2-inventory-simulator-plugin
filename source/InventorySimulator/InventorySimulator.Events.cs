@@ -90,6 +90,7 @@ public partial class InventorySimulator
         if (player != null && IsPlayerHumanAndValid(player))
         {
             ClearPlayerUseCmd(player.SteamID);
+            ClearPlayerServerSideClient(player.UserId);
             RemovePlayerInventory(player.SteamID);
             ClearInventoryManager();
         }
