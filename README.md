@@ -64,6 +64,12 @@ Submit a PR or open an issue if you happen to know a workaround for them.
 * **Type:** `bool`
 * **Default:** `true`
 
+#### `invsim_require_inventory` ConVar
+
+* Require the player's inventory to be fetched before allowing them to connect to the game.
+* **Type:** `bool`
+* **Default:** `false`
+
 #### `invsim_minmodels` ConVar
 
 * Allows agents or use specific models for each team.

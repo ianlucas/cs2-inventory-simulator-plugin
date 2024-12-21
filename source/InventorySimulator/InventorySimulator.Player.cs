@@ -81,6 +81,13 @@ public partial class InventorySimulator
         PlayerUseCmdBlockManager.Remove(steamId, out var _);
     }
 
+    public void ClearPlayerServerSideClient(int? userid)
+    {
+        var key = ServerSideClientUserid.FirstOrDefault(other => other.Value == userid).Key;
+        if (key != default)
+            ServerSideClientUserid.TryRemove(key, out _);
+    }
+
     public PlayerInventory GetPlayerInventory(CCSPlayerController player)
     {
         if (PlayerInventoryManager.TryGetValue(player.SteamID, out var inventory))

@@ -60,4 +60,18 @@ public partial class InventorySimulator
     {
         LoadPlayerInventories();
     }
+
+    public void OnInvSimRequireInventoryChange(object? _, bool value)
+    {
+        if (value)
+        {
+            Extensions.ConnectFunc.Hook(OnConnect, HookMode.Post);
+            Extensions.SetSignonStateFunc.Hook(OnSetSignonState, HookMode.Pre);
+        }
+        else
+        {
+            Extensions.ConnectFunc.Unhook(OnConnect, HookMode.Post);
+            Extensions.SetSignonStateFunc.Unhook(OnSetSignonState, HookMode.Pre);
+        }
+    }
 }
