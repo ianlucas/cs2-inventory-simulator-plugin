@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Modules.Memory;
 
 namespace InventorySimulator;
@@ -29,7 +29,7 @@ public partial class InventorySimulator : BasePlugin
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeathPre, HookMode.Pre);
         RegisterEventHandler<EventRoundMvp>(OnRoundMvpPre, HookMode.Pre);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
-        
+
         invsim_file.ValueChanged += OnInvsimFileChanged;
         OnInvsimFileChanged(null, invsim_file.Value);
 

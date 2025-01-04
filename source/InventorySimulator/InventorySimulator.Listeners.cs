@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 
 namespace InventorySimulator;
 
@@ -31,14 +31,17 @@ public partial class InventorySimulator
             Server.NextFrame(() =>
             {
                 var weapon = new CBasePlayerWeapon(entity.Handle);
-                if (!weapon.IsValid || weapon.OriginalOwnerXuidLow == 0) return;
+                if (!weapon.IsValid || weapon.OriginalOwnerXuidLow == 0)
+                    return;
 
                 var player = Utilities.GetPlayerFromSteamId(weapon.OriginalOwnerXuidLow);
-                if (player == null || !IsPlayerHumanAndValid(player)) return;
+                if (player == null || !IsPlayerHumanAndValid(player))
+                    return;
 
                 GivePlayerWeaponSkin(player, weapon);
             });
-        } else if (designerName == "player_spray_decal")
+        }
+        else if (designerName == "player_spray_decal")
         {
             if (!invsim_spraychanger_enabled.Value)
                 return;
@@ -46,10 +49,12 @@ public partial class InventorySimulator
             Server.NextFrame(() =>
             {
                 var sprayDecal = new CPlayerSprayDecal(entity.Handle);
-                if (!sprayDecal.IsValid || sprayDecal.AccountID == 0) return;
+                if (!sprayDecal.IsValid || sprayDecal.AccountID == 0)
+                    return;
 
                 var player = Utilities.GetPlayerFromSteamId(sprayDecal.AccountID);
-                if (player == null || !IsPlayerHumanAndValid(player)) return;
+                if (player == null || !IsPlayerHumanAndValid(player))
+                    return;
 
                 GivePlayerGraffiti(player, sprayDecal);
             });

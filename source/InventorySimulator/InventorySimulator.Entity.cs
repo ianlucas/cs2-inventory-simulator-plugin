@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 
 namespace InventorySimulator;
 
@@ -28,14 +28,22 @@ public partial class InventorySimulator
         }
     }
 
-    public void UpdatePlayerWeaponMeshGroupMask(CCSPlayerController player, CBasePlayerWeapon weapon, bool isLegacy)
+    public void UpdatePlayerWeaponMeshGroupMask(
+        CCSPlayerController player,
+        CBasePlayerWeapon weapon,
+        bool isLegacy
+    )
     {
         // 1. We update the weapon's MeshGroupMask.
         UpdateWeaponMeshGroupMask(weapon, isLegacy);
 
         // 2. If the current view model is displaying it, ensure that it has the correct MeshGroupMask.
         var viewModel = player.GetViewModel();
-        if (viewModel != null && viewModel.Weapon.Value != null && viewModel.Weapon.Value.Index == weapon.Index)
+        if (
+            viewModel != null
+            && viewModel.Weapon.Value != null
+            && viewModel.Weapon.Value.Index == weapon.Index
+        )
         {
             UpdateWeaponMeshGroupMask(viewModel, isLegacy);
             Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
@@ -59,14 +67,22 @@ public partial class InventorySimulator
         return weapon.AttributeManager.Item.ItemID >= MinimumCustomItemID;
     }
 
-    public void SetPlayerModel(CCSPlayerController player, string model, bool voFallback = true, string voPrefix = "", bool voFemale = false, List<uint>? patches = null)
+    public void SetPlayerModel(
+        CCSPlayerController player,
+        string model,
+        bool voFallback = true,
+        string voPrefix = "",
+        bool voFemale = false,
+        List<uint>? patches = null
+    )
     {
         try
         {
             Server.NextFrame(() =>
             {
                 var pawn = player.PlayerPawn.Value;
-                if (pawn == null) return;
+                if (pawn == null)
+                    return;
                 if (patches != null && patches.Count == 5)
                 {
                     for (var index = 0; index < patches.Count; index++)
@@ -94,9 +110,16 @@ public partial class InventorySimulator
     public CCSPlayerController? GetPlayerFromItemServices(CCSPlayer_ItemServices itemServices)
     {
         var pawn = itemServices.Pawn.Value;
-        if (pawn == null || !pawn.IsValid || !pawn.Controller.IsValid || pawn.Controller.Value == null) return null;
+        if (
+            pawn == null
+            || !pawn.IsValid
+            || !pawn.Controller.IsValid
+            || pawn.Controller.Value == null
+        )
+            return null;
         var player = new CCSPlayerController(pawn.Controller.Value.Handle);
-        if (!IsPlayerHumanAndValid(player)) return null;
+        if (!IsPlayerHumanAndValid(player))
+            return null;
         return player;
     }
 
@@ -112,7 +135,9 @@ public partial class InventorySimulator
 
     public bool IsPlayerPawnValid(CCSPlayerController player)
     {
-        return player.PlayerPawn != null && player.PlayerPawn.Value != null && player.PlayerPawn.IsValid;
+        return player.PlayerPawn != null
+            && player.PlayerPawn.Value != null
+            && player.PlayerPawn.IsValid;
     }
 
     public bool IsPlayerUseCmdBusy(CCSPlayerController player)

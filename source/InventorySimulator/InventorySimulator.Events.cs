@@ -38,9 +38,7 @@ public partial class InventorySimulator
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo _)
     {
         var player = @event.Userid;
-        if (player != null &&
-            IsPlayerHumanAndValid(player) &&
-            IsPlayerPawnValid(player))
+        if (player != null && IsPlayerHumanAndValid(player) && IsPlayerPawnValid(player))
         {
             GiveOnPlayerSpawn(player);
         }
@@ -54,14 +52,13 @@ public partial class InventorySimulator
         var victim = @event.Userid;
         if (attacker != null && victim != null)
         {
-            var isValidAttacker = (
-                IsPlayerHumanAndValid(attacker) &&
-                IsPlayerPawnValid(attacker));
-            var isValidVictim = (
-                invsim_stattrak_ignore_bots.Value
-                    ? IsPlayerHumanAndValid(victim)
-                    : IsPlayerValid(victim)) &&
-                IsPlayerPawnValid(victim);
+            var isValidAttacker = (IsPlayerHumanAndValid(attacker) && IsPlayerPawnValid(attacker));
+            var isValidVictim =
+                (
+                    invsim_stattrak_ignore_bots.Value
+                        ? IsPlayerHumanAndValid(victim)
+                        : IsPlayerValid(victim)
+                ) && IsPlayerPawnValid(victim);
             if (isValidAttacker && isValidVictim)
             {
                 GivePlayerWeaponStatTrakIncrement(attacker, @event.Weapon, @event.WeaponItemid);
@@ -74,9 +71,7 @@ public partial class InventorySimulator
     public HookResult OnRoundMvpPre(EventRoundMvp @event, GameEventInfo _)
     {
         var player = @event.Userid;
-        if (player != null &&
-            IsPlayerHumanAndValid(player) &&
-            IsPlayerPawnValid(player))
+        if (player != null && IsPlayerHumanAndValid(player) && IsPlayerPawnValid(player))
         {
             GivePlayerMusicKitStatTrakIncrement(player);
         }

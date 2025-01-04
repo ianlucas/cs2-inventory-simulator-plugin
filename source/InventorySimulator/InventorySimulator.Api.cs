@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
+using Microsoft.Extensions.Logging;
 
 namespace InventorySimulator;
 
@@ -34,7 +34,8 @@ public partial class InventorySimulator
         catch (Exception error)
         {
             Logger.LogError($"GET {pathname} failed: {error.Message}");
-            if (rethrow) throw;
+            if (rethrow)
+                throw;
             return default;
         }
     }
@@ -75,7 +76,8 @@ public partial class InventorySimulator
             try
             {
                 var playerInventory = await Fetch<PlayerInventory>(
-                    $"/api/equipped/v3/{steamId}.json", true
+                    $"/api/equipped/v3/{steamId}.json",
+                    true
                 );
 
                 if (playerInventory != null)
@@ -93,7 +95,7 @@ public partial class InventorySimulator
                 // Try again to fetch data (up to 3 times).
             }
         }
-        
+
         FetchingPlayerInventory.Remove(steamId);
     }
 
@@ -118,11 +120,14 @@ public partial class InventorySimulator
         if (invsim_apikey.Value == "")
             return;
 
-        await Send($"/api/increment-item-stattrak", new
-        {
-            apiKey = invsim_apikey.Value,
-            targetUid,
-            userId = userId.ToString()
-        });
+        await Send(
+            $"/api/increment-item-stattrak",
+            new
+            {
+                apiKey = invsim_apikey.Value,
+                targetUid,
+                userId = userId.ToString(),
+            }
+        );
     }
 }
