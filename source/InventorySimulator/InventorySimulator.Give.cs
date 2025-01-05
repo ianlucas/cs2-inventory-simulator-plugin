@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
-using CounterStrikeSharp.API;
 
 namespace InventorySimulator;
 
@@ -13,8 +13,10 @@ public partial class InventorySimulator
 {
     public void GivePlayerMusicKit(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (!IsPlayerHumanAndValid(player)) return;
-        if (player.InventoryServices == null) return;
+        if (!IsPlayerHumanAndValid(player))
+            return;
+        if (player.InventoryServices == null)
+            return;
 
         var item = inventory.MusicKit;
         if (item != null)
@@ -30,10 +32,12 @@ public partial class InventorySimulator
 
     public void GivePlayerPin(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (player.InventoryServices == null) return;
+        if (player.InventoryServices == null)
+            return;
 
         var pin = inventory.Pin;
-        if (pin == null) return;
+        if (pin == null)
+            return;
 
         for (var index = 0; index < player.InventoryServices.Rank.Length; index++)
         {
@@ -96,20 +100,21 @@ public partial class InventorySimulator
 
     public void GivePlayerWeaponSkin(CCSPlayerController player, CBasePlayerWeapon weapon)
     {
-        if (IsCustomWeaponItemID(weapon)) return;
+        if (IsCustomWeaponItemID(weapon))
+            return;
 
         var isKnife = IsKnifeClassName(weapon.DesignerName);
         var entityDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
         var inventory = GetPlayerInventory(player);
         var item = isKnife ? inventory.GetKnife(player.TeamNum) : inventory.GetWeapon(player.Team, entityDef);
-        if (item == null) return;
+        if (item == null)
+            return;
 
         if (isKnife)
         {
             if (entityDef != item.Def)
-            {
                 weapon.ChangeSubclass(item.Def);
-            }
+
             weapon.AttributeManager.Item.ItemDefinitionIndex = item.Def;
             weapon.AttributeManager.Item.EntityQuality = 3;
         }
@@ -162,22 +167,20 @@ public partial class InventorySimulator
         }
     }
 
-    public void GivePlayerWeaponStatTrakIncrement(
-        CCSPlayerController player,
-        string designerName,
-        string weaponItemId)
+    public void GivePlayerWeaponStatTrakIncrement(CCSPlayerController player, string designerName, string weaponItemId)
     {
         try
         {
             var weapon = player.PlayerPawn.Value?.WeaponServices?.ActiveWeapon.Value;
 
             if (
-                weapon == null ||
-                !IsCustomWeaponItemID(weapon) ||
-                weapon.FallbackStatTrak < 0 ||
-                weapon.AttributeManager.Item.AccountID != (uint)player.SteamID ||
-                weapon.AttributeManager.Item.ItemID != ulong.Parse(weaponItemId) ||
-                weapon.FallbackStatTrak >= 999_999)
+                weapon == null
+                || !IsCustomWeaponItemID(weapon)
+                || weapon.FallbackStatTrak < 0
+                || weapon.AttributeManager.Item.AccountID != (uint)player.SteamID
+                || weapon.AttributeManager.Item.ItemID != ulong.Parse(weaponItemId)
+                || weapon.FallbackStatTrak >= 999_999
+            )
             {
                 return;
             }
@@ -245,16 +248,21 @@ public partial class InventorySimulator
 
     public unsafe void SprayPlayerGraffiti(CCSPlayerController player)
     {
-        if (!IsPlayerHumanAndValid(player)) return;
+        if (!IsPlayerHumanAndValid(player))
+            return;
         var inventory = GetPlayerInventory(player);
         var item = inventory.Graffiti;
-        if (item == null) return;
+        if (item == null)
+            return;
         var pawn = player.PlayerPawn.Value;
-        if (pawn == null || pawn.LifeState != (int)LifeState_t.LIFE_ALIVE) return;
+        if (pawn == null || pawn.LifeState != (int)LifeState_t.LIFE_ALIVE)
+            return;
         var movementServices = pawn.MovementServices?.As<CCSPlayer_MovementServices>();
-        if (movementServices == null) return;
+        if (movementServices == null)
+            return;
         var trace = stackalloc GameTrace[1];
-        if (!pawn.IsAbleToApplySpray((IntPtr)trace) || (IntPtr)trace == IntPtr.Zero) return;
+        if (!pawn.IsAbleToApplySpray((IntPtr)trace) || (IntPtr)trace == IntPtr.Zero)
+            return;
         player.ExecuteClientCommand("play sounds/items/spraycan_shake");
         PlayerSprayCooldownManager[player.SteamID] = Now();
         var endPos = Vector3toVector(trace->EndPos);

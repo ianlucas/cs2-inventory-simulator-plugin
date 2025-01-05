@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
 
 namespace InventorySimulator;
@@ -17,7 +17,8 @@ public partial class InventorySimulator
         var url = invsim_ws_print_full_url.Value ? GetApiUrl() : invsim_hostname.Value;
         player?.PrintToChat(Localizer["invsim.announce", url]);
 
-        if (!invsim_ws_enabled.Value || player == null) return;
+        if (!invsim_ws_enabled.Value || player == null)
+            return;
         if (PlayerCooldownManager.TryGetValue(player.SteamID, out var timestamp))
         {
             var cooldown = invsim_ws_cooldown.Value;

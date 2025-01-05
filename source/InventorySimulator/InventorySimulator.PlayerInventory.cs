@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API.Modules.Utils;
 using System.Text.Json.Serialization;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace InventorySimulator;
 
@@ -103,7 +103,8 @@ public class PlayerInventory(
     Dictionary<byte, AgentItem>? agents = null,
     uint? pin = null,
     MusicKitItem? musicKit = null,
-    GraffitiItem? graffiti = null)
+    GraffitiItem? graffiti = null
+)
 {
     [JsonPropertyName("knives")]
     public Dictionary<byte, WeaponEconItem> Knives { get; set; } = knives ?? [];
@@ -154,6 +155,7 @@ public class PlayerInventory(
     // forces the sticker to regenerate. This approach is based on workarounds by @stefanx111 and @bklol.
 
     public Dictionary<int, Dictionary<float, (ushort, string)>> CachedWeaponEconItems = [];
+
     public float GetWeaponEconItemWear(WeaponEconItem item)
     {
         var wear = item.Wear;

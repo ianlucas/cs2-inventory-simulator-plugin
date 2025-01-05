@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
+using Microsoft.Extensions.Logging;
 
 namespace InventorySimulator;
 
@@ -33,8 +33,9 @@ public partial class InventorySimulator
         }
         catch (Exception error)
         {
-            Logger.LogError($"GET {pathname} failed: {error.Message}");
-            if (rethrow) throw;
+            Logger.LogError("GET {Pathname} failed: {Message}", pathname, error.Message);
+            if (rethrow)
+                throw;
             return default;
         }
     }
@@ -50,11 +51,11 @@ public partial class InventorySimulator
             var response = await client.PostAsync(url, content);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
-                Logger.LogError($"POST {url} failed, check your invsim_apikey's value.");
+                Logger.LogError("POST {Url} failed, check your invsim_apikey's value.", url);
         }
         catch (Exception error)
         {
-            Logger.LogError($"POST {pathname} failed: {error.Message}");
+            Logger.LogError("POST {Pathname} failed: {Message}", pathname, error.Message);
         }
     }
 
@@ -74,9 +75,7 @@ public partial class InventorySimulator
         {
             try
             {
-                var playerInventory = await Fetch<PlayerInventory>(
-                    $"/api/equipped/v3/{steamId}.json", true
-                );
+                var playerInventory = await Fetch<PlayerInventory>($"/api/equipped/v3/{steamId}.json", true);
 
                 if (playerInventory != null)
                 {
@@ -93,7 +92,7 @@ public partial class InventorySimulator
                 // Try again to fetch data (up to 3 times).
             }
         }
-        
+
         FetchingPlayerInventory.Remove(steamId);
     }
 
@@ -118,11 +117,14 @@ public partial class InventorySimulator
         if (invsim_apikey.Value == "")
             return;
 
-        await Send($"/api/increment-item-stattrak", new
-        {
-            apiKey = invsim_apikey.Value,
-            targetUid,
-            userId = userId.ToString()
-        });
+        await Send(
+            $"/api/increment-item-stattrak",
+            new
+            {
+                apiKey = invsim_apikey.Value,
+                targetUid,
+                userId = userId.ToString(),
+            }
+        );
     }
 }

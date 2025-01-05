@@ -50,13 +50,16 @@ public partial class InventorySimulator
                 PlayerUseCmdBlockManager[player.SteamID] = true;
             if (PlayerUseCmdManager.TryGetValue(player.SteamID, out var timer))
                 timer.Kill();
-            PlayerUseCmdManager[player.SteamID] = AddTimer(0.1f, () =>
-            {
-                if (PlayerUseCmdBlockManager.ContainsKey(player.SteamID))
-                    PlayerUseCmdBlockManager.Remove(player.SteamID, out var _);
-                else if (player.IsValid && !IsPlayerUseCmdBusy(player))
-                    player.ExecuteClientCommandFromServer("css_spray");
-            });
+            PlayerUseCmdManager[player.SteamID] = AddTimer(
+                0.1f,
+                () =>
+                {
+                    if (PlayerUseCmdBlockManager.ContainsKey(player.SteamID))
+                        PlayerUseCmdBlockManager.Remove(player.SteamID, out var _);
+                    else if (player.IsValid && !IsPlayerUseCmdBusy(player))
+                        player.ExecuteClientCommandFromServer("css_spray");
+                }
+            );
         }
 
         return HookResult.Continue;

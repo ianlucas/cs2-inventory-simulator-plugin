@@ -3,17 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using System.Collections.Concurrent;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Cvars.Validators;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
-using System.Collections.Concurrent;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
+    // csharpier-ignore-start
     public readonly FakeConVar<bool> invsim_stattrak_ignore_bots = new("invsim_stattrak_ignore_bots", "Whether to ignore StatTrak increments for bot kills.", true);
     public readonly FakeConVar<bool> invsim_spraychanger_enabled = new("invsim_spraychanger_enabled", "Whether to change player vanilla spray if they have a graffiti equipped.", false);
     public readonly FakeConVar<bool> invsim_spray_on_use = new("invsim_spray_on_use", "Whether to try to apply spray when player presses use.", false);
@@ -27,6 +28,7 @@ public partial class InventorySimulator
     public readonly FakeConVar<string> invsim_hostname = new("invsim_hostname", "Inventory Simulator API's hostname.", "inventory.cstrike.app");
     public readonly FakeConVar<string> invsim_protocol = new("invsim_protocol", "Inventory Simulator API's protocol.", "https");
     public readonly FakeConVar<string> invsim_file = new("invsim_file", "File to load when plugin is loaded.", "inventories.json");
+    // csharpier-ignore-end
 
     public readonly HashSet<ulong> FetchingPlayerInventory = [];
     public readonly HashSet<ulong> LoadedPlayerInventory = [];

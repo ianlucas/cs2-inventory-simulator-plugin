@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using System.Text.Json;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace InventorySimulator;
 
@@ -34,7 +34,7 @@ public partial class InventorySimulator
         }
         catch
         {
-            Logger.LogError($"Error when processing \"{invsim_file.Value}\".");
+            Logger.LogError("Error when processing \"{File}\".", invsim_file.Value);
         }
     }
 
@@ -46,7 +46,8 @@ public partial class InventorySimulator
             var player = Utilities.GetPlayerFromSteamId(steamId);
             if (inventory.MusicKit != null)
                 PlayerOnTickInventoryManager[steamId] = (player, inventory);
-            else PlayerOnTickInventoryManager.Remove(steamId, out _);
+            else
+                PlayerOnTickInventoryManager.Remove(steamId, out _);
         });
     }
 
