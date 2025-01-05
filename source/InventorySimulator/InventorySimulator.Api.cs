@@ -33,7 +33,7 @@ public partial class InventorySimulator
         }
         catch (Exception error)
         {
-            Logger.LogError($"GET {pathname} failed: {error.Message}");
+            Logger.LogError("GET {Pathname} failed: {Message}", pathname, error.Message);
             if (rethrow)
                 throw;
             return default;
@@ -51,11 +51,11 @@ public partial class InventorySimulator
             var response = await client.PostAsync(url, content);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
-                Logger.LogError($"POST {url} failed, check your invsim_apikey's value.");
+                Logger.LogError("POST {Url} failed, check your invsim_apikey's value.", url);
         }
         catch (Exception error)
         {
-            Logger.LogError($"POST {pathname} failed: {error.Message}");
+            Logger.LogError("POST {Pathname} failed: {Message}", pathname, error.Message);
         }
     }
 

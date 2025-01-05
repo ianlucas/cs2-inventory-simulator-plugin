@@ -34,7 +34,7 @@ public partial class InventorySimulator
         }
         catch
         {
-            Logger.LogError($"Error when processing \"{invsim_file.Value}\".");
+            Logger.LogError("Error when processing \"{File}\".", invsim_file.Value);
         }
     }
 
