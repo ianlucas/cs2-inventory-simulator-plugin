@@ -53,12 +53,7 @@ public partial class InventorySimulator
         if (attacker != null && victim != null)
         {
             var isValidAttacker = (IsPlayerHumanAndValid(attacker) && IsPlayerPawnValid(attacker));
-            var isValidVictim =
-                (
-                    invsim_stattrak_ignore_bots.Value
-                        ? IsPlayerHumanAndValid(victim)
-                        : IsPlayerValid(victim)
-                ) && IsPlayerPawnValid(victim);
+            var isValidVictim = (invsim_stattrak_ignore_bots.Value ? IsPlayerHumanAndValid(victim) : IsPlayerValid(victim)) && IsPlayerPawnValid(victim);
             if (isValidAttacker && isValidVictim)
             {
                 GivePlayerWeaponStatTrakIncrement(attacker, @event.Weapon, @event.WeaponItemid);

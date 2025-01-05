@@ -28,22 +28,14 @@ public partial class InventorySimulator
         }
     }
 
-    public void UpdatePlayerWeaponMeshGroupMask(
-        CCSPlayerController player,
-        CBasePlayerWeapon weapon,
-        bool isLegacy
-    )
+    public void UpdatePlayerWeaponMeshGroupMask(CCSPlayerController player, CBasePlayerWeapon weapon, bool isLegacy)
     {
         // 1. We update the weapon's MeshGroupMask.
         UpdateWeaponMeshGroupMask(weapon, isLegacy);
 
         // 2. If the current view model is displaying it, ensure that it has the correct MeshGroupMask.
         var viewModel = player.GetViewModel();
-        if (
-            viewModel != null
-            && viewModel.Weapon.Value != null
-            && viewModel.Weapon.Value.Index == weapon.Index
-        )
+        if (viewModel != null && viewModel.Weapon.Value != null && viewModel.Weapon.Value.Index == weapon.Index)
         {
             UpdateWeaponMeshGroupMask(viewModel, isLegacy);
             Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
@@ -110,12 +102,7 @@ public partial class InventorySimulator
     public CCSPlayerController? GetPlayerFromItemServices(CCSPlayer_ItemServices itemServices)
     {
         var pawn = itemServices.Pawn.Value;
-        if (
-            pawn == null
-            || !pawn.IsValid
-            || !pawn.Controller.IsValid
-            || pawn.Controller.Value == null
-        )
+        if (pawn == null || !pawn.IsValid || !pawn.Controller.IsValid || pawn.Controller.Value == null)
             return null;
         var player = new CCSPlayerController(pawn.Controller.Value.Handle);
         if (!IsPlayerHumanAndValid(player))
@@ -135,9 +122,7 @@ public partial class InventorySimulator
 
     public bool IsPlayerPawnValid(CCSPlayerController player)
     {
-        return player.PlayerPawn != null
-            && player.PlayerPawn.Value != null
-            && player.PlayerPawn.IsValid;
+        return player.PlayerPawn != null && player.PlayerPawn.Value != null && player.PlayerPawn.IsValid;
     }
 
     public bool IsPlayerUseCmdBusy(CCSPlayerController player)

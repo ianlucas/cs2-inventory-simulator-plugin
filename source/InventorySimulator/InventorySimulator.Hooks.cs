@@ -19,9 +19,7 @@ public partial class InventorySimulator
 
     public HookResult OnSetSignonState(DynamicHook hook)
     {
-        short? userid = ServerSideClientUserid.TryGetValue(hook.GetParam<IntPtr>(0), out var u)
-            ? u
-            : null;
+        short? userid = ServerSideClientUserid.TryGetValue(hook.GetParam<IntPtr>(0), out var u) ? u : null;
         var state = hook.GetParam<uint>(1);
         if (userid != null)
         {
@@ -46,10 +44,7 @@ public partial class InventorySimulator
             return HookResult.Continue;
 
         var player = hook.GetParam<CCSPlayerController>(0);
-        if (
-            (player.Buttons & PlayerButtons.Use) != 0
-            && player.PlayerPawn.Value?.IsAbleToApplySpray() == true
-        )
+        if ((player.Buttons & PlayerButtons.Use) != 0 && player.PlayerPawn.Value?.IsAbleToApplySpray() == true)
         {
             if (IsPlayerUseCmdBusy(player))
                 PlayerUseCmdBlockManager[player.SteamID] = true;
