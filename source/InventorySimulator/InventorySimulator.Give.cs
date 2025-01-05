@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
-using CounterStrikeSharp.API;
 
 namespace InventorySimulator;
 
@@ -13,8 +13,10 @@ public partial class InventorySimulator
 {
     public void GivePlayerMusicKit(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (!IsPlayerHumanAndValid(player)) return;
-        if (player.InventoryServices == null) return;
+        if (!IsPlayerHumanAndValid(player))
+            return;
+        if (player.InventoryServices == null)
+            return;
 
         var item = inventory.MusicKit;
         if (item != null)
@@ -30,14 +32,17 @@ public partial class InventorySimulator
 
     public void GivePlayerPin(CCSPlayerController player, PlayerInventory inventory)
     {
-        if (player.InventoryServices == null) return;
+        if (player.InventoryServices == null)
+            return;
 
         var pin = inventory.Pin;
-        if (pin == null) return;
+        if (pin == null)
+            return;
 
         for (var index = 0; index < player.InventoryServices.Rank.Length; index++)
         {
-            player.InventoryServices.Rank[index] = index == 5 ? (MedalRank_t)pin.Value : MedalRank_t.MEDAL_RANK_NONE;
+            player.InventoryServices.Rank[index] =
+                index == 5 ? (MedalRank_t)pin.Value : MedalRank_t.MEDAL_RANK_NONE;
             Utilities.SetStateChanged(player, "CCSPlayerController", "m_pInventoryServices");
         }
     }
@@ -58,14 +63,32 @@ public partial class InventorySimulator
                 UpdateEconItemID(glove);
 
                 glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
-                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
-                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
-                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
+                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+                    "set item texture prefab",
+                    item.Paint
+                );
+                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+                    "set item texture seed",
+                    item.Seed
+                );
+                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+                    "set item texture wear",
+                    item.Wear
+                );
 
                 glove.AttributeList.Attributes.RemoveAll();
-                glove.AttributeList.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
-                glove.AttributeList.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
-                glove.AttributeList.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
+                glove.AttributeList.SetOrAddAttributeValueByName(
+                    "set item texture prefab",
+                    item.Paint
+                );
+                glove.AttributeList.SetOrAddAttributeValueByName(
+                    "set item texture seed",
+                    item.Seed
+                );
+                glove.AttributeList.SetOrAddAttributeValueByName(
+                    "set item texture wear",
+                    item.Wear
+                );
 
                 pawn.SetBodygroup("default_gloves", 1);
             });
@@ -89,20 +112,32 @@ public partial class InventorySimulator
 
         if (inventory.Agents.TryGetValue(player.TeamNum, out var item))
         {
-            var patches = item.Patches.Count != 5 ? Enumerable.Repeat((uint)0, 5).ToList() : item.Patches;
-            SetPlayerModel(player, GetAgentModelPath(item.Model), item.VoFallback, item.VoPrefix, item.VoFemale, patches);
+            var patches =
+                item.Patches.Count != 5 ? Enumerable.Repeat((uint)0, 5).ToList() : item.Patches;
+            SetPlayerModel(
+                player,
+                GetAgentModelPath(item.Model),
+                item.VoFallback,
+                item.VoPrefix,
+                item.VoFemale,
+                patches
+            );
         }
     }
 
     public void GivePlayerWeaponSkin(CCSPlayerController player, CBasePlayerWeapon weapon)
     {
-        if (IsCustomWeaponItemID(weapon)) return;
+        if (IsCustomWeaponItemID(weapon))
+            return;
 
         var isKnife = IsKnifeClassName(weapon.DesignerName);
         var entityDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
         var inventory = GetPlayerInventory(player);
-        var item = isKnife ? inventory.GetKnife(player.TeamNum) : inventory.GetWeapon(player.Team, entityDef);
-        if (item == null) return;
+        var item = isKnife
+            ? inventory.GetKnife(player.TeamNum)
+            : inventory.GetWeapon(player.Team, entityDef);
+        if (item == null)
+            return;
 
         if (isKnife)
         {
@@ -128,22 +163,52 @@ public partial class InventorySimulator
         weapon.AttributeManager.Item.AccountID = (uint)player.SteamID;
 
         weapon.AttributeManager.Item.NetworkedDynamicAttributes.Attributes.RemoveAll();
-        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
-        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
-        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
+        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+            "set item texture prefab",
+            item.Paint
+        );
+        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+            "set item texture seed",
+            item.Seed
+        );
+        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+            "set item texture wear",
+            item.Wear
+        );
 
         weapon.AttributeManager.Item.AttributeList.Attributes.RemoveAll();
-        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
-        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
-        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
+        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName(
+            "set item texture prefab",
+            item.Paint
+        );
+        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName(
+            "set item texture seed",
+            item.Seed
+        );
+        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName(
+            "set item texture wear",
+            item.Wear
+        );
 
         if (item.Stattrak >= 0)
         {
             weapon.FallbackStatTrak = item.Stattrak;
-            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(item.Stattrak));
-            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater score type", 0);
-            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(item.Stattrak));
-            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("kill eater score type", 0);
+            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+                "kill eater",
+                ViewAsFloat(item.Stattrak)
+            );
+            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+                "kill eater score type",
+                0
+            );
+            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName(
+                "kill eater",
+                ViewAsFloat(item.Stattrak)
+            );
+            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName(
+                "kill eater score type",
+                0
+            );
         }
 
         if (!isKnife)
@@ -155,8 +220,14 @@ public partial class InventorySimulator
                 // treat a uint as a float. For example, if the uint stickerId is 2229, we would interpret its value as
                 // if it were a float (e.g., float stickerId = 3.12349e-42f).
                 // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blame/main/game/shared/econ/econ_item_view.cpp#L194
-                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"sticker slot {sticker.Slot} id", ViewAsFloat(sticker.Def));
-                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"sticker slot {sticker.Slot} wear", sticker.Wear);
+                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+                    $"sticker slot {sticker.Slot} id",
+                    ViewAsFloat(sticker.Def)
+                );
+                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+                    $"sticker slot {sticker.Slot} wear",
+                    sticker.Wear
+                );
             }
             UpdatePlayerWeaponMeshGroupMask(player, weapon, item.Legacy);
         }
@@ -165,19 +236,21 @@ public partial class InventorySimulator
     public void GivePlayerWeaponStatTrakIncrement(
         CCSPlayerController player,
         string designerName,
-        string weaponItemId)
+        string weaponItemId
+    )
     {
         try
         {
             var weapon = player.PlayerPawn.Value?.WeaponServices?.ActiveWeapon.Value;
 
             if (
-                weapon == null ||
-                !IsCustomWeaponItemID(weapon) ||
-                weapon.FallbackStatTrak < 0 ||
-                weapon.AttributeManager.Item.AccountID != (uint)player.SteamID ||
-                weapon.AttributeManager.Item.ItemID != ulong.Parse(weaponItemId) ||
-                weapon.FallbackStatTrak >= 999_999)
+                weapon == null
+                || !IsCustomWeaponItemID(weapon)
+                || weapon.FallbackStatTrak < 0
+                || weapon.AttributeManager.Item.AccountID != (uint)player.SteamID
+                || weapon.AttributeManager.Item.ItemID != ulong.Parse(weaponItemId)
+                || weapon.FallbackStatTrak >= 999_999
+            )
             {
                 return;
             }
@@ -186,10 +259,18 @@ public partial class InventorySimulator
             var newValue = weapon.FallbackStatTrak + 1;
             var def = weapon.AttributeManager.Item.ItemDefinitionIndex;
             weapon.FallbackStatTrak = newValue;
-            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(newValue));
-            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(newValue));
+            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName(
+                "kill eater",
+                ViewAsFloat(newValue)
+            );
+            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName(
+                "kill eater",
+                ViewAsFloat(newValue)
+            );
             var inventory = GetPlayerInventory(player);
-            var item = isKnife ? inventory.GetKnife(player.TeamNum) : inventory.GetWeapon(player.Team, def);
+            var item = isKnife
+                ? inventory.GetKnife(player.TeamNum)
+                : inventory.GetWeapon(player.Team, def);
             if (item != null)
             {
                 item.Stattrak = newValue;
@@ -245,16 +326,21 @@ public partial class InventorySimulator
 
     public unsafe void SprayPlayerGraffiti(CCSPlayerController player)
     {
-        if (!IsPlayerHumanAndValid(player)) return;
+        if (!IsPlayerHumanAndValid(player))
+            return;
         var inventory = GetPlayerInventory(player);
         var item = inventory.Graffiti;
-        if (item == null) return;
+        if (item == null)
+            return;
         var pawn = player.PlayerPawn.Value;
-        if (pawn == null || pawn.LifeState != (int)LifeState_t.LIFE_ALIVE) return;
+        if (pawn == null || pawn.LifeState != (int)LifeState_t.LIFE_ALIVE)
+            return;
         var movementServices = pawn.MovementServices?.As<CCSPlayer_MovementServices>();
-        if (movementServices == null) return;
+        if (movementServices == null)
+            return;
         var trace = stackalloc GameTrace[1];
-        if (!pawn.IsAbleToApplySpray((IntPtr)trace) || (IntPtr)trace == IntPtr.Zero) return;
+        if (!pawn.IsAbleToApplySpray((IntPtr)trace) || (IntPtr)trace == IntPtr.Zero)
+            return;
         player.ExecuteClientCommand("play sounds/items/spraycan_shake");
         PlayerSprayCooldownManager[player.SteamID] = Now();
         var endPos = Vector3toVector(trace->EndPos);
