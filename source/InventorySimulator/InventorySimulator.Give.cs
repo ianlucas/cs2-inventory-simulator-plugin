@@ -142,9 +142,8 @@ public partial class InventorySimulator
         if (isKnife)
         {
             if (entityDef != item.Def)
-            {
                 weapon.ChangeSubclass(item.Def);
-            }
+
             weapon.AttributeManager.Item.ItemDefinitionIndex = item.Def;
             weapon.AttributeManager.Item.EntityQuality = 3;
         }
