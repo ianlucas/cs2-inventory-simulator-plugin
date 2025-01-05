@@ -4,16 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 using System.Numerics;
-using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
 using NativeVector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
-    static CCSGameRulesProxy? GameRulesProxy;
-
     public static string GetAgentModelPath(string model) => $"characters/models/{model}.vmdl";
 
     public static bool IsKnifeClassName(string className) =>
@@ -32,18 +28,6 @@ public partial class InventorySimulator
         };
         return BitConverter.ToSingle(bytes, 0);
     }
-
-    public static CCSGameRules? GetGameRules() =>
-        (
-            GameRulesProxy?.IsValid == true ? GameRulesProxy.GameRules
-            : (
-                GameRulesProxy = Utilities
-                    .FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules")
-                    .First()
-            )?.IsValid == true
-                ? GameRulesProxy?.GameRules
-            : null
-        );
 
     public static NativeVector Vector3toVector(Vector3 vec) => new(vec.X, vec.Y, vec.Z);
 }
