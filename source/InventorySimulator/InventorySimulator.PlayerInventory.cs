@@ -20,6 +20,24 @@ public class StickerItem
     public float Wear { get; set; }
 }
 
+public class KeychainItem
+{
+    [JsonPropertyName("id")]
+    public uint Id { get; set; }
+
+    [JsonPropertyName("x")]
+    public float OffsetX { get; set; }
+    
+    [JsonPropertyName("y")]
+    public float OffsetY { get; set; }
+
+    [JsonPropertyName("z")]
+    public float OffsetZ { get; set; }
+
+    [JsonPropertyName("seed")]
+    public float Seed { get; set; }
+}
+
 public class BaseEconItem
 {
     [JsonPropertyName("def")]
@@ -53,6 +71,9 @@ public class WeaponEconItem : BaseEconItem
 
     [JsonPropertyName("uid")]
     public required int Uid { get; set; }
+
+    [JsonPropertyName("keychain")]
+    public KeychainItem? Keychain { get; set; }
 }
 
 public class AgentItem

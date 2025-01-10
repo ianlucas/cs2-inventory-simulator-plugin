@@ -165,6 +165,13 @@ public partial class InventorySimulator
             }
             UpdatePlayerWeaponMeshGroupMask(player, weapon, item.Legacy);
         }
+        if (item.Keychain != null) {
+			weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"keychain slot 0 id", ViewAsFloat(item.Keychain.Id));
+            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"keychain slot 0 offset x", item.Keychain.OffsetX);
+            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"keychain slot 0 offset y", item.Keychain.OffsetY);
+            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"keychain slot 0 offset z", item.Keychain.OffsetZ);
+            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"keychain slot 0 seed", item.Keychain.Seed);
+        }
     }
 
     public void GivePlayerWeaponStatTrakIncrement(CCSPlayerController player, string designerName, string weaponItemId)
