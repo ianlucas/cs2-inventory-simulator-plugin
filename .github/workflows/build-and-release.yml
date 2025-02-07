@@ -44,7 +44,7 @@ jobs:
         id: release
         uses: softprops/action-gh-release@v1
         with:
-          body: ${{ env.project_name }} (v${{ steps.buildnumber.outputs.build_number }})
+          generate_release_notes: true
           tag_name: v${{ steps.buildnumber.outputs.build_number }}
           files: |
             ${{ env.project_name }}-v${{ steps.buildnumber.outputs.build_number }}.zip
