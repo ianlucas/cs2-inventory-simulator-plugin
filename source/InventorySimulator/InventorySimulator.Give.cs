@@ -155,13 +155,20 @@ public partial class InventorySimulator
         {
             foreach (var sticker in item.Stickers)
             {
+                var slot = $"sticker slot {sticker.Slot}";
                 // To set the ID of the sticker, we need to use a workaround. In the items_game.txt file, locate the
                 // sticker slot 0 id entry. It should be marked with stored_as_integer set to 1. This means we need to
                 // treat a uint as a float. For example, if the uint stickerId is 2229, we would interpret its value as
                 // if it were a float (e.g., float stickerId = 3.12349e-42f).
                 // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blame/main/game/shared/econ/econ_item_view.cpp#L194
-                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"sticker slot {sticker.Slot} id", ViewAsFloat(sticker.Def));
-                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"sticker slot {sticker.Slot} wear", sticker.Wear);
+                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} id", ViewAsFloat(sticker.Def));
+                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} wear", sticker.Wear);
+                if (sticker.Rotation != null)
+                    weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} rotation", sticker.Rotation.Value);
+                if (sticker.X != null)
+                    weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} offset x", sticker.X.Value);
+                if (sticker.Y != null)
+                    weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} offset y", sticker.Y.Value);
             }
             UpdatePlayerWeaponMeshGroupMask(player, weapon, item.Legacy);
         }
