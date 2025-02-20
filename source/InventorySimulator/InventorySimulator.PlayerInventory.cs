@@ -18,6 +18,15 @@ public class StickerItem
 
     [JsonPropertyName("wear")]
     public float Wear { get; set; }
+
+    [JsonPropertyName("rotation")]
+    public int? Rotation { get; set; }
+
+    [JsonPropertyName("x")]
+    public float? X { get; set; }
+
+    [JsonPropertyName("y")]
+    public float? Y { get; set; }
 }
 
 public class BaseEconItem
