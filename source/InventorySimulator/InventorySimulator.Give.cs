@@ -3,6 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using System.Collections.Immutable;
+using System.Reflection;
+using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
@@ -117,7 +121,8 @@ public partial class InventorySimulator
         var isKnife = IsKnifeClassName(weapon.DesignerName);
         var entityDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
         var inventory = GetPlayerInventory(player);
-        var item = isKnife ? inventory.GetKnife(player.TeamNum) : inventory.GetWeapon(player.Team, entityDef);
+        var fallback = invsim_fallback_team.Value;
+        var item = isKnife ? inventory.GetKnife(player.TeamNum, fallback) : inventory.GetWeapon(player.Team, entityDef, fallback);
         if (item == null)
             return;
 
@@ -139,7 +144,7 @@ public partial class InventorySimulator
         item.WearOverride ??= inventory.GetWeaponEconItemWear(item);
         weapon.FallbackPaintKit = item.Paint;
         weapon.FallbackSeed = item.Seed;
-        weapon.FallbackWear = item.WearOverride ?? item.Wear;
+        weapon.FallbackWear = invsim_caching_fix.Value ? item.Wear : item.WearOverride ?? item.Wear;
         weapon.AttributeManager.Item.CustomName = item.Nametag;
         weapon.AttributeManager.Item.AccountID = (uint)player.SteamID;
 
@@ -210,7 +215,8 @@ public partial class InventorySimulator
             weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(newValue));
             weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(newValue));
             var inventory = GetPlayerInventory(player);
-            var item = isKnife ? inventory.GetKnife(player.TeamNum) : inventory.GetWeapon(player.Team, def);
+            var fallback = invsim_fallback_team.Value;
+            var item = isKnife ? inventory.GetKnife(player.TeamNum, fallback) : inventory.GetWeapon(player.Team, def, fallback);
             if (item != null)
             {
                 item.Stattrak = newValue;
@@ -236,6 +242,87 @@ public partial class InventorySimulator
         }
     }
 
+    public void GivePlayerCurrentWeapons(CCSPlayerController player, PlayerInventory inventory, PlayerInventory oldInventory)
+    {
+        var pawn = player.PlayerPawn.Value;
+        var weaponServices = pawn?.WeaponServices;
+        if (pawn == null || weaponServices == null)
+            return;
+        var activeDesignerName = weaponServices.ActiveWeapon.Value?.DesignerName;
+        var targets = new List<(string, int, int, bool, gear_slot_t)>();
+        foreach (var handle in weaponServices.MyWeapons)
+        {
+            var weapon = handle.Value?.As<CCSWeaponBase>();
+            if (weapon == null || weapon.DesignerName.Contains("weapon_") != true)
+                continue;
+            if (weapon.OriginalOwnerXuidLow != (uint)player.SteamID)
+                continue;
+            var data = weapon.VData;
+            if (data == null)
+                continue;
+            if (data.GearSlot is gear_slot_t.GEAR_SLOT_RIFLE or gear_slot_t.GEAR_SLOT_PISTOL or gear_slot_t.GEAR_SLOT_KNIFE)
+            {
+                var entityDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
+                var fallback = invsim_fallback_team.Value;
+                var oldItem =
+                    data.GearSlot is gear_slot_t.GEAR_SLOT_KNIFE
+                        ? oldInventory.GetKnife(player.TeamNum, fallback)
+                        : oldInventory.GetWeapon(player.Team, entityDef, fallback);
+                var item =
+                    data.GearSlot is gear_slot_t.GEAR_SLOT_KNIFE ? inventory.GetKnife(player.TeamNum, fallback) : inventory.GetWeapon(player.Team, entityDef, fallback);
+
+                if (oldItem == item)
+                    continue;
+
+                var clip = weapon.Clip1;
+                var reserve = weapon.ReserveAmmo[0];
+
+                targets.Add((weapon.DesignerName, clip, reserve, activeDesignerName == weapon.DesignerName, data.GearSlot));
+            }
+        }
+        foreach (var target in targets)
+        {
+            var designerName = target.Item1;
+            var clip = target.Item2;
+            var reserve = target.Item3;
+            var active = target.Item4;
+            var gearSlot = target.Item5;
+
+            var oldWeapon = weaponServices.MyWeapons.FirstOrDefault(h => h.Value?.DesignerName == designerName);
+            oldWeapon?.Value?.AddEntityIOEvent("Kill", oldWeapon.Value, null, "", 0.1f);
+
+            var weapon = new CBasePlayerWeapon(player.GiveNamedItem(designerName));
+            Server.RunOnTick(
+                Server.TickCount + 32,
+                () =>
+                {
+                    if (weapon.IsValid && pawn.IsValid)
+                    {
+                        weapon.Clip1 = clip;
+                        Utilities.SetStateChanged(weapon, "CBasePlayerWeapon", "m_iClip1");
+                        weapon.ReserveAmmo[0] = reserve;
+                        Utilities.SetStateChanged(weapon, "CBasePlayerWeapon", "m_pReserveAmmo");
+                        Server.NextFrame(() =>
+                        {
+                            if (active)
+                            {
+                                var command = gearSlot switch
+                                {
+                                    gear_slot_t.GEAR_SLOT_RIFLE => "slot1",
+                                    gear_slot_t.GEAR_SLOT_PISTOL => "slot2",
+                                    gear_slot_t.GEAR_SLOT_KNIFE => "slot3",
+                                    _ => null,
+                                };
+                                if (command != null)
+                                    player.ExecuteClientCommand(command);
+                            }
+                        });
+                    }
+                }
+            );
+        }
+    }
+
     public void GiveOnPlayerSpawn(CCSPlayerController player)
     {
         var inventory = GetPlayerInventory(player);
@@ -244,13 +331,14 @@ public partial class InventorySimulator
         GivePlayerGloves(player, inventory);
     }
 
-    public void GiveOnRefreshPlayerInventory(CCSPlayerController player)
+    public void GiveOnRefreshPlayerInventory(CCSPlayerController player, PlayerInventory oldInventory)
     {
         var inventory = GetPlayerInventory(player);
         GivePlayerPin(player, inventory);
         if (invsim_ws_immediately.Value)
         {
             GivePlayerGloves(player, inventory);
+            GivePlayerCurrentWeapons(player, inventory, oldInventory);
         }
     }
 

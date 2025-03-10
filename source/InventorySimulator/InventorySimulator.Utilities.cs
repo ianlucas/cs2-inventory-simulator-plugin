@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 using System.Numerics;
+using CounterStrikeSharp.API.Modules.Utils;
 using NativeVector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
 namespace InventorySimulator;
@@ -15,6 +16,8 @@ public partial class InventorySimulator
     public static bool IsKnifeClassName(string className) => className.Contains("bayonet") || className.Contains("knife");
 
     public static long Now() => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+    public static CsTeam ToggleTeam(CsTeam team) => team == CsTeam.Terrorist ? CsTeam.CounterTerrorist : CsTeam.Terrorist;
 
     public static float ViewAsFloat<T>(T value)
         where T : struct
