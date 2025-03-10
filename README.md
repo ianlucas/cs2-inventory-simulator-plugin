@@ -70,6 +70,12 @@ Submit a PR or open an issue if you happen to know a workaround for them.
 * **Type:** `bool`
 * **Default:** `false`
 
+#### `invsim_fallback_team` ConVar
+
+* Allows giving other team equipped skin when the current team doesn't have a skin equipped (e.g. giving AK-47 for a CT player will give their equipped T skin).
+* **Type:** `bool`
+* **Default:** `false`
+
 #### `invsim_minmodels` ConVar
 
 * Allows agents or use specific models for each team.
@@ -91,6 +97,18 @@ Submit a PR or open an issue if you happen to know a workaround for them.
 * Cooldown in seconds between player inventory refreshes.
 * **Type:** `int`
 * **Default:** `30`
+
+#### `invsim_ws_gloves_fix` ConVar
+
+* Applies a fix for the issue where the gloves aren't updated after the player uses `!ws` command. Please report any issue with this fix.
+* **Type:** `bool`
+* **Default:** `false`
+
+#### `invsim_ws_immediately` ConVar
+
+* Applies weapon skins changes immediately after issuing `!ws` command. Please report any issue with this feature.
+* **Type:** `bool`
+* **Default:** `false`
 
 #### `invsim_ws_print_full_url` ConVar
 
