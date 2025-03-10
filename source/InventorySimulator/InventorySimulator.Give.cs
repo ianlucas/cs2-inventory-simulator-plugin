@@ -54,6 +54,17 @@ public partial class InventorySimulator
 
         if (inventory.Gloves.TryGetValue(player.TeamNum, out var item))
         {
+            if (invsim_ws_gloves_fix.Value)
+            {
+                // Workaround by @daffyyyy.
+                var model = pawn.CBodyComponent?.SceneNode?.GetSkeletonInstance()?.ModelState.ModelName;
+                if (!string.IsNullOrEmpty(model))
+                {
+                    pawn.SetModel("characters/models/tm_jumpsuit/tm_jumpsuit_varianta.vmdl");
+                    pawn.SetModel(model);
+                }
+            }
+
             var glove = pawn.EconGloves;
             Server.NextFrame(() =>
             {
@@ -237,6 +248,10 @@ public partial class InventorySimulator
     {
         var inventory = GetPlayerInventory(player);
         GivePlayerPin(player, inventory);
+        if (invsim_ws_immediately.Value)
+        {
+            GivePlayerGloves(player, inventory);
+        }
     }
 
     public void GivePlayerGraffiti(CCSPlayerController player, CPlayerSprayDecal sprayDecal)
