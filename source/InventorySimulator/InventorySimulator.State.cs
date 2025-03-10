@@ -23,7 +23,6 @@ public partial class InventorySimulator
     public readonly FakeConVar<bool> invsim_ws_gloves_fix = new("invsim_ws_gloves_fix", "Whether to apply the glove change fix.", false);
     public readonly FakeConVar<bool> invsim_ws_immediately = new("invsim_ws_immediately", "Whether to apply skin changes immediately.", false);
     public readonly FakeConVar<bool> invsim_fallback_team = new("invsim_fallback_team", "Whether get skin from any team (first current team).", false);
-    public readonly FakeConVar<bool> invsim_caching_fix = new("invsim_caching_fix", "Whether to apply skin caching fix.", true);
     public readonly FakeConVar<bool> invsim_require_inventory = new("invsim_require_inventory", "Require the player's inventory to be fetched before allowing them to connect to the game.", false);
     public readonly FakeConVar<int> invsim_minmodels = new("invsim_minmodels", "Allows agents or use specific models for each team.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
     public readonly FakeConVar<int> invsim_ws_cooldown = new("invsim_ws_cooldown", "Cooldown in seconds between player inventory refreshes.", 30);

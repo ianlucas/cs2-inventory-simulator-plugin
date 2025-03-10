@@ -144,7 +144,7 @@ public partial class InventorySimulator
         item.WearOverride ??= inventory.GetWeaponEconItemWear(item);
         weapon.FallbackPaintKit = item.Paint;
         weapon.FallbackSeed = item.Seed;
-        weapon.FallbackWear = invsim_caching_fix.Value ? item.Wear : item.WearOverride ?? item.Wear;
+        weapon.FallbackWear = item.WearOverride ?? item.Wear;
         weapon.AttributeManager.Item.CustomName = item.Nametag;
         weapon.AttributeManager.Item.AccountID = (uint)player.SteamID;
 
