@@ -103,12 +103,12 @@ public partial class InventorySimulator
             await FetchPlayerInventory(player.SteamID);
             return;
         }
-
+        var oldInventory = GetPlayerInventory(player);
         await FetchPlayerInventory(player.SteamID, true);
         Server.NextFrame(() =>
         {
             player.PrintToChat(Localizer["invsim.ws_completed"]);
-            GiveOnRefreshPlayerInventory(player);
+            GiveOnRefreshPlayerInventory(player, oldInventory);
         });
     }
 

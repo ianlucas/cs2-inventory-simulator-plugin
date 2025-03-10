@@ -27,6 +27,33 @@ public class StickerItem
 
     [JsonPropertyName("y")]
     public float? Y { get; set; }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not StickerItem other)
+            return false;
+
+        return Def == other.Def && Slot == other.Slot && Wear == other.Wear && Rotation == other.Rotation && X == other.X && Y == other.Y;
+    }
+
+    public static bool operator ==(StickerItem? left, StickerItem? right)
+    {
+        if (ReferenceEquals(left, right))
+            return true;
+        if (left is null || right is null)
+            return false;
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(StickerItem? left, StickerItem? right)
+    {
+        return !(left == right);
+    }
 }
 
 public class BaseEconItem
@@ -62,6 +89,40 @@ public class WeaponEconItem : BaseEconItem
 
     [JsonPropertyName("uid")]
     public required int Uid { get; set; }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not WeaponEconItem other)
+            return false;
+
+        return Def == other.Def
+            && Paint == other.Paint
+            && Seed == other.Seed
+            && Wear == other.Wear
+            && Legacy == other.Legacy
+            && Nametag == other.Nametag
+            && Stattrak == other.Stattrak
+            && Stickers.SequenceEqual(other.Stickers);
+    }
+
+    public static bool operator ==(WeaponEconItem? left, WeaponEconItem? right)
+    {
+        if (ReferenceEquals(left, right))
+            return true;
+        if (left is null || right is null)
+            return false;
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(WeaponEconItem? left, WeaponEconItem? right)
+    {
+        return !(left == right);
+    }
 }
 
 public class AgentItem
@@ -139,18 +200,31 @@ public class PlayerInventory(
     [JsonPropertyName("graffiti")]
     public GraffitiItem? Graffiti { get; set; } = graffiti;
 
-    public WeaponEconItem? GetKnife(byte team)
+    public WeaponEconItem? GetKnife(byte team, bool fallback)
     {
         if (Knives.TryGetValue(team, out var knife))
+        {
+            return knife;
+        }
+        if (fallback && Knives.TryGetValue((byte)InventorySimulator.ToggleTeam((CsTeam)team), out knife))
         {
             return knife;
         }
         return null;
     }
 
-    public WeaponEconItem? GetWeapon(CsTeam team, ushort def)
+    public Dictionary<ushort, WeaponEconItem> GetWeapons(CsTeam team)
     {
-        if ((team == CsTeam.Terrorist ? TWeapons : CTWeapons).TryGetValue(def, out var weapon))
+        return team == CsTeam.Terrorist ? TWeapons : CTWeapons;
+    }
+
+    public WeaponEconItem? GetWeapon(CsTeam team, ushort def, bool fallback)
+    {
+        if (GetWeapons(team).TryGetValue(def, out var weapon))
+        {
+            return weapon;
+        }
+        if (fallback && GetWeapons(InventorySimulator.ToggleTeam(team)).TryGetValue(def, out weapon))
         {
             return weapon;
         }
