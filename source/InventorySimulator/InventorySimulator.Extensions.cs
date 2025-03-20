@@ -69,4 +69,14 @@ public static class Extensions
     {
         return IsAbleToApplySprayFunc(pawn.Handle, ptr, 0, 0) == IntPtr.Zero;
     }
+
+    public static string GetActualDesignerName(this CBasePlayerWeapon weapon)
+    {
+        return weapon.AttributeManager.Item.ItemDefinitionIndex switch
+        {
+            60 => "weapon_m4a1_silencer",
+            61 => "weapon_usp_silencer",
+            _ => weapon.DesignerName,
+        };
+    }
 }

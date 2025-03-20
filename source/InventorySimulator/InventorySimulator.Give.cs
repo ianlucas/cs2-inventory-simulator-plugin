@@ -245,7 +245,7 @@ public partial class InventorySimulator
         if (pawn == null || weaponServices == null)
             return;
         var activeDesignerName = weaponServices.ActiveWeapon.Value?.DesignerName;
-        var targets = new List<(string, int, int, bool, gear_slot_t)>();
+        var targets = new List<(string, string, int, int, bool, gear_slot_t)>();
         foreach (var handle in weaponServices.MyWeapons)
         {
             var weapon = handle.Value?.As<CCSWeaponBase>();
@@ -273,21 +273,22 @@ public partial class InventorySimulator
                 var clip = weapon.Clip1;
                 var reserve = weapon.ReserveAmmo[0];
 
-                targets.Add((weapon.DesignerName, clip, reserve, activeDesignerName == weapon.DesignerName, data.GearSlot));
+                targets.Add((weapon.DesignerName, weapon.GetActualDesignerName(), clip, reserve, activeDesignerName == weapon.DesignerName, data.GearSlot));
             }
         }
         foreach (var target in targets)
         {
             var designerName = target.Item1;
-            var clip = target.Item2;
-            var reserve = target.Item3;
-            var active = target.Item4;
-            var gearSlot = target.Item5;
+            var actualDesignerName = target.Item2;
+            var clip = target.Item3;
+            var reserve = target.Item4;
+            var active = target.Item5;
+            var gearSlot = target.Item6;
 
             var oldWeapon = weaponServices.MyWeapons.FirstOrDefault(h => h.Value?.DesignerName == designerName);
             oldWeapon?.Value?.AddEntityIOEvent("Kill", oldWeapon.Value, null, "", 0.1f);
 
-            var weapon = new CBasePlayerWeapon(player.GiveNamedItem(designerName));
+            var weapon = new CBasePlayerWeapon(player.GiveNamedItem(actualDesignerName));
             Server.RunOnTick(
                 Server.TickCount + 32,
                 () =>
