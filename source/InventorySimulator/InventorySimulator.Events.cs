@@ -13,14 +13,7 @@ public partial class InventorySimulator
     {
         var player = @event.Userid;
         if (player != null && IsPlayerHumanAndValid(player))
-        {
-            if (PlayerOnTickInventoryManager.TryGetValue(player.SteamID, out var tuple))
-            {
-                PlayerOnTickInventoryManager[player.SteamID] = (player, tuple.Item2);
-            }
-            RefreshPlayerInventory(player);
-        }
-
+            OnPlayerConnect(player);
         return HookResult.Continue;
     }
 
@@ -28,11 +21,15 @@ public partial class InventorySimulator
     {
         var player = @event.Userid;
         if (player != null && IsPlayerHumanAndValid(player))
-        {
-            RefreshPlayerInventory(player);
-        }
-
+            OnPlayerConnect(player);
         return HookResult.Continue;
+    }
+
+    public void OnPlayerConnect(CCSPlayerController player)
+    {
+        if (PlayerOnTickInventoryManager.TryGetValue(player.SteamID, out var tuple))
+            PlayerOnTickInventoryManager[player.SteamID] = (player, tuple.Item2);
+        RefreshPlayerInventory(player);
     }
 
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo _)
