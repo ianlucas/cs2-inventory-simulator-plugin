@@ -1,4 +1,4 @@
-﻿/*---------------------------------------------------------------------------------------------
+/*---------------------------------------------------------------------------------------------
  *  Copyright (c) Ian Lucas. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
@@ -14,6 +14,8 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
+    private readonly object _fetchingLock = new object();
+
     public string GetApiUrl(string pathname = "")
     {
         return $"{invsim_protocol.Value}://{invsim_hostname.Value}{pathname}";
@@ -66,34 +68,51 @@ public partial class InventorySimulator
         if (!force && existing != null)
             return;
 
-        if (FetchingPlayerInventory.Contains(steamId))
-            return;
-
-        FetchingPlayerInventory.Add(steamId);
-
-        for (var attempt = 0; attempt < 3; attempt++)
+        bool shouldFetch = false;
+        lock (_fetchingLock)
         {
-            try
+            if (!FetchingPlayerInventory.Contains(steamId))
             {
-                var playerInventory = await Fetch<PlayerInventory>($"/api/equipped/v3/{steamId}.json", true);
-
-                if (playerInventory != null)
-                {
-                    if (existing != null)
-                        playerInventory.CachedWeaponEconItems = existing.CachedWeaponEconItems;
-                    PlayerCooldownManager[steamId] = Now();
-                    AddPlayerInventory(steamId, playerInventory);
-                }
-
-                break;
-            }
-            catch
-            {
-                // Try again to fetch data (up to 3 times).
+                FetchingPlayerInventory.Add(steamId);
+                shouldFetch = true;
             }
         }
 
-        FetchingPlayerInventory.Remove(steamId);
+        if (!shouldFetch)
+            return;
+
+        try
+        {
+            for (var attempt = 0; attempt < 3; attempt++)
+            {
+                try
+                {
+                    var playerInventory = await Fetch<PlayerInventory>($"/api/equipped/v3/{steamId}.json", true);
+
+                    if (playerInventory != null)
+                    {
+                        if (existing != null)
+                            playerInventory.CachedWeaponEconItems = existing.CachedWeaponEconItems;
+                        PlayerCooldownManager[steamId] = Now();
+                        AddPlayerInventory(steamId, playerInventory);
+                    }
+
+                    break;
+                }
+                catch
+                {
+                    if (attempt == 2)
+                        Logger.LogError($"Failed to fetch inventory for {steamId} after 3 attempts.");
+                }
+            }
+        }
+        finally
+        {
+            lock (_fetchingLock)
+            {
+                FetchingPlayerInventory.Remove(steamId);
+            }
+        }
     }
 
     public async void RefreshPlayerInventory(CCSPlayerController player, bool force = false)
