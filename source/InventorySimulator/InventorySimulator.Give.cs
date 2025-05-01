@@ -68,20 +68,7 @@ public partial class InventorySimulator
             var glove = pawn.EconGloves;
             Server.NextFrame(() =>
             {
-                glove.Initialized = true;
-                glove.ItemDefinitionIndex = item.Def;
-                UpdateEconItemID(glove);
-
-                glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
-                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
-                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
-                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
-
-                glove.AttributeList.Attributes.RemoveAll();
-                glove.AttributeList.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
-                glove.AttributeList.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
-                glove.AttributeList.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
-
+                ApplyGloveAttributesFromItem(glove, item);
                 pawn.SetBodygroup("default_gloves", 1);
             });
         }
@@ -328,6 +315,12 @@ public partial class InventorySimulator
         GivePlayerGloves(player, inventory);
     }
 
+    public void GiveOnLoadPlayerInventory(CCSPlayerController player)
+    {
+        GiveTeamPreviewItems("team_select");
+        GiveTeamPreviewItems("team_intro");
+    }
+
     public void GiveOnRefreshPlayerInventory(CCSPlayerController player, PlayerInventory oldInventory)
     {
         var inventory = GetPlayerInventory(player);
@@ -386,6 +379,36 @@ public partial class InventorySimulator
             sprayDecal.TintID = item.Tint;
             sprayDecal.DispatchSpawn();
             player.ExecuteClientCommand("play sounds/items/spraycan_spray");
+        }
+    }
+
+    public void GiveTeamPreviewItems(string prefix)
+    {
+        var teamPreviews = Utilities
+            .FindAllEntitiesByDesignerName<CCSGO_TeamPreviewCharacterPosition>($"{prefix}_counterterrorist")
+            .Concat(Utilities.FindAllEntitiesByDesignerName<CCSGO_TeamPreviewCharacterPosition>($"{prefix}_terrorist"));
+
+        Server.PrintToChatAll($"---GiveTeamPreviewItems prefix={prefix}");
+
+        foreach (var teamPreview in teamPreviews)
+        {
+            if (teamPreview.Xuid == 0)
+                continue;
+            Server.PrintToChatAll($"[{teamPreview.DesignerName}] Index={teamPreview.Index} Xuid={teamPreview.Xuid}");
+            var player = Utilities.GetPlayerFromSteamId(teamPreview.Xuid);
+            if (player == null || !IsPlayerHumanAndValid(player))
+                continue;
+            var inventory = GetPlayerInventory(player);
+            GivePlayerTeamPreview(player, teamPreview, inventory);
+        }
+    }
+
+    public void GivePlayerTeamPreview(CCSPlayerController player, CCSGO_TeamPreviewCharacterPosition teamPreview, PlayerInventory inventory)
+    {
+        if (inventory.Gloves.TryGetValue(player.TeamNum, out var glove))
+        {
+            ApplyGloveAttributesFromItem(teamPreview.GlovesItem, glove);
+            Utilities.SetStateChanged(teamPreview, "CCSGO_TeamPreviewCharacterPosition", "m_glovesItem");
         }
     }
 }

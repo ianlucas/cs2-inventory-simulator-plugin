@@ -9,7 +9,6 @@ using CounterStrikeSharp.API.Modules.Memory;
 
 namespace InventorySimulator;
 
-[MinimumApiVersion(235)]
 public partial class InventorySimulator : BasePlugin
 {
     public override string ModuleAuthor => "Ian Lucas";
@@ -26,6 +25,8 @@ public partial class InventorySimulator : BasePlugin
         RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
         Extensions.ProcessUsercmds.Hook(OnProcessUsercmdsPost, HookMode.Post);
         VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
+        Extensions.UpdateSelectTeamPreview.Hook(OnUpdateSelectTeamPreview, HookMode.Post);
+        Extensions.UpdateIntroTeamPreview.Hook(OnUpdateIntroTeamPreview, HookMode.Post);
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeathPre, HookMode.Pre);
         RegisterEventHandler<EventRoundMvp>(OnRoundMvpPre, HookMode.Pre);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);

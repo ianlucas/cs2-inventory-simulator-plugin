@@ -10,6 +10,23 @@ namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
+    public void ApplyGloveAttributesFromItem(CEconItemView glove, BaseEconItem item)
+    {
+        glove.Initialized = true;
+        glove.ItemDefinitionIndex = item.Def;
+        UpdateEconItemID(glove);
+
+        glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
+        glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
+        glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
+        glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
+
+        glove.AttributeList.Attributes.RemoveAll();
+        glove.AttributeList.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
+        glove.AttributeList.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
+        glove.AttributeList.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
+    }
+
     public void UpdateWeaponMeshGroupMask(CBaseEntity weapon, bool isLegacy)
     {
         if (weapon.CBodyComponent != null && weapon.CBodyComponent.SceneNode != null)

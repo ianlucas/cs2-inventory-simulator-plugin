@@ -5,11 +5,14 @@
 
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
+    public bool DidHandleTeamIntro = false;
+
     public void OnTick()
     {
         // According to @bklol the right way to change the Music Kit is to update the player's inventory, I'm
@@ -20,6 +23,20 @@ public partial class InventorySimulator
             {
                 GivePlayerMusicKit(player, inventory);
             }
+
+        var gameRules = GetGameRules();
+        if (gameRules != null)
+            if (gameRules.TeamIntroPeriod)
+            {
+                if (DidHandleTeamIntro != true)
+                {
+                    Server.PrintToChatAll("---Updating team intro entities---");
+                    GiveTeamPreviewItems("team_intro");
+                    DidHandleTeamIntro = true;
+                }
+            }
+            else
+                DidHandleTeamIntro = false;
     }
 
     public void OnEntityCreated(CEntityInstance entity)
