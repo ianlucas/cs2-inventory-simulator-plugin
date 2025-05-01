@@ -26,7 +26,7 @@ public partial class InventorySimulator
             var player = Utilities.GetPlayerFromUserid((int)userid);
             if (player != null && !player.IsBot)
             {
-                if (!FetchingPlayerInventory.Contains(player.SteamID))
+                if (!FetchingPlayerInventory.ContainsKey(player.SteamID))
                     RefreshPlayerInventory(player);
                 var allowed = PlayerInventoryManager.ContainsKey(player.SteamID);
                 if (state >= 0 && !allowed)

@@ -27,7 +27,7 @@ public partial class InventorySimulator
                 LoadedPlayerInventory.Clear();
                 foreach (var pair in inventories)
                 {
-                    LoadedPlayerInventory.Add(pair.Key);
+                    LoadedPlayerInventory.TryAdd(pair.Key, true);
                     AddPlayerInventory(pair.Key, pair.Value);
                 }
             }
@@ -63,7 +63,7 @@ public partial class InventorySimulator
 
     public void RemovePlayerInventory(ulong steamId)
     {
-        if (!LoadedPlayerInventory.Contains(steamId))
+        if (!LoadedPlayerInventory.ContainsKey(steamId))
         {
             PlayerInventoryManager.Remove(steamId, out _);
             PlayerCooldownManager.Remove(steamId, out _);
