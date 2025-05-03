@@ -30,7 +30,7 @@ public partial class InventorySimulator
             }
         }
 
-        if (FetchingPlayerInventory.Contains(player.SteamID))
+        if (FetchingPlayerInventory.ContainsKey(player.SteamID))
         {
             player.PrintToChat(Localizer["invsim.ws_in_progress"]);
             return;

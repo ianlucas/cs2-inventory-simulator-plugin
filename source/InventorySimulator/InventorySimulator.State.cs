@@ -33,9 +33,8 @@ public partial class InventorySimulator
     public readonly FakeConVar<string> invsim_file = new("invsim_file", "File to load when plugin is loaded.", "inventories.json");
     // csharpier-ignore-end
 
-    public readonly HashSet<ulong> FetchingPlayerInventory = [];
-    public readonly HashSet<ulong> LoadedPlayerInventory = [];
-
+    public readonly ConcurrentDictionary<ulong, bool> FetchingPlayerInventory = [];
+    public readonly ConcurrentDictionary<ulong, bool> LoadedPlayerInventory = [];
     public readonly ConcurrentDictionary<ulong, long> PlayerCooldownManager = [];
     public readonly ConcurrentDictionary<ulong, long> PlayerSprayCooldownManager = [];
     public readonly ConcurrentDictionary<ulong, (CCSPlayerController?, PlayerInventory)> PlayerOnTickInventoryManager = [];

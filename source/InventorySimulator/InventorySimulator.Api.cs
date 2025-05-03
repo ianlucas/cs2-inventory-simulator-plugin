@@ -66,10 +66,10 @@ public partial class InventorySimulator
         if (!force && existing != null)
             return;
 
-        if (FetchingPlayerInventory.Contains(steamId))
+        if (FetchingPlayerInventory.ContainsKey(steamId))
             return;
 
-        FetchingPlayerInventory.Add(steamId);
+        FetchingPlayerInventory.TryAdd(steamId, true);
 
         for (var attempt = 0; attempt < 3; attempt++)
         {
@@ -93,7 +93,7 @@ public partial class InventorySimulator
             }
         }
 
-        FetchingPlayerInventory.Remove(steamId);
+        FetchingPlayerInventory.Remove(steamId, out var _);
     }
 
     public async void RefreshPlayerInventory(CCSPlayerController player, bool force = false)
