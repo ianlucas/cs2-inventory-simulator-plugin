@@ -45,12 +45,6 @@ public partial class InventorySimulator
         return HookResult.Continue;
     }
 
-    public HookResult OnUpdateIntroTeamPreview(DynamicHook hook)
-    {
-        GiveTeamPreviewItems("team_intro");
-        return HookResult.Continue;
-    }
-
     public HookResult OnProcessUsercmdsPost(DynamicHook hook)
     {
         if (!invsim_spray_on_use.Value)
