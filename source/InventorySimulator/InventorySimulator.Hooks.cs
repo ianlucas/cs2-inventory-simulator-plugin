@@ -41,7 +41,7 @@ public partial class InventorySimulator
     public HookResult OnUpdateSelectTeamPreview(DynamicHook hook)
     {
         var player = hook.GetParam<CCSPlayerController>(0);
-        GiveTeamPreviewItems("team_select");
+        GiveTeamPreviewItems("team_select", player);
         return HookResult.Continue;
     }
 
