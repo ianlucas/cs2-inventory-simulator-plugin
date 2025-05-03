@@ -52,7 +52,9 @@ public partial class InventorySimulator
         if (pawn == null || pawn.Handle == IntPtr.Zero)
             return;
 
-        if (inventory.Gloves.TryGetValue(player.TeamNum, out var item))
+        var fallback = invsim_fallback_team.Value;
+        var item = inventory.GetGloves(player.TeamNum, fallback);
+        if (item != null)
         {
             if (invsim_ws_gloves_fix.Value)
             {
@@ -68,20 +70,7 @@ public partial class InventorySimulator
             var glove = pawn.EconGloves;
             Server.NextFrame(() =>
             {
-                glove.Initialized = true;
-                glove.ItemDefinitionIndex = item.Def;
-                UpdateEconItemID(glove);
-
-                glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
-                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
-                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
-                glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
-
-                glove.AttributeList.Attributes.RemoveAll();
-                glove.AttributeList.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
-                glove.AttributeList.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
-                glove.AttributeList.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
-
+                ApplyGloveAttributesFromItem(glove, item);
                 pawn.SetBodygroup("default_gloves", 1);
             });
         }
@@ -114,75 +103,15 @@ public partial class InventorySimulator
         if (IsCustomWeaponItemID(weapon))
             return;
 
-        var isKnife = IsKnifeClassName(weapon.DesignerName);
+        var isKnife = weapon.DesignerName.IsKnifeClassName();
         var entityDef = weapon.AttributeManager.Item.ItemDefinitionIndex;
         var inventory = GetPlayerInventory(player);
         var fallback = invsim_fallback_team.Value;
         var item = isKnife ? inventory.GetKnife(player.TeamNum, fallback) : inventory.GetWeapon(player.Team, entityDef, fallback);
-        if (item == null)
-            return;
-
-        if (isKnife)
+        if (item != null)
         {
-            if (entityDef != item.Def)
-                weapon.ChangeSubclass(item.Def);
-
-            weapon.AttributeManager.Item.ItemDefinitionIndex = item.Def;
-            weapon.AttributeManager.Item.EntityQuality = 3;
-        }
-        else
-        {
-            weapon.AttributeManager.Item.EntityQuality = item.Stattrak >= 0 ? 9 : 4;
-        }
-
-        UpdateEconItemID(weapon.AttributeManager.Item);
-
-        item.WearOverride ??= inventory.GetWeaponEconItemWear(item);
-        weapon.FallbackPaintKit = item.Paint;
-        weapon.FallbackSeed = item.Seed;
-        weapon.FallbackWear = item.WearOverride ?? item.Wear;
-        weapon.AttributeManager.Item.CustomName = item.Nametag;
-        weapon.AttributeManager.Item.AccountID = (uint)player.SteamID;
-
-        weapon.AttributeManager.Item.NetworkedDynamicAttributes.Attributes.RemoveAll();
-        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
-        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
-        weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
-
-        weapon.AttributeManager.Item.AttributeList.Attributes.RemoveAll();
-        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
-        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
-        weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
-
-        if (item.Stattrak >= 0)
-        {
-            weapon.FallbackStatTrak = item.Stattrak;
-            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(item.Stattrak));
-            weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater score type", 0);
-            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(item.Stattrak));
-            weapon.AttributeManager.Item.AttributeList.SetOrAddAttributeValueByName("kill eater score type", 0);
-        }
-
-        if (!isKnife)
-        {
-            foreach (var sticker in item.Stickers)
-            {
-                var slot = $"sticker slot {sticker.Slot}";
-                // To set the ID of the sticker, we need to use a workaround. In the items_game.txt file, locate the
-                // sticker slot 0 id entry. It should be marked with stored_as_integer set to 1. This means we need to
-                // treat a uint as a float. For example, if the uint stickerId is 2229, we would interpret its value as
-                // if it were a float (e.g., float stickerId = 3.12349e-42f).
-                // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blame/main/game/shared/econ/econ_item_view.cpp#L194
-                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} id", ViewAsFloat(sticker.Def));
-                weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} wear", sticker.Wear);
-                if (sticker.Rotation != null)
-                    weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} rotation", sticker.Rotation.Value);
-                if (sticker.X != null)
-                    weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} offset x", sticker.X.Value);
-                if (sticker.Y != null)
-                    weapon.AttributeManager.Item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} offset y", sticker.Y.Value);
-            }
-            UpdatePlayerWeaponMeshGroupMask(player, weapon, item.Legacy);
+            item.WearOverride ??= inventory.GetWeaponEconItemWear(item);
+            ApplyWeaponAtrributesFromItem(weapon.AttributeManager.Item, item, weapon, player);
         }
     }
 
@@ -204,7 +133,7 @@ public partial class InventorySimulator
                 return;
             }
 
-            var isKnife = IsKnifeClassName(designerName);
+            var isKnife = designerName.IsKnifeClassName();
             var newValue = weapon.FallbackStatTrak + 1;
             var def = weapon.AttributeManager.Item.ItemDefinitionIndex;
             weapon.FallbackStatTrak = newValue;
@@ -273,7 +202,7 @@ public partial class InventorySimulator
                 var clip = weapon.Clip1;
                 var reserve = weapon.ReserveAmmo[0];
 
-                targets.Add((weapon.DesignerName, weapon.GetActualDesignerName(), clip, reserve, activeDesignerName == weapon.DesignerName, data.GearSlot));
+                targets.Add((weapon.DesignerName, weapon.GetDesignerName(), clip, reserve, activeDesignerName == weapon.DesignerName, data.GearSlot));
             }
         }
         foreach (var target in targets)
@@ -326,6 +255,12 @@ public partial class InventorySimulator
         GivePlayerPin(player, inventory);
         GivePlayerAgent(player, inventory);
         GivePlayerGloves(player, inventory);
+    }
+
+    public void GiveOnLoadPlayerInventory(CCSPlayerController player)
+    {
+        GiveTeamPreviewItems("team_select", player);
+        GiveTeamPreviewItems("team_intro", player);
     }
 
     public void GiveOnRefreshPlayerInventory(CCSPlayerController player, PlayerInventory oldInventory)
@@ -386,6 +321,51 @@ public partial class InventorySimulator
             sprayDecal.TintID = item.Tint;
             sprayDecal.DispatchSpawn();
             player.ExecuteClientCommand("play sounds/items/spraycan_spray");
+        }
+    }
+
+    public void GiveTeamPreviewItems(string prefix, CCSPlayerController? player = null)
+    {
+        var teamPreviews = Utilities
+            .FindAllEntitiesByDesignerName<CCSGO_TeamPreviewCharacterPosition>($"{prefix}_counterterrorist")
+            .Concat(Utilities.FindAllEntitiesByDesignerName<CCSGO_TeamPreviewCharacterPosition>($"{prefix}_terrorist"));
+
+        foreach (var teamPreview in teamPreviews)
+        {
+            if (teamPreview.Xuid == 0 || (player != null && player.SteamID != teamPreview.Xuid))
+                continue;
+            player ??= Utilities.GetPlayerFromSteamId(teamPreview.Xuid);
+            if (player == null || !IsPlayerHumanAndValid(player))
+                continue;
+            var inventory = GetPlayerInventory(player);
+            GivePlayerTeamPreview(player, teamPreview, inventory);
+        }
+    }
+
+    public void GivePlayerTeamPreview(CCSPlayerController player, CCSGO_TeamPreviewCharacterPosition teamPreview, PlayerInventory inventory)
+    {
+        var fallback = invsim_fallback_team.Value;
+
+        var gloveItem = inventory.GetGloves(player.TeamNum, fallback);
+        if (gloveItem != null)
+        {
+            ApplyGloveAttributesFromItem(teamPreview.GlovesItem, gloveItem);
+            Utilities.SetStateChanged(teamPreview, "CCSGO_TeamPreviewCharacterPosition", "m_glovesItem");
+        }
+
+        var weaponItem = teamPreview.WeaponItem.IsKnifeClassName()
+            ? inventory.GetKnife(player.TeamNum, fallback)
+            : inventory.GetWeapon(player.Team, teamPreview.WeaponItem.ItemDefinitionIndex, fallback);
+        if (weaponItem != null)
+        {
+            ApplyWeaponAtrributesFromItem(teamPreview.WeaponItem, weaponItem);
+            Utilities.SetStateChanged(teamPreview, "CCSGO_TeamPreviewCharacterPosition", "m_weaponItem");
+        }
+
+        if (inventory.Agents.TryGetValue(player.TeamNum, out var agentItem) && agentItem.Def != null)
+        {
+            teamPreview.AgentItem.ItemDefinitionIndex = agentItem.Def.Value;
+            Utilities.SetStateChanged(teamPreview, "CCSGO_TeamPreviewCharacterPosition", "m_agentItem");
         }
     }
 }

@@ -38,6 +38,13 @@ public partial class InventorySimulator
         return HookResult.Continue;
     }
 
+    public HookResult OnUpdateSelectTeamPreview(DynamicHook hook)
+    {
+        var player = hook.GetParam<CCSPlayerController>(0);
+        GiveTeamPreviewItems("team_select", player);
+        return HookResult.Continue;
+    }
+
     public HookResult OnProcessUsercmdsPost(DynamicHook hook)
     {
         if (!invsim_spray_on_use.Value)

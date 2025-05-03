@@ -5,11 +5,112 @@
 
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities;
 
 namespace InventorySimulator;
 
 public partial class InventorySimulator
 {
+    public void ApplyGloveAttributesFromItem(CEconItemView glove, BaseEconItem item)
+    {
+        glove.Initialized = true;
+        glove.ItemDefinitionIndex = item.Def;
+        UpdateEconItemID(glove);
+
+        glove.NetworkedDynamicAttributes.Attributes.RemoveAll();
+        glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
+        glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
+        glove.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
+
+        glove.AttributeList.Attributes.RemoveAll();
+        glove.AttributeList.SetOrAddAttributeValueByName("set item texture prefab", item.Paint);
+        glove.AttributeList.SetOrAddAttributeValueByName("set item texture seed", item.Seed);
+        glove.AttributeList.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
+    }
+
+    public void ApplyWeaponAtrributesFromItem(CEconItemView item, WeaponEconItem weaponItem, CBasePlayerWeapon? weapon = null, CCSPlayerController? player = null)
+    {
+        var isKnife = weapon?.DesignerName.IsKnifeClassName() ?? item.IsKnifeClassName();
+        var entityDef = weapon?.AttributeManager.Item.ItemDefinitionIndex ?? item.ItemDefinitionIndex;
+
+        if (isKnife)
+        {
+            if (weapon != null && entityDef != weaponItem.Def)
+                weapon.ChangeSubclass(weaponItem.Def);
+
+            item.ItemDefinitionIndex = weaponItem.Def;
+            item.EntityQuality = 3;
+        }
+        else
+        {
+            item.EntityQuality = weaponItem.Stattrak >= 0 ? 9 : 4;
+        }
+
+        UpdateEconItemID(item);
+
+        if (weapon != null)
+        {
+            weapon.FallbackPaintKit = weaponItem.Paint;
+            weapon.FallbackSeed = weaponItem.Seed;
+            weapon.FallbackWear = weaponItem.WearOverride ?? weaponItem.Wear;
+        }
+
+        if (player != null)
+        {
+            item.AccountID = (uint)player.SteamID;
+        }
+
+        item.CustomName = weaponItem.Nametag;
+
+        item.NetworkedDynamicAttributes.Attributes.RemoveAll();
+        item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture prefab", weaponItem.Paint);
+        item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture seed", weaponItem.Seed);
+        item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("set item texture wear", weaponItem.Wear);
+
+        item.AttributeList.Attributes.RemoveAll();
+        item.AttributeList.SetOrAddAttributeValueByName("set item texture prefab", weaponItem.Paint);
+        item.AttributeList.SetOrAddAttributeValueByName("set item texture seed", weaponItem.Seed);
+        item.AttributeList.SetOrAddAttributeValueByName("set item texture wear", weaponItem.Wear);
+
+        if (weaponItem.Stattrak >= 0)
+        {
+            if (weapon != null)
+            {
+                weapon.FallbackStatTrak = weaponItem.Stattrak;
+            }
+            item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(weaponItem.Stattrak));
+            item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName("kill eater score type", 0);
+            item.AttributeList.SetOrAddAttributeValueByName("kill eater", ViewAsFloat(weaponItem.Stattrak));
+            item.AttributeList.SetOrAddAttributeValueByName("kill eater score type", 0);
+        }
+
+        if (!isKnife)
+        {
+            foreach (var sticker in weaponItem.Stickers)
+            {
+                var slot = $"sticker slot {sticker.Slot}";
+                // To set the ID of the sticker, we need to use a workaround. In the items_game.txt file, locate the
+                // sticker slot 0 id entry. It should be marked with stored_as_integer set to 1. This means we need to
+                // treat a uint as a float. For example, if the uint stickerId is 2229, we would interpret its value as
+                // if it were a float (e.g., float stickerId = 3.12349e-42f).
+                // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blame/main/game/shared/econ/econ_item_view.cpp#L194
+                item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} id", ViewAsFloat(sticker.Def));
+                item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} wear", sticker.Wear);
+                if (sticker.Rotation != null)
+                    item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} rotation", sticker.Rotation.Value);
+                if (sticker.X != null)
+                    item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} offset x", sticker.X.Value);
+                if (sticker.Y != null)
+                    item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} offset y", sticker.Y.Value);
+            }
+
+            if (weapon != null && player != null)
+            {
+                UpdatePlayerWeaponMeshGroupMask(player, weapon, weaponItem.Legacy);
+            }
+        }
+    }
+
     public void UpdateWeaponMeshGroupMask(CBaseEntity weapon, bool isLegacy)
     {
         if (weapon.CBodyComponent != null && weapon.CBodyComponent.SceneNode != null)
