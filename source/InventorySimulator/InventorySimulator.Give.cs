@@ -52,7 +52,9 @@ public partial class InventorySimulator
         if (pawn == null || pawn.Handle == IntPtr.Zero)
             return;
 
-        if (inventory.Gloves.TryGetValue(player.TeamNum, out var item))
+        var fallback = invsim_fallback_team.Value;
+        var item = inventory.GetGlove(player.TeamNum, fallback);
+        if (item != null)
         {
             if (invsim_ws_gloves_fix.Value)
             {
