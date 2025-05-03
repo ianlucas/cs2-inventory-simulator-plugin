@@ -127,6 +127,9 @@ public class WeaponEconItem : BaseEconItem
 
 public class AgentItem
 {
+    [JsonPropertyName("def")]
+    public ushort? Def { get; set; }
+
     [JsonPropertyName("model")]
     public required string Model { get; set; }
 
@@ -227,6 +230,19 @@ public class PlayerInventory(
         if (fallback && GetWeapons(InventorySimulator.ToggleTeam(team)).TryGetValue(def, out weapon))
         {
             return weapon;
+        }
+        return null;
+    }
+
+    public BaseEconItem? GetGlove(byte team, bool fallback)
+    {
+        if (Gloves.TryGetValue(team, out var glove))
+        {
+            return glove;
+        }
+        if (fallback && Gloves.TryGetValue((byte)InventorySimulator.ToggleTeam((CsTeam)team), out glove))
+        {
+            return glove;
         }
         return null;
     }

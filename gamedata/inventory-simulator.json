@@ -41,13 +41,6 @@
       "linux": "55 48 89 E5 41 57 41 56 41 55 41 54 53 48 89 FB 48 83 EC ? 89 75"
     }
   },
-  "UpdateIntroTeamPreview": {
-    "signatures": {
-      "library": "server",
-      "windows": "",
-      "linux": "48 8D 05 ? ? ? ? 48 8B 38 48 85 FF 0F 84 ? ? ? ? 55 48 89 E5 41 57"
-    }
-  },
   "CServerSideClientBase_SetSignonState": {
     "signatures": {
       "library": "engine2",

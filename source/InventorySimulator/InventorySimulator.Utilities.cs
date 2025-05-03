@@ -17,8 +17,6 @@ public partial class InventorySimulator
 
     public static string GetAgentModelPath(string model) => $"characters/models/{model}.vmdl";
 
-    public static bool IsKnifeClassName(string className) => className.Contains("bayonet") || className.Contains("knife");
-
     public static long Now() => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
     public static CsTeam ToggleTeam(CsTeam team) => team == CsTeam.Terrorist ? CsTeam.CounterTerrorist : CsTeam.Terrorist;

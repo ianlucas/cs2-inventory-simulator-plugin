@@ -44,8 +44,6 @@ public static class Extensions
         GameData.GetSignature("CCSPlayerController_UpdateSelectTeamPreview")
     );
 
-    public static readonly MemoryFunctionWithReturn<IntPtr> UpdateIntroTeamPreview = new(GameData.GetSignature("UpdateIntroTeamPreview"));
-
     public static readonly MemoryFunctionWithReturn<IntPtr, IntPtr, IntPtr, short, IntPtr, byte, int, int, byte> ConnectFunc = new(
         GameData.GetSignature("CServerSideClientBase_Connect"),
         Addresses.EnginePath
@@ -74,15 +72,5 @@ public static class Extensions
     public static bool IsAbleToApplySpray(this CCSPlayerPawn pawn, IntPtr ptr = 0)
     {
         return IsAbleToApplySprayFunc(pawn.Handle, ptr, 0, 0) == IntPtr.Zero;
-    }
-
-    public static string GetActualDesignerName(this CBasePlayerWeapon weapon)
-    {
-        return weapon.AttributeManager.Item.ItemDefinitionIndex switch
-        {
-            60 => "weapon_m4a1_silencer",
-            61 => "weapon_usp_silencer",
-            _ => weapon.DesignerName,
-        };
     }
 }

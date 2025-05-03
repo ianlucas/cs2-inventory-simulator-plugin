@@ -22,11 +22,11 @@ public partial class InventorySimulator : BasePlugin
         RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         RegisterEventHandler<EventPlayerConnect>(OnPlayerConnect);
         RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull);
+        RegisterEventHandler<EventRoundPrestart>(OnRoundPrestart);
         RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
         Extensions.ProcessUsercmds.Hook(OnProcessUsercmdsPost, HookMode.Post);
         VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
         Extensions.UpdateSelectTeamPreview.Hook(OnUpdateSelectTeamPreview, HookMode.Post);
-        Extensions.UpdateIntroTeamPreview.Hook(OnUpdateIntroTeamPreview, HookMode.Post);
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeathPre, HookMode.Pre);
         RegisterEventHandler<EventRoundMvp>(OnRoundMvpPre, HookMode.Pre);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);

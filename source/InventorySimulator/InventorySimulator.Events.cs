@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 
 namespace InventorySimulator;
@@ -30,6 +31,16 @@ public partial class InventorySimulator
         if (PlayerOnTickInventoryManager.TryGetValue(player.SteamID, out var tuple))
             PlayerOnTickInventoryManager[player.SteamID] = (player, tuple.Item2);
         RefreshPlayerInventory(player);
+    }
+
+    public HookResult OnRoundPrestart(EventRoundPrestart @event, GameEventInfo _)
+    {
+        Server.NextFrame(() =>
+        {
+            if (GetGameRules().TeamIntroPeriod)
+                GiveTeamPreviewItems("team_intro");
+        });
+        return HookResult.Continue;
     }
 
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo _)

@@ -24,19 +24,19 @@ public partial class InventorySimulator
                 GivePlayerMusicKit(player, inventory);
             }
 
+        /*
         var gameRules = GetGameRules();
         if (gameRules != null)
             if (gameRules.TeamIntroPeriod)
             {
                 if (DidHandleTeamIntro != true)
                 {
-                    Server.PrintToChatAll("---Updating team intro entities---");
                     GiveTeamPreviewItems("team_intro");
                     DidHandleTeamIntro = true;
                 }
             }
             else
-                DidHandleTeamIntro = false;
+                DidHandleTeamIntro = false;*/
     }
 
     public void OnEntityCreated(CEntityInstance entity)
