@@ -77,7 +77,11 @@ public static class SkillIssues
     public static string? GetDesignerName(this CEconItemView item) =>
         _itemDefinitionIndexes.Where(w => w.Value == item.ItemDefinitionIndex).Select(w => w.Key).FirstOrDefault();
 
-    public static string GetDesignerName(this CBasePlayerWeapon weapon) => weapon.AttributeManager.Item.GetDesignerName() ?? weapon.DesignerName;
+    public static string GetDesignerName(this CBasePlayerWeapon weapon)
+    {
+        var designerName = weapon.AttributeManager.Item.GetDesignerName() ?? weapon.DesignerName;
+        return designerName.IsKnifeClassName() ? "weapon_knife" : designerName;
+    }
 
     public static bool IsKnifeClassName(this string className) => className.Contains("bayonet") || className.Contains("knife");
 
