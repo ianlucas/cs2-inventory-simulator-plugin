@@ -234,7 +234,7 @@ public class PlayerInventory(
         return null;
     }
 
-    public BaseEconItem? GetGlove(byte team, bool fallback)
+    public BaseEconItem? GetGloves(byte team, bool fallback)
     {
         if (Gloves.TryGetValue(team, out var glove))
         {

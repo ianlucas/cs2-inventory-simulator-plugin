@@ -53,7 +53,7 @@ public partial class InventorySimulator
             return;
 
         var fallback = invsim_fallback_team.Value;
-        var item = inventory.GetGlove(player.TeamNum, fallback);
+        var item = inventory.GetGloves(player.TeamNum, fallback);
         if (item != null)
         {
             if (invsim_ws_gloves_fix.Value)
@@ -346,7 +346,7 @@ public partial class InventorySimulator
     {
         var fallback = invsim_fallback_team.Value;
 
-        var gloveItem = inventory.GetGlove(player.TeamNum, fallback);
+        var gloveItem = inventory.GetGloves(player.TeamNum, fallback);
         if (gloveItem != null)
         {
             ApplyGloveAttributesFromItem(teamPreview.GlovesItem, gloveItem);
