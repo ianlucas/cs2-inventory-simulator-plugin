@@ -41,14 +41,12 @@ public partial class InventorySimulator
     public HookResult OnUpdateSelectTeamPreview(DynamicHook hook)
     {
         var player = hook.GetParam<CCSPlayerController>(0);
-        player.PrintToChat("UPDATING YOUR SELECT TEAM PREVIEW!");
         GiveTeamPreviewItems("team_select");
         return HookResult.Continue;
     }
 
     public HookResult OnUpdateIntroTeamPreview(DynamicHook hook)
     {
-        Server.PrintToChatAll("TEAM INTRO UPDATED!");
         GiveTeamPreviewItems("team_intro");
         return HookResult.Continue;
     }
