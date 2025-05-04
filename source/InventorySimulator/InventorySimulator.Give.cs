@@ -305,7 +305,7 @@ public partial class InventorySimulator
         var trace = stackalloc GameTrace[1];
         if (!pawn.IsAbleToApplySpray((IntPtr)trace) || (IntPtr)trace == IntPtr.Zero)
             return;
-        player.ExecuteClientCommand("play sounds/items/spraycan_shake");
+        player.EmitSound("SprayCan.Shake");
         PlayerSprayCooldownManager[player.SteamID] = Now();
         var endPos = Vector3toVector(trace->EndPos);
         var normalPos = Vector3toVector(trace->Normal);
@@ -320,7 +320,7 @@ public partial class InventorySimulator
             sprayDecal.Player = item.Def;
             sprayDecal.TintID = item.Tint;
             sprayDecal.DispatchSpawn();
-            player.ExecuteClientCommand("play sounds/items/spraycan_spray");
+            player.EmitSound("SprayCan.Paint");
         }
     }
 
