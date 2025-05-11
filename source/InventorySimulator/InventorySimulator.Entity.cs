@@ -28,7 +28,7 @@ public partial class InventorySimulator
         glove.AttributeList.SetOrAddAttributeValueByName("set item texture wear", item.Wear);
     }
 
-    public void ApplyWeaponAtrributesFromItem(CEconItemView item, WeaponEconItem weaponItem, CBasePlayerWeapon? weapon = null, CCSPlayerController? player = null)
+    public void ApplyWeaponAttributesFromItem(CEconItemView item, WeaponEconItem weaponItem, CBasePlayerWeapon? weapon = null, CCSPlayerController? player = null)
     {
         var isKnife = weapon?.DesignerName.IsKnifeClassName() ?? item.IsKnifeClassName();
         var entityDef = weapon?.AttributeManager.Item.ItemDefinitionIndex ?? item.ItemDefinitionIndex;

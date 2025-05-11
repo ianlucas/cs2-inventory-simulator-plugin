@@ -114,7 +114,7 @@ public partial class InventorySimulator
         if (item != null)
         {
             item.WearOverride ??= inventory.GetWeaponEconItemWear(item);
-            ApplyWeaponAtrributesFromItem(weapon.AttributeManager.Item, item, weapon, player);
+            ApplyWeaponAttributesFromItem(weapon.AttributeManager.Item, item, weapon, player);
         }
     }
 
@@ -361,7 +361,7 @@ public partial class InventorySimulator
             : inventory.GetWeapon(player.Team, teamPreview.WeaponItem.ItemDefinitionIndex, fallback);
         if (weaponItem != null)
         {
-            ApplyWeaponAtrributesFromItem(teamPreview.WeaponItem, weaponItem);
+            ApplyWeaponAttributesFromItem(teamPreview.WeaponItem, weaponItem);
             Utilities.SetStateChanged(teamPreview, "CCSGO_TeamPreviewCharacterPosition", "m_weaponItem");
         }
 
