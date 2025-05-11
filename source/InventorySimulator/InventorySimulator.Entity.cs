@@ -173,6 +173,8 @@ public partial class InventorySimulator
         {
             Server.NextFrame(() =>
             {
+                if (!player.IsValid)
+                    return;
                 var pawn = player.PlayerPawn.Value;
                 if (pawn == null)
                     return;
@@ -187,8 +189,11 @@ public partial class InventorySimulator
                 {
                     Server.NextFrame(() =>
                     {
-                        pawn.StrVOPrefix = voPrefix;
-                        pawn.HasFemaleVoice = voFemale;
+                        if (pawn.IsValid)
+                        {
+                            pawn.StrVOPrefix = voPrefix;
+                            pawn.HasFemaleVoice = voFemale;
+                        }
                     });
                 }
                 pawn.SetModel(model);
