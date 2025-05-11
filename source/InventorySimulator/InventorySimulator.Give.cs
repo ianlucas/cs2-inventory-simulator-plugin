@@ -70,8 +70,11 @@ public partial class InventorySimulator
             var glove = pawn.EconGloves;
             Server.NextFrame(() =>
             {
-                ApplyGloveAttributesFromItem(glove, item);
-                pawn.SetBodygroup("default_gloves", 1);
+                if (pawn.IsValid)
+                {
+                    ApplyGloveAttributesFromItem(glove, item);
+                    pawn.SetBodygroup("default_gloves", 1);
+                }
             });
         }
     }
@@ -222,7 +225,7 @@ public partial class InventorySimulator
                 Server.TickCount + 32,
                 () =>
                 {
-                    if (weapon.IsValid && pawn.IsValid)
+                    if (weapon.IsValid)
                     {
                         weapon.Clip1 = clip;
                         Utilities.SetStateChanged(weapon, "CBasePlayerWeapon", "m_iClip1");
@@ -230,7 +233,7 @@ public partial class InventorySimulator
                         Utilities.SetStateChanged(weapon, "CBasePlayerWeapon", "m_pReserveAmmo");
                         Server.NextFrame(() =>
                         {
-                            if (active)
+                            if (active && player.IsValid)
                             {
                                 var command = gearSlot switch
                                 {
