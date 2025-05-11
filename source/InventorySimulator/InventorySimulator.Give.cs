@@ -225,7 +225,7 @@ public partial class InventorySimulator
                 Server.TickCount + 32,
                 () =>
                 {
-                    if (weapon.IsValid && pawn.IsValid)
+                    if (weapon.IsValid)
                     {
                         weapon.Clip1 = clip;
                         Utilities.SetStateChanged(weapon, "CBasePlayerWeapon", "m_iClip1");
