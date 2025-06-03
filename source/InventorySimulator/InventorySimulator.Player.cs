@@ -44,7 +44,7 @@ public partial class InventorySimulator
         Server.NextFrame(() =>
         {
             var player = Utilities.GetPlayerFromSteamId(steamId);
-            if (inventory.MusicKit != null)
+            if (inventory.MusicKit != null || inventory.Graffiti != null)
                 PlayerOnTickInventoryManager[steamId] = (player, inventory);
             else
                 PlayerOnTickInventoryManager.Remove(steamId, out _);

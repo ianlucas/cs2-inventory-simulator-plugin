@@ -19,6 +19,9 @@ public partial class InventorySimulator
             if (player != null)
             {
                 GivePlayerMusicKit(player, inventory);
+
+                if (invsim_compatibility_mode.Value && invsim_spray_on_use.Value)
+                    SprayPlayerGraffitiThruPlayerButtons(player);
             }
     }
 
@@ -78,5 +81,34 @@ public partial class InventorySimulator
             Extensions.ConnectFunc.Unhook(OnConnect, HookMode.Post);
             Extensions.SetSignonStateFunc.Unhook(OnSetSignonState, HookMode.Pre);
         }
+    }
+
+    private bool _isProcessUsercmdsPostHooked = false;
+
+    public void OnSprayHookingChange(bool compatibilityMode, bool sprayOnUse)
+    {
+        if (!compatibilityMode && sprayOnUse)
+        {
+            if (!_isProcessUsercmdsPostHooked)
+            {
+                Extensions.ProcessUsercmds.Hook(OnProcessUsercmdsPost, HookMode.Post);
+                _isProcessUsercmdsPostHooked = true;
+            }
+        }
+        else if (_isProcessUsercmdsPostHooked)
+        {
+            Extensions.ProcessUsercmds.Unhook(OnProcessUsercmdsPost, HookMode.Post);
+            _isProcessUsercmdsPostHooked = false;
+        }
+    }
+
+    public void OnInvSimCompatibilityModeChange(object? _, bool value)
+    {
+        OnSprayHookingChange(value, invsim_spray_on_use.Value);
+    }
+
+    public void OnInvSimSprayOnUseChange(object? _, bool value)
+    {
+        OnSprayHookingChange(invsim_compatibility_mode.Value, value);
     }
 }
