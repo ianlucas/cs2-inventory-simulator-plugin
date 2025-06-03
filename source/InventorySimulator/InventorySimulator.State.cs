@@ -27,7 +27,7 @@ public partial class InventorySimulator
     public readonly FakeConVar<int> invsim_minmodels = new("invsim_minmodels", "Allows agents or use specific models for each team.", 0, flags: ConVarFlags.FCVAR_NONE, new RangeValidator<int>(0, 2));
     public readonly FakeConVar<int> invsim_ws_cooldown = new("invsim_ws_cooldown", "Cooldown in seconds between player inventory refreshes.", 30);
     public readonly FakeConVar<int> invsim_spray_cooldown = new("invsim_spray_cooldown", "Cooldown in seconds between player sprays.", 30);
-    public readonly FakeConVar<bool> invsim_compatibility_mode = new("invsim_compatibility_mode", "Whether we are in compatibility mode. (With CS2Fixes.)", false);
+    public readonly FakeConVar<bool> invsim_compatibility_mode = new("invsim_compatibility_mode", "Whether we are in compatibility mode. (e.g. with CS2Fixes.)", false);
     public readonly FakeConVar<string> invsim_apikey = new("invsim_apikey", "Inventory Simulator API's key.", "");
     public readonly FakeConVar<string> invsim_hostname = new("invsim_hostname", "Inventory Simulator API's hostname.", "inventory.cstrike.app");
     public readonly FakeConVar<string> invsim_protocol = new("invsim_protocol", "Inventory Simulator API's protocol.", "https");
