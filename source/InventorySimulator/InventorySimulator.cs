@@ -24,7 +24,6 @@ public partial class InventorySimulator : BasePlugin
         RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnectFull);
         RegisterEventHandler<EventRoundPrestart>(OnRoundPrestart);
         RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
-        Extensions.ProcessUsercmds.Hook(OnProcessUsercmdsPost, HookMode.Post);
         VirtualFunctions.GiveNamedItemFunc.Hook(OnGiveNamedItemPost, HookMode.Post);
         Extensions.UpdateSelectTeamPreview.Hook(OnUpdateSelectTeamPreview, HookMode.Post);
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeathPre, HookMode.Pre);
@@ -36,5 +35,11 @@ public partial class InventorySimulator : BasePlugin
 
         invsim_require_inventory.ValueChanged += OnInvSimRequireInventoryChange;
         OnInvSimRequireInventoryChange(null, invsim_require_inventory.Value);
+
+        invsim_compatibility_mode.ValueChanged += OnInvSimCompatibilityModeChange;
+        OnInvSimCompatibilityModeChange(null, invsim_compatibility_mode.Value);
+
+        invsim_spray_on_use.ValueChanged += OnInvSimSprayOnUseChange;
+        OnInvSimSprayOnUseChange(null, invsim_spray_on_use.Value);
     }
 }

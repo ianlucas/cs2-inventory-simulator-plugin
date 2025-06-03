@@ -56,6 +56,12 @@ Submit a PR or open an issue if you happen to know a workaround for them.
 * **Type:** `string`
 * **Default:** _empty_
 
+#### `invsim_compatibility_mode` ConVar
+
+* Whether enable compatibility mode to try to work with other frameworks (e.g. CS2Fixes). May affect performance when enabled using spray on use.
+* **Type:** `bool`
+* **Default:** `false`
+
 #### `invsim_stattrak_ignore_bots` ConVar
 
 * Whether to ignore StatTrak increments for bot kills.

@@ -5,6 +5,7 @@
 
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace InventorySimulator;
@@ -324,6 +325,27 @@ public partial class InventorySimulator
             sprayDecal.TintID = item.Tint;
             sprayDecal.DispatchSpawn();
             player.EmitSound("SprayCan.Paint");
+        }
+    }
+
+    public void SprayPlayerGraffitiThruPlayerButtons(CCSPlayerController player)
+    {
+        if ((player.Buttons & PlayerButtons.Use) != 0 && player.PlayerPawn.Value?.IsAbleToApplySpray() == true)
+        {
+            if (IsPlayerUseCmdBusy(player))
+                PlayerUseCmdBlockManager[player.SteamID] = true;
+            if (PlayerUseCmdManager.TryGetValue(player.SteamID, out var timer))
+                timer.Kill();
+            PlayerUseCmdManager[player.SteamID] = AddTimer(
+                0.1f,
+                () =>
+                {
+                    if (PlayerUseCmdBlockManager.ContainsKey(player.SteamID))
+                        PlayerUseCmdBlockManager.Remove(player.SteamID, out var _);
+                    else if (player.IsValid && !IsPlayerUseCmdBusy(player))
+                        player.ExecuteClientCommandFromServer("css_spray");
+                }
+            );
         }
     }
 
