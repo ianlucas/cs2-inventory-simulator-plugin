@@ -1,4 +1,4 @@
-﻿/*---------------------------------------------------------------------------------------------
+/*---------------------------------------------------------------------------------------------
  *  Copyright (c) Ian Lucas. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
@@ -20,6 +20,34 @@ public partial class InventorySimulator
             {
                 GivePlayerMusicKit(player, inventory);
             }
+
+        // 处理喷漆功能
+        if (invsim_spray_on_use.Value)
+        {
+            foreach (var player in Utilities.GetPlayers())
+            {
+                if (player != null && player.IsValid && !player.IsBot && player.PlayerPawn.Value?.IsAbleToApplySpray() == true)
+                {
+                    if ((player.Buttons & PlayerButtons.Use) != 0)
+                    {
+                        if (IsPlayerUseCmdBusy(player))
+                            PlayerUseCmdBlockManager[player.SteamID] = true;
+                        if (PlayerUseCmdManager.TryGetValue(player.SteamID, out var timer))
+                            timer.Kill();
+                        PlayerUseCmdManager[player.SteamID] = AddTimer(
+                            0.1f,
+                            () =>
+                            {
+                                if (PlayerUseCmdBlockManager.ContainsKey(player.SteamID))
+                                    PlayerUseCmdBlockManager.Remove(player.SteamID, out var _);
+                                else if (player.IsValid && !IsPlayerUseCmdBusy(player))
+                                    player.ExecuteClientCommandFromServer("css_spray");
+                            }
+                        );
+                    }
+                }
+            }
+        }
     }
 
     public void OnEntityCreated(CEntityInstance entity)
