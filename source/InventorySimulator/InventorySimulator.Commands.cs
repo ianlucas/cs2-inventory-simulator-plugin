@@ -63,10 +63,7 @@ public partial class InventorySimulator
     [ConsoleCommand("css_wslogin", "Authenticate player to Inventory Simulator.")]
     public void OnWsloginCommand(CCSPlayerController? player, CommandInfo _)
     {
-        if (invsim_apikey.Value == "")
-            return;
-
-        if (player != null && invsim_wslogin.Value)
+        if (invsim_apikey.Value == "" && invsim_wslogin.Value && player != null)
         {
             player.PrintToChat(Localizer["invsim.login_in_progress"]);
             if (AuthenticatingPlayer.ContainsKey(player.SteamID))
