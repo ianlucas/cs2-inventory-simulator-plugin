@@ -31,10 +31,12 @@ public partial class InventorySimulator
     public readonly FakeConVar<string> invsim_apikey = new("invsim_apikey", "Inventory Simulator API's key.", "");
     public readonly FakeConVar<string> invsim_hostname = new("invsim_hostname", "Inventory Simulator API's hostname.", "inventory.cstrike.app");
     public readonly FakeConVar<string> invsim_protocol = new("invsim_protocol", "Inventory Simulator API's protocol.", "https");
+    public readonly FakeConVar<bool> invsim_wslogin = new("invsim_wslogin", "Not recommended, but allows authenticating into Inventory Simulator and printing login URL to the player.", false);
     public readonly FakeConVar<string> invsim_file = new("invsim_file", "File to load when plugin is loaded.", "inventories.json");
     // csharpier-ignore-end
 
     public readonly ConcurrentDictionary<ulong, bool> FetchingPlayerInventory = [];
+    public readonly ConcurrentDictionary<ulong, bool> AuthenticatingPlayer = [];
     public readonly ConcurrentDictionary<ulong, bool> LoadedPlayerInventory = [];
     public readonly ConcurrentDictionary<ulong, long> PlayerCooldownManager = [];
     public readonly ConcurrentDictionary<ulong, long> PlayerSprayCooldownManager = [];

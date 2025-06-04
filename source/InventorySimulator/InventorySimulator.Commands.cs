@@ -59,4 +59,16 @@ public partial class InventorySimulator
             SprayPlayerGraffiti(player);
         }
     }
+
+    [ConsoleCommand("css_wslogin", "Authenticate player to Inventory Simulator.")]
+    public void OnWsloginCommand(CCSPlayerController? player, CommandInfo _)
+    {
+        if (invsim_apikey.Value == "" && invsim_wslogin.Value && player != null)
+        {
+            player.PrintToChat(Localizer["invsim.login_in_progress"]);
+            if (AuthenticatingPlayer.ContainsKey(player.SteamID))
+                return;
+            SendSignIn(player.SteamID);
+        }
+    }
 }
