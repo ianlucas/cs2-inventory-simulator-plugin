@@ -56,9 +56,15 @@ Submit a PR or open an issue if you happen to know a workaround for them.
 * **Type:** `string`
 * **Default:** _empty_
 
+#### `invsim_wslogin` ConVar
+
+* Not recommended, but allows authenticating into Inventory Simulator and printing login URL to the player.
+* **Type:** `bool`
+* **Default:** `false`
+
 #### `invsim_compatibility_mode` ConVar
 
-* Whether enable compatibility mode to try to work with other frameworks (e.g. CS2Fixes). May affect performance when enabled using spray on use.
+* Whether enable compatibility mode to try to work with other frameworks and/or MetaMod plugins (e.g. CS2Fixes).
 * **Type:** `bool`
 * **Default:** `false`
 
