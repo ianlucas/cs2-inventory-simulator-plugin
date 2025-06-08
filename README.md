@@ -44,9 +44,17 @@ Submit a PR or open an issue if you happen to know a workaround for them.
 
 ### Configuration
 
+#### `invsim_protocol` ConVar
+
+* Inventory Simulator API's protocol.
+* **Type:** `string`
+* **Default:** `https`
+
 #### `invsim_hostname` ConVar
 
 * Inventory Simulator API's hostname.
+* This will be combined with the `invsim_protocol` to form the full URL. 
+* For example, these two default values will combine to `https://inventory.cstrike.app`.
 * **Type:** `string`
 * **Default:** `inventory.cstrike.app`
 
