@@ -162,6 +162,10 @@ Submit a PR or open an issue if you happen to know a workaround for them.
 
 * Sprays player's graffiti in the nearest wall if possible. Players can bind to `T` key using `bind t css_spray`.
 
+#### `!wslogin` Command
+
+* Prints an authentication URL for the player if `invsim_wslogin` ConVar is `true` and `invsim_apikey` has the permissive scope for authenticating the user.
+
 ## See also
 
 If you are looking for a plugin that gives you more control, please see [cs2-WeaponPaints](https://github.com/Nereziel/cs2-WeaponPaints).
