@@ -44,7 +44,7 @@ public static class Extensions
         GameData.GetSignature("CCSPlayerController_UpdateSelectTeamPreview")
     );
 
-    public static readonly MemoryFunctionWithReturn<IntPtr, IntPtr, IntPtr, short, IntPtr, byte, int, int, byte> ConnectFunc = new(
+    public static readonly MemoryFunctionWithReturn<IntPtr, IntPtr, IntPtr, short, IntPtr, byte, int, int> ConnectFunc = new(
         GameData.GetSignature("CServerSideClientBase_Connect"),
         Addresses.EnginePath
     );
