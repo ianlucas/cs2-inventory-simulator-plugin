@@ -54,5 +54,11 @@
       "windows": "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 54 41 55 41 56 41 57 48 83 EC ? 4C 8B BC 24",
       "linux": "55 48 89 E5 41 57 49 89 FF 41 56 41 89 CE 41 55 41 BD"
     }
+  },
+  "CCSPlayer_WeaponServices_DropWeapon": {
+    "offsets": {
+      "windows": 22,
+      "linux": 23
+    }
   }
 }
