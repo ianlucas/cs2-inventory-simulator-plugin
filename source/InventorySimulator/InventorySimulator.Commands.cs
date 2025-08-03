@@ -43,7 +43,7 @@ public partial class InventorySimulator
     [ConsoleCommand("css_spray", "Spray player's graffiti.")]
     public void OnSprayCommand(CCSPlayerController? player, CommandInfo _)
     {
-        if (player != null)
+        if (player != null && invsim_spray_enabled.Value)
         {
             if (PlayerSprayCooldownManager.TryGetValue(player.SteamID, out var timestamp))
             {

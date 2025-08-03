@@ -131,16 +131,7 @@ public partial class InventorySimulator
 
     public void UpdatePlayerWeaponMeshGroupMask(CCSPlayerController player, CBasePlayerWeapon weapon, bool isLegacy)
     {
-        // 1. We update the weapon's MeshGroupMask.
         UpdateWeaponMeshGroupMask(weapon, isLegacy);
-
-        // 2. If the current view model is displaying it, ensure that it has the correct MeshGroupMask.
-        var viewModel = player.GetViewModel();
-        if (viewModel != null && viewModel.Weapon.Value != null && viewModel.Weapon.Value.Index == weapon.Index)
-        {
-            UpdateWeaponMeshGroupMask(viewModel, isLegacy);
-            Utilities.SetStateChanged(viewModel, "CBaseEntity", "m_CBodyComponent");
-        }
     }
 
     public void UpdateEconItemID(CEconItemView econItemView)

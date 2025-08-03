@@ -5,28 +5,8 @@
 
 using System.Numerics;
 using System.Runtime.InteropServices;
-using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Memory;
-using CounterStrikeSharp.API.Modules.Utils;
 
 namespace InventorySimulator;
-
-public static class HackExtensions
-{
-    // This is a hack by KillStr3aK.
-    public static unsafe CBaseViewModel? GetViewModel(this CCSPlayerController player)
-    {
-        if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.ViewModelServices == null)
-            return null;
-        var viewModelServices = new CCSPlayer_ViewModelServices(player.PlayerPawn.Value.ViewModelServices.Handle);
-        var ptr = viewModelServices.Handle + Schema.GetSchemaOffset("CCSPlayer_ViewModelServices", "m_hViewModel");
-        var references = MemoryMarshal.CreateSpan(ref ptr, 3);
-        var viewModel = (CHandle<CBaseViewModel>)Activator.CreateInstance(typeof(CHandle<CBaseViewModel>), references[0])!;
-        if (viewModel == null || viewModel.Value == null)
-            return null;
-        return viewModel.Value;
-    }
-}
 
 // This is a hack by Nuko.
 [StructLayout(LayoutKind.Explicit, Size = 0x44)]
