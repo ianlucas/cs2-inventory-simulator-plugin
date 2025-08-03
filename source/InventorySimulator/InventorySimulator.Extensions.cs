@@ -3,9 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace InventorySimulator;
 
@@ -72,5 +74,16 @@ public static class Extensions
     public static bool IsAbleToApplySpray(this CCSPlayerPawn pawn, IntPtr ptr = 0)
     {
         return IsAbleToApplySprayFunc(pawn.Handle, ptr, 0, 0) == IntPtr.Zero;
+    }
+
+    public static void DropWeapon(this CCSPlayer_WeaponServices services, CBasePlayerWeapon weapon)
+    {
+        Guard.IsValidEntity(weapon);
+        VirtualFunction.CreateVoid<nint, CBasePlayerWeapon, Vector?, Vector?>(services.Handle, GameData.GetOffset("CCSPlayer_WeaponServices_DropWeapon"))(
+            services.Handle,
+            weapon,
+            null,
+            null
+        );
     }
 }

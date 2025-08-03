@@ -174,7 +174,7 @@ public partial class InventorySimulator
     public void GivePlayerCurrentWeapons(CCSPlayerController player, PlayerInventory inventory, PlayerInventory oldInventory)
     {
         var pawn = player.PlayerPawn.Value;
-        var weaponServices = pawn?.WeaponServices;
+        var weaponServices = pawn?.WeaponServices?.As<CCSPlayer_WeaponServices>();
         if (pawn == null || weaponServices == null)
             return;
         var activeDesignerName = weaponServices.ActiveWeapon.Value?.DesignerName;
@@ -218,8 +218,12 @@ public partial class InventorySimulator
             var active = target.Item5;
             var gearSlot = target.Item6;
 
-            var oldWeapon = weaponServices.MyWeapons.FirstOrDefault(h => h.Value?.DesignerName == designerName);
-            oldWeapon?.Value?.AddEntityIOEvent("Kill", oldWeapon.Value, null, "", 0.1f);
+            var oldWeapon = weaponServices.MyWeapons.FirstOrDefault(h => h.Value?.DesignerName == designerName)?.Value;
+            if (oldWeapon != null)
+            {
+                weaponServices.DropWeapon(oldWeapon);
+                oldWeapon.Remove();
+            }
 
             var weapon = new CBasePlayerWeapon(player.GiveNamedItem(actualDesignerName));
             Server.RunOnTick(
