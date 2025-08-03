@@ -17,7 +17,7 @@ public partial class InventorySimulator
     // csharpier-ignore-start
     public readonly FakeConVar<bool> invsim_stattrak_ignore_bots = new("invsim_stattrak_ignore_bots", "Whether to ignore StatTrak increments for bot kills.", true);
     public readonly FakeConVar<bool> invsim_spraychanger_enabled = new("invsim_spraychanger_enabled", "Whether to change player vanilla spray if they have a graffiti equipped.", false);
-    public readonly FakeConVar<bool> invsim_spray_enabled = new("invsim_spray_enabled", "Whether to enable spraying using !spray and/or use key.", false);
+    public readonly FakeConVar<bool> invsim_spray_enabled = new("invsim_spray_enabled", "Whether to enable spraying using !spray and/or use key.", true);
     public readonly FakeConVar<bool> invsim_spray_on_use = new("invsim_spray_on_use", "Whether to try to apply spray when player presses use.", false);
     public readonly FakeConVar<bool> invsim_ws_enabled = new("invsim_ws_enabled", "Whether players can refresh their inventory using !ws.", false);
     public readonly FakeConVar<bool> invsim_ws_print_full_url = new("invsim_ws_print_full_url", "Whether print full URL when the player uses !ws.", true);
