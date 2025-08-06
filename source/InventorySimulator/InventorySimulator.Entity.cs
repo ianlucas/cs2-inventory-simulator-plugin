@@ -5,7 +5,6 @@
 
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Entities;
 
 namespace InventorySimulator;
 
@@ -36,7 +35,8 @@ public partial class InventorySimulator
         if (isKnife)
         {
             if (weapon != null && entityDef != weaponItem.Def)
-                weapon.ChangeSubclass(weaponItem.Def);
+                // Thanks to xstage and stefanx111
+                weapon.AcceptInput("ChangeSubclass", value: weaponItem.Def.ToString());
 
             item.ItemDefinitionIndex = weaponItem.Def;
             item.EntityQuality = 3;
