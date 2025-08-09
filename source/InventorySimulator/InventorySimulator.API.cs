@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -21,17 +22,18 @@ public class SignInUserResponse
 
 public partial class InventorySimulator
 {
-    public string GetApiUrl(string pathname = "")
+    public string GetAPIUrl(string pathname = "")
     {
         return $"{invsim_protocol.Value}://{invsim_hostname.Value}{pathname}";
     }
 
     public async Task<T?> Fetch<T>(string pathname, bool rethrow = false)
     {
+        var url = GetAPIUrl(pathname);
         try
         {
             using HttpClient client = new();
-            var response = await client.GetAsync(GetApiUrl(pathname));
+            var response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             string jsonContent = response.Content.ReadAsStringAsync().Result;
@@ -40,7 +42,7 @@ public partial class InventorySimulator
         }
         catch (Exception error)
         {
-            Logger.LogError("GET {Pathname} failed: {Message}", pathname, error.Message);
+            Logger.LogError("GET {Url} failed: {Message}", url, error.Message);
             if (rethrow)
                 throw;
             return default;
@@ -49,9 +51,9 @@ public partial class InventorySimulator
 
     public async Task<T?> Send<T>(string pathname, object data)
     {
+        var url = GetAPIUrl(pathname);
         try
         {
-            var url = GetApiUrl(pathname);
             var json = JsonSerializer.Serialize(data);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             using HttpClient client = new();
@@ -79,7 +81,7 @@ public partial class InventorySimulator
         }
         catch (Exception error)
         {
-            Logger.LogError("POST {Pathname} failed: {Message}", pathname, error.Message);
+            Logger.LogError("POST {Url} failed: {Message}", url, error.Message);
             return default;
         }
     }
@@ -185,7 +187,7 @@ public partial class InventorySimulator
                 return;
             }
 
-            player?.PrintToChat(Localizer["invsim.login", $"{GetApiUrl("/api/sign-in/callback")}?token={response.Token}"]);
+            player?.PrintToChat(Localizer["invsim.login", $"{GetAPIUrl("/api/sign-in/callback")}?token={response.Token}"]);
         });
     }
 }
