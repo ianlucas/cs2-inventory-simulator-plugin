@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Modules.Memory;
 
 namespace InventorySimulator;
@@ -18,6 +17,8 @@ public partial class InventorySimulator : BasePlugin
 
     public override void Load(bool hotReload)
     {
+        PatchChangeSubclass();
+
         RegisterListener<Listeners.OnTick>(OnTick);
         RegisterListener<Listeners.OnEntityCreated>(OnEntityCreated);
         RegisterEventHandler<EventPlayerConnect>(OnPlayerConnect);

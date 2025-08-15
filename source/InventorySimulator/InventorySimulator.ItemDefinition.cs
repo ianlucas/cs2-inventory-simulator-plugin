@@ -7,7 +7,7 @@ using CounterStrikeSharp.API.Core;
 
 namespace InventorySimulator;
 
-public static class SkillIssues
+public static class ItemDefinition
 {
     private static readonly Dictionary<string, int> _itemDefinitionIndexes = new()
     {
