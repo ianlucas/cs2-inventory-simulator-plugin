@@ -89,11 +89,6 @@ public partial class InventorySimulator
             foreach (var sticker in weaponItem.Stickers)
             {
                 var slot = $"sticker slot {sticker.Slot}";
-                // To set the ID of the sticker, we need to use a workaround. In the items_game.txt file, locate the
-                // sticker slot 0 id entry. It should be marked with stored_as_integer set to 1. This means we need to
-                // treat a uint as a float. For example, if the uint stickerId is 2229, we would interpret its value as
-                // if it were a float (e.g., float stickerId = 3.12349e-42f).
-                // @see https://gitlab.com/KittenPopo/csgo-2018-source/-/blame/main/game/shared/econ/econ_item_view.cpp#L194
                 item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} id", ViewAsFloat(sticker.Def));
                 item.NetworkedDynamicAttributes.SetOrAddAttributeValueByName($"{slot} wear", sticker.Wear);
                 if (sticker.Rotation != null)
@@ -106,32 +101,9 @@ public partial class InventorySimulator
 
             if (weapon != null && player != null)
             {
-                UpdatePlayerWeaponMeshGroupMask(player, weapon, weaponItem.Legacy);
+                weapon.AcceptInput("SetBodygroup", value: $"body,{(weaponItem.Legacy ? 1 : 0)}");
             }
         }
-    }
-
-    public void UpdateWeaponMeshGroupMask(CBaseEntity weapon, bool isLegacy)
-    {
-        if (weapon.CBodyComponent != null && weapon.CBodyComponent.SceneNode != null)
-        {
-            var skeleton = weapon.CBodyComponent.SceneNode.GetSkeletonInstance();
-            if (skeleton != null)
-            {
-                // The term "Legacy" refers to the old weapon models from CS:GO. In CS2, the MeshGroupMask is used to
-                // determine whether the game should display the legacy model (value = 2) or the new model (value = 1).
-                var value = (ulong)(isLegacy ? 2 : 1);
-                if (skeleton.ModelState.MeshGroupMask != value)
-                {
-                    skeleton.ModelState.MeshGroupMask = value;
-                }
-            }
-        }
-    }
-
-    public void UpdatePlayerWeaponMeshGroupMask(CCSPlayerController player, CBasePlayerWeapon weapon, bool isLegacy)
-    {
-        UpdateWeaponMeshGroupMask(weapon, isLegacy);
     }
 
     public void UpdateEconItemID(CEconItemView econItemView)
