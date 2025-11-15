@@ -28,6 +28,7 @@ This plugin features all current (and public) knowledge on how to give economy i
 
 Submit a PR or open an issue if you happen to know a workaround for them.
 
+- Primary and secondary weapons may appear duplicated in the Radial Weapon Menu ([#86](https://github.com/ianlucas/cs2-inventory-simulator-plugin/issues/86)).
 - When using `!ws`, the wear of skins may [get worse over time](https://github.com/ianlucas/cs2-inventory-simulator-plugin/blob/cadd90dd859604e5de7908169f63ae7ca4b6d206/source/InventorySimulator/InventorySimulator.PlayerInventory.cs#L151-L175) if player doesn't reconnect.
 - When using `!ws`, gloves are only updated when rejoining the game or switching teams ([#21](https://github.com/ianlucas/cs2-inventory-simulator-plugin/issues/21)).
   - You can use [`invsim_ws_gloves_fix`](https://github.com/ianlucas/cs2-inventory-simulator-plugin/tree/main#invsim_ws_gloves_fix-convar) ConVar for a workaround on this issue.
